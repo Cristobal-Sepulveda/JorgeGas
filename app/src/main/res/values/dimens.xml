@@ -10,4 +10,5 @@
     <dimen name="space_small">8dp</dimen>
     <dimen name="space_normal">16dp</dimen>
     <dimen name="space_big">24dp</dimen>
+    <dimen name="space_bigger">48dp</dimen>
 </resources>

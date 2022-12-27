@@ -86,7 +86,9 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:3.6.28"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:2.12.1"
     androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
-    
+
+    //CardView
+    implementation("androidx.cardview:cardview:1.0.0")
     //Koin Dependency Injection
     // Koin Core features
     implementation "io.insert-koin:koin-core:3.3.0"
