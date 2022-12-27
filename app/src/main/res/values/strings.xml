@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Conductor</string>
+    <string name="title_home">Home</string>
+    <string name="title_map">Mapa</string>
+    <string name="title_profile">Perfil</string>
+    <string name="mensage_bienvenida">Bienvenido</string>
+    <string name="button_login">Iniciar sesión</string>
+    <string name="location_required_error">Debe activar su gps antes de usar esta aplicación</string>
+</resources>
