@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "838847601508",
+    "project_id": "app-login-y-maps",
+    "storage_bucket": "app-login-y-maps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838847601508:android:11b44222884864e4b3f871",
+        "android_client_info": {
+          "package_name": "com.example.conductor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "838847601508-epi5n3ndat621g27a17ovimr9pp92544.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.conductor",
+            "certificate_hash": "86e8a928600d100e6f7d986a5d063a99b440a72a"
+          }
+        },
+        {
+          "client_id": "838847601508-904kolmv6sbk3qmgmic63jtg0b4re81m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoj0W39p99v0l8S1RdnZZrPAbXFdQ8b4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "838847601508-904kolmv6sbk3qmgmic63jtg0b4re81m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
