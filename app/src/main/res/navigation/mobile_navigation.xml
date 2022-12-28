@@ -13,14 +13,15 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_map"
         android:name="com.example.conductor.ui.map.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
 
-    <fragment
-        android:id="@+id/navigation_notifications"
+    <dialog
+        android:id="@+id/navigation_profile"
         android:name="com.example.conductor.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+    </dialog>
 </navigation>

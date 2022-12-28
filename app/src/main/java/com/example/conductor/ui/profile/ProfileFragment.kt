@@ -6,21 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.DialogFragment
 import com.example.conductor.AuthenticationActivity
-import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
-import org.koin.android.ext.android.inject
 
-class ProfileFragment : BaseFragment() {
+class ProfileFragment : DialogFragment() {
 
     //use Koin to retrieve the ViewModel instance
-    override val _viewModel: ProfileViewModel by inject()
     private var _binding: FragmentProfileBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -32,14 +27,18 @@ class ProfileFragment : BaseFragment() {
         val root: View = binding.root
 
         val textView: TextView = binding.textNotifications
-        _viewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
 
         _binding!!.buttonLogout.setOnClickListener{
             logout()
         }
         return root
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            dialog?.show();
+        }
     }
 
     private fun logout(){
