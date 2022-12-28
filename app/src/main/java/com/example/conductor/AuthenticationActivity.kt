@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.conductor.utils.Constants.REQUEST_TURN_DEVICE_LOCATION_ON
@@ -19,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+
 /**
  * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
  * signed in users to the RemindersActivity.
@@ -27,20 +30,20 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
     private lateinit var firebaseAuth: FirebaseAuth
-
+    private lateinit var error: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        firebaseAuth = FirebaseAuth.getInstance()
         hayUsuarioLogeado()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
         binding.loginButton.setOnClickListener {
-                launchSignInFlow()
+            launchSignInFlow()
         }
         checkDeviceLocationSettings()
     }
 
     private fun hayUsuarioLogeado(){
-        firebaseAuth = FirebaseAuth.getInstance()
         if (firebaseAuth.currentUser!= null){
             val intent = Intent(this, MainActivity::class.java)
             finish()
@@ -51,24 +54,29 @@ class AuthenticationActivity : AppCompatActivity() {
     /** Give users the option to sign in / register with their email or Google account.
     * If users choose to register with their email, they will need to create a password as well.*/
     private fun launchSignInFlow() {
+        val email = binding.edittextEmail.text.toString()
+        val password = binding.edittextPassword.text.toString()
 
-        /** What im doing here is telling to the firebaseUI how i want to let the user log-in */
-        val providers = arrayListOf(
-                AuthUI.IdpConfig.EmailBuilder().build(),
-                AuthUI.IdpConfig.GoogleBuilder().build())
-
-        /** Create and launch sign-in intent.
-         *  We listen to the response of this activity with the
-         *  SIGN_IN_REQUEST_CODE*/
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setAvailableProviders(providers)
-/*                .setTheme(R.style.LoginTheme)
-                .setLogo(R.drawable.map)*/
-                .build(), SIGN_IN_RESULT_CODE
-        )
+        if(!TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)){
+            Log.i("login", "Iniciando login")
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        val intent = Intent(this, MainActivity::class.java)
+                        finish()
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Usuario y/o contraseña incorrectos.",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+        } else {
+            Toast.makeText(this, "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

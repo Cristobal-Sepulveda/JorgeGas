@@ -11,5 +11,7 @@ class ProfileViewModel(val app: Application, val dataSource: AppDataSource,) : B
     private val _text = MutableLiveData<String>().apply {
         value = "This is notifications Fragment"
     }
+
+
     val text: LiveData<String> = _text
 }

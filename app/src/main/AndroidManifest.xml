@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -16,6 +18,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:supportsRtl="true"
         android:theme="@style/Theme.Conductor"
+        android:usesCleartextTraffic="true"
         android:fullBackupContent="@xml/backup_rules"
         tools:targetApi="31">
         <meta-data
@@ -37,7 +40,8 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity">
         </activity>
     </application>
 </manifest>

@@ -1,13 +1,16 @@
 package com.example.conductor.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import com.example.conductor.AuthenticationActivity
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentProfileBinding
+import com.google.firebase.auth.FirebaseAuth
 import org.koin.android.ext.android.inject
 
 class ProfileFragment : BaseFragment() {
@@ -25,19 +28,25 @@ class ProfileFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
-
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textNotifications
-        profileViewModel.text.observe(viewLifecycleOwner) {
+        _viewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
+        }
+
+        _binding!!.buttonLogout.setOnClickListener{
+            logout()
         }
         return root
     }
 
+    private fun logout(){
+        FirebaseAuth.getInstance().signOut()
+        this.activity?.finish()
+        startActivity(Intent(activity, AuthenticationActivity::class.java))
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
