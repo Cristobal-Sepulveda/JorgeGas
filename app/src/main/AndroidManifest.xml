@@ -41,7 +41,9 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 </manifest>
