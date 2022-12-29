@@ -13,4 +13,7 @@
     <string name="location_required_error">Location services must be enabled to use the app</string>
     <string name="settings">Settings</string>
     <string name="logo_jorge_gas">Logo Jorge Gas</string>
+    <string name="logout_button">Logout Button</string>
+    <string name="cerrar_modal">cerrar modal</string>
+    <string name="permission_denied_explanation">Para usar la App debes aceptar los permisos solicitados.</string>
 </resources>

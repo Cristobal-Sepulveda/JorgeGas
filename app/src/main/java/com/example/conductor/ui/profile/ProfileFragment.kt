@@ -26,9 +26,8 @@ class ProfileFragment : DialogFragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
 
-        _binding!!.buttonLogout.setOnClickListener{
+        _binding!!.imageviewLogout.setOnClickListener{
             logout()
         }
         return root
