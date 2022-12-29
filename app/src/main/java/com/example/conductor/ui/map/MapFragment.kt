@@ -1,30 +1,18 @@
 package com.example.conductor.ui.map
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.Color
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.MenuRes
-import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentTransaction
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
@@ -35,11 +23,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 
 
-class MapFragment() : BaseFragment(), OnMapReadyCallback {
+class MapFragment : BaseFragment(), OnMapReadyCallback {
 
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
@@ -47,32 +34,20 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     // The entry point to the Fused Location Provider.
+    private var locationPermissionGranted = false
     private val defaultLocation = LatLng(-33.8523341, 151.2106085)
-    private val DEFAULT_ZOOM = 15
+    private val cameraDefaultZoom = 15
     private var lastKnownLocation: Location? = null
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()){ isGranted ->
         when{
-            isGranted -> Toast.makeText(requireActivity(), "Permiso otorgado", Toast.LENGTH_LONG).show()
+            isGranted -> {
+                Toast.makeText(requireActivity(), "Permiso otorgado", Toast.LENGTH_LONG).show()
+                locationPermissionGranted = true
+                getDeviceLocation()
+            }
             else -> sendAlert()
         }
-    }
-    private fun sendAlert(){
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.perm_request_rationale_title)
-            .setMessage(R.string.perm_request_rationale)
-            .setPositiveButton(R.string.request_perm_again) { _, _ ->
-                startActivityForResult(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package",
-                        "com.example.conductor",
-                        null)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                },1001)
-            }
-            .setNegativeButton(R.string.dismiss, null)
-            .create()
-            .show()
     }
 
     override fun onCreateView(
@@ -82,19 +57,16 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
     ): View {
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        // Specify the current activity as the lifecycle owner of the binding. This is used so that
+        // Specify the current fragment as the lifecycle owner of the binding. This is used so that
         // the binding can observe LiveData updates
+        binding.lifecycleOwner = this
 
         //Adding  the map setup implementation
-
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
 
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
-
-
 
         return binding.root
     }
@@ -103,6 +75,21 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
         map = googleMap
         enableMyLocation()
         setMapStyle(map)
+        markingPolygons()
+    }
+
+    private fun markingPolygons(){
+        val polygon1 = map.addPolygon(PolygonOptions()
+            .clickable(true)
+            .add(
+                LatLng(-33.633367050547506, -70.59543769051807),
+                LatLng(-33.60612470913769, -70.60332616149529),
+                LatLng(-33.602979696865454, -70.57716705402323),
+                LatLng(-33.61228664097706, -70.57541457902043),
+            ))
+        polygon1.fillColor = Color.argb(100,0,255,0)
+        polygon1.strokeColor = -0xc771c4
+        //map.setOnPolygonClickListener()
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -124,6 +111,19 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    private fun sendAlert(){
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.perm_request_rationale_title)
+            .setMessage(R.string.perm_request_rationale)
+            .setPositiveButton(R.string.request_perm_again) { _, _ ->
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            .setNegativeButton(R.string.dismiss, null)
+            .create()
+            .show()
+    }
+
     private fun enableMyLocation(){
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             requireActivity(),
@@ -131,18 +131,84 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
 
         if(isPermissionGranted){
             Toast.makeText(requireActivity(),"Ya tenemos permisos", Toast.LENGTH_LONG).show()
-
+            locationPermissionGranted = true
+            getDeviceLocation()
         }else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-                val permissions = arrayOf(
+/*                val permissions = arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                )
+                )*/
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION,
                 )
             }else{
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
+        }
+    }
+
+    private fun getDeviceLocation() {
+        try {
+            Log.i("getDeviceLocation", "$locationPermissionGranted")
+            if (locationPermissionGranted) {
+                val locationResult = fusedLocationProviderClient.lastLocation
+                locationResult.addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        // Set the map's camera position to the current location of the device.
+                        lastKnownLocation = task.result
+                        Log.i("getDeviceLocation", task.result?.longitude.toString())
+
+                        if (lastKnownLocation != null) {
+                            //zoom to the user location after taking his permission
+                            Log.i("getDeviceLocation", "moving camera to user location")
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
+                                , cameraDefaultZoom.toFloat())
+                            )
+                            map.addMarker(MarkerOptions()
+                                .position(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude))
+                                .title("Marker in your actual location")
+                            )
+                        }else{
+                            //zoom to defaultLocation after taking his permission
+                            Log.i("getDeviceLocation", "moving camera to default location")
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                LatLng(defaultLocation.latitude, defaultLocation.longitude)
+                                , cameraDefaultZoom.toFloat())
+                            )
+                            map.addMarker(MarkerOptions().
+                            position(defaultLocation).
+                            title("Marker in default location"))
+                            map.uiSettings.isMyLocationButtonEnabled = false
+                        }
+                    }
+                    else {
+                        Log.i("getDeviceLocation", "getting location task wasn't successfully")
+                        // zoom to the default location after taking his permission
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            LatLng(defaultLocation.latitude, defaultLocation.longitude)
+                            , cameraDefaultZoom.toFloat())
+                        )
+                        map.addMarker(MarkerOptions()
+                            .position(defaultLocation)
+                            .title("Marker in default location"))
+                        map.uiSettings.isMyLocationButtonEnabled = false
+                    }
+                }
+            }else{
+                Log.i("getDeviceLocation", "getting location task wasn't successfully")
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(defaultLocation.latitude,
+                            defaultLocation.longitude
+                        ), cameraDefaultZoom.toFloat()))
+                map.addMarker(MarkerOptions().
+                position(defaultLocation).
+                title("Marker in default location"))
+                map.uiSettings.isMyLocationButtonEnabled = false
+            }
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
         }
     }
 

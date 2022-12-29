@@ -51,9 +51,10 @@ class MyApp : Application() {
             //LOCAL_DATABASE, here im creating the local database in the first start and
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).fieldDao }
+            single { getDatabase(this@MyApp).permissionsDeniedDao }
 
             //REPOSITORY
-            single { AppRepository(get()) as AppDataSource }
+            single { AppRepository(get(),get()) as AppDataSource }
         }
 
         startKoin {
