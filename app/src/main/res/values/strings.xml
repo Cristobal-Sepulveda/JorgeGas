@@ -16,4 +16,8 @@
     <string name="logout_button">Logout Button</string>
     <string name="cerrar_modal">cerrar modal</string>
     <string name="permission_denied_explanation">Para usar la App debes aceptar los permisos solicitados.</string>
+    <string name="perm_request_rationale_title">¡Aviso!</string>
+    <string name="perm_request_rationale">Para poder utilizar la aplicación tienes que aceptar el permiso solicitado.</string>
+    <string name="request_perm_again">ACEPTAR</string>
+    <string name="dismiss">CANCELAR</string>
 </resources>

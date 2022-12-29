@@ -3,6 +3,7 @@ package com.example.conductor.ui.map
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,6 +18,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
@@ -43,21 +45,35 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private lateinit var map: GoogleMap
-    private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    // The entry point to the Fused Location Provider.
     private val defaultLocation = LatLng(-33.8523341, 151.2106085)
     private val DEFAULT_ZOOM = 15
-    private var locationPermissionGranted = false
-    private val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 33
-    private val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 34
-    private val LOCATION_PERMISSION_INDEX = 0
-    private val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
-
-    // The entry point to the Fused Location Provider.
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>
-
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()){ isGranted ->
+        when{
+            isGranted -> Toast.makeText(requireActivity(), "Permiso otorgado", Toast.LENGTH_LONG).show()
+            else -> sendAlert()
+        }
+    }
+    private fun sendAlert(){
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.perm_request_rationale_title)
+            .setMessage(R.string.perm_request_rationale)
+            .setPositiveButton(R.string.request_perm_again) { _, _ ->
+                startActivityForResult(Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package",
+                        "com.example.conductor",
+                        null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                },1001)
+            }
+            .setNegativeButton(R.string.dismiss, null)
+            .create()
+            .show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,6 +93,8 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
+
+
 
         return binding.root
     }
@@ -106,67 +124,28 @@ class MapFragment() : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-
-
-    @SuppressLint("MissingPermission")
     private fun enableMyLocation(){
-        if(isPermissionGranted()){
-            //map.isMyLocationEnabled = true
-        }else{
-            requestForegroundAndBackgroundLocationPermissions()
-        }
-    }
-
-    private fun isPermissionGranted(): Boolean{
-        return ContextCompat.checkSelfPermission(
+        val isPermissionGranted = ContextCompat.checkSelfPermission(
             requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
 
-    private fun requestForegroundAndBackgroundLocationPermissions() {
-        var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        val resultCode = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
+        if(isPermissionGranted){
+            Toast.makeText(requireActivity(),"Ya tenemos permisos", Toast.LENGTH_LONG).show()
+
         }else{
-            REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-        }
-        Log.i("Permisos",resultCode.toString())
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            permissionsArray,
-            resultCode
-        )
-    }
-
-
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (
-            grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-                    PackageManager.PERMISSION_DENIED)) {
-            Snackbar.make(
-                binding.root,
-                R.string.permission_denied_explanation,
-                Snackbar.LENGTH_LONG
-            ).setAction(R.string.settings) {
-                startActivityForResult(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts("package",
-                        "com.example.conductor",
-                        null)
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                },1001)
-            }.show()
-        }else{
-            Toast.makeText(requireActivity(),"hola", Toast.LENGTH_LONG).show()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                val permissions = arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                )
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION,
+                )
+            }else{
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
         }
     }
+
 }
 
 
