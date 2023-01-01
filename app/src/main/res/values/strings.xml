@@ -20,4 +20,6 @@
     <string name="perm_request_rationale">Para poder utilizar la aplicación tienes que aceptar el permiso solicitado.</string>
     <string name="request_perm_again">ACEPTAR</string>
     <string name="dismiss">CANCELAR</string>
+    <string name="crear_nueva_cuenta">Crear Nueva cuenta</string>
+    <string name="eliminar_cuenta">Eliminar una cuenta</string>
 </resources>

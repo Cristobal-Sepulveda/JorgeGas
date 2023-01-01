@@ -5,9 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.example.conductor.AuthenticationActivity
+import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -30,14 +31,13 @@ class ProfileFragment : DialogFragment() {
         _binding!!.imageviewLogout.setOnClickListener{
             logout()
         }
-        return root
-    }
 
-    override fun onStop() {
-        super.onStop()
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-            dialog?.show();
+        _binding!!.imageviewCerrarModal.setOnClickListener{
+            this.dismiss()
         }
+        return root
+
+
     }
 
     private fun logout(){
@@ -45,6 +45,7 @@ class ProfileFragment : DialogFragment() {
         this.activity?.finish()
         startActivity(Intent(activity, AuthenticationActivity::class.java))
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

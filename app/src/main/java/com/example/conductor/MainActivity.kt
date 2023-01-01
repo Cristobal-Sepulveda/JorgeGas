@@ -5,6 +5,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.databinding.ActivityMainBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         settingUpBottomNavigationView()
+
     }
 
     private fun settingUpBottomNavigationView(){
@@ -26,15 +28,15 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(
             R.id.nav_host_fragment_activity_main
         )
-        val appBarConfiguration = AppBarConfiguration(
+        navView.setupWithNavController(navController)
+/*        val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_map,
                 R.id.navigation_profile
             )
-        )
+        )*/
         //setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
     }
 
 }

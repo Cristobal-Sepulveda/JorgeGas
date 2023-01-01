@@ -30,7 +30,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
 
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     // The entry point to the Fused Location Provider.
@@ -55,11 +54,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        Log.i("MapFragment", "MapFragment onCreateView")
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         // Specify the current fragment as the lifecycle owner of the binding. This is used so that
         // the binding can observe LiveData updates
-        binding.lifecycleOwner = this
+        _binding!!.lifecycleOwner = this
 
         //Adding  the map setup implementation
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
@@ -68,7 +67,13 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        return binding.root
+        return _binding!!.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i("MapFragment", "MapFragment onDestroyView")
+        _binding = null
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
