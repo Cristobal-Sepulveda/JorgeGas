@@ -12,6 +12,10 @@
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home"
         >
+
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
         <action
             android:id="@+id/action_navigation_home_to_navigation_map"
             app:destination="@id/navigation_map" />
@@ -22,15 +26,29 @@
         android:name="com.example.conductor.ui.map.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" >
+
+        <action
+            android:id="@+id/action_navigation_map_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
         <action
             android:id="@+id/action_navigation_map_to_navigation_home"
             app:destination="@id/navigation_home" />
     </fragment>
 
-    <dialog
+    <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.conductor.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile">
-    </dialog>
+        android:name="com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragment"
+        android:label="@string/administracion_cuentas"
+        tools:layout="@layout/fragment_administrar_cuentas">
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_home"
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_map"
+            app:destination="@id/navigation_map"
+            app:popUpTo="@id/navigation_map"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

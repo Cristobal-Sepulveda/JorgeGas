@@ -22,4 +22,8 @@
     <string name="dismiss">CANCELAR</string>
     <string name="crear_nueva_cuenta">Crear Nueva cuenta</string>
     <string name="eliminar_cuenta">Eliminar una cuenta</string>
+    <string name="perfil">Perfil</string>
+    <string name="administrar_cuentas">Administrar cuentas</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="administracion_cuentas">Administración de cuentas</string>
 </resources>

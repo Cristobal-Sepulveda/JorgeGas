@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.*
 import org.koin.android.ext.android.inject
 
 
-class MapFragment : BaseFragment(), OnMapReadyCallback {
+class MapFragment : BaseFragment(), OnMapReadyCallback{
 
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
@@ -67,6 +67,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
+
         return _binding!!.root
     }
 
@@ -76,10 +77,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         _binding = null
     }
 
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
-        setMapStyle(map)
+        //setMapStyle(map)
         markingPolygons()
     }
 

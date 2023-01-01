@@ -8,10 +8,9 @@ import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.home.HomeViewModel
 import com.example.conductor.ui.map.MapViewModel
-import com.example.conductor.ui.profile.ProfileViewModel
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -42,7 +41,7 @@ class MyApp : Application() {
                 )
             }
             single {
-                ProfileViewModel(
+                AdministrarCuentasViewModel(
                     get(),
                     get() as AppDataSource
                 )
