@@ -9,46 +9,30 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.conductor.ui.home.HomeFragment"
-        android:label="@string/title_home"
+        android:label="@string/vista_general"
         tools:layout="@layout/fragment_home"
-        >
-
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_profile"
-            app:destination="@id/navigation_profile" />
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_map"
-            app:destination="@id/navigation_map" />
-    </fragment>
+        />
 
     <fragment
         android:id="@+id/navigation_map"
         android:name="com.example.conductor.ui.map.MapFragment"
         android:label="@string/title_map"
-        tools:layout="@layout/fragment_map" >
-
-        <action
-            android:id="@+id/action_navigation_map_to_navigation_profile"
-            app:destination="@id/navigation_profile" />
-        <action
-            android:id="@+id/action_navigation_map_to_navigation_home"
-            app:destination="@id/navigation_home" />
-    </fragment>
+        tools:layout="@layout/fragment_map"
+        />
 
     <fragment
-        android:id="@+id/navigation_profile"
+        android:id="@+id/navigation_administrar_cuentas"
         android:name="com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragment"
         android:label="@string/administracion_cuentas"
-        tools:layout="@layout/fragment_administrar_cuentas">
-        <action
-            android:id="@+id/action_navigation_profile_to_navigation_home"
-            app:destination="@id/navigation_home"
-            app:popUpTo="@id/navigation_home"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_navigation_profile_to_navigation_map"
-            app:destination="@id/navigation_map"
-            app:popUpTo="@id/navigation_map"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_administrar_cuentas"
+        />
+
+    <fragment
+        android:id="@+id/navigation_nueva_utilidad"
+        android:name="com.example.conductor.ui.nuevautilidad.NuevaUtilidadFragment"
+        android:label="@string/nueva_utilidad"
+        tools:layout="@layout/fragment_nueva_utilidad"
+        />
+
+
 </navigation>

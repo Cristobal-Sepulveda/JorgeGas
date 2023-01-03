@@ -6,9 +6,10 @@ import androidx.core.content.ContextCompat
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.ui.home.HomeViewModel
 import com.example.conductor.ui.map.MapViewModel
-import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
+import com.example.conductor.ui.nuevautilidad.NuevaUtilidadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
@@ -36,6 +37,12 @@ class MyApp : Application() {
             }
             single {
                 HomeViewModel(
+                    get(),
+                    get() as AppDataSource
+                )
+            }
+            single {
+                NuevaUtilidadViewModel(
                     get(),
                     get() as AppDataSource
                 )

@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    tools:context=".ui.administrarcuentas.AdministrarCuentasFragment">
+    tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
 
 
     <ImageView

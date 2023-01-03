@@ -26,4 +26,7 @@
     <string name="administrar_cuentas">Administrar cuentas</string>
     <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="administracion_cuentas">Administración de cuentas</string>
+    <string name="title_cuentas">Cuentas</string>
+    <string name="nueva_utilidad">Nueva utilidad</string>
+    <string name="vista_general">Vista General</string>
 </resources>

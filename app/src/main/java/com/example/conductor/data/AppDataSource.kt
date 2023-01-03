@@ -13,4 +13,5 @@ interface AppDataSource {
     suspend fun deletingSavedFieldsInLocalDatabase()
     suspend fun registrarIntentoDeObtenerPermisos(permissionDenied: PERMISSION_DENIED_DBO)
     suspend fun obtenerIntentoDePermisos(): List<PERMISSION_DENIED_DBO>
+
 }
