@@ -36,6 +36,9 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
         firebaseUser = firebaseAuth.currentUser!!.email.toString()
         navController = findNavController(R.id.nav_host_fragment_activity_main)
+        setSupportActionBar(binding.toolbar)
+        //supportActionBar?.setIcon(R.drawable.logo_blanco)
+
 
         seteandoDrawableLayout()
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
@@ -51,11 +54,9 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private fun seteandoDrawableLayout(){
         if( firebaseUser == "1@1.1"){
             val drawerLayout = binding.drawerLayout
-            Log.i("MapFragment", "true")
             NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
             NavigationUI.setupWithNavController(binding.navView, navController)
         }else{
-            Log.i("MapFragment", "false")
             NavigationUI.setupActionBarWithNavController(this, navController)
         }
     }
