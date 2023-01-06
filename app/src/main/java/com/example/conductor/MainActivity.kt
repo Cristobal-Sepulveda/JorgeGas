@@ -6,30 +6,24 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity(), MenuProvider {
 
     //val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivityMainBinding
-    private lateinit var drawerLayout: DrawerLayout
     private var menuHost: MenuHost = this
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
@@ -42,17 +36,21 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
         firebaseUser = firebaseAuth.currentUser!!.email.toString()
         navController = findNavController(R.id.nav_host_fragment_activity_main)
-        drawerLayout = binding.drawerLayout
 
         seteandoDrawableLayout()
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setupWithNavController(navController)
+        binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
+            logout()
+            true
+        }
 
     }
 
     private fun seteandoDrawableLayout(){
         if( firebaseUser == "1@1.1"){
+            val drawerLayout = binding.drawerLayout
             Log.i("MapFragment", "true")
             NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
             NavigationUI.setupWithNavController(binding.navView, navController)
@@ -64,6 +62,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
     override fun onSupportNavigateUp(): Boolean {
         return if( firebaseUser == "1@1.1"){
+            val drawerLayout = binding.drawerLayout
             NavigationUI.navigateUp(navController,drawerLayout)
         }else{
             navController.navigateUp()
@@ -76,14 +75,30 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId){
-            R.id.logout -> logout()
-            else -> {
+            R.id.modoClaro -> {
+                showToast()
+            }
+            R.id.modoOscuro ->{
+                showToast()
+            }
+            R.id.acercaDe -> {
+                showToast()
+            }
+            R.id.navigation_administrar_cuentas -> {
                 return NavigationUI.onNavDestinationSelected(
                     menuItem,
                     navController)
             }
         }
         return false
+
+    }
+
+    private fun showToast(){
+        Toast.makeText(
+                this,
+                "Esta funcionalidad se implementará en un futuro.",
+                Toast.LENGTH_LONG).show()
     }
 
     private fun logout(){

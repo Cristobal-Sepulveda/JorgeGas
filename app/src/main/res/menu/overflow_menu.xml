@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-
     <item
-        android:title="@string/cerrar_sesion"
-        android:id="@+id/logout"/>
+        android:title="@string/modo_oscuro"
+        android:id="@+id/modoOscuro"/>
+    <item
+        android:title="@string/modo_claro"
+        android:id="@+id/modoClaro"/>
+    <item
+        android:title="@string/acerca_de"
+        android:id="@+id/acercaDe"/>
 
 </menu>

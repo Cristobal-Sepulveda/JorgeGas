@@ -6,4 +6,18 @@
         android:id="@+id/navigation_administrar_cuentas"
         android:icon="@drawable/ic_baseline_person_24"
         />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item android:title="" />
+    <item
+        android:title="@string/cerrar_sesion"
+        android:id="@+id/logout_item"
+        android:icon="@drawable/ic_baseline_logout_24"
+        />
+
 </menu>

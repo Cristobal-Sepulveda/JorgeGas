@@ -2559,12 +2559,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                 LatLng(-33.6394976645399, -70.6786301560785),
                 LatLng(-33.63924347329206, -70.67502088198),
                 LatLng(-33.63869679658627, -70.67303128254161),
-                //orilla derecha
-                //LatLng(-33.63869679658627, -70.67303128254161),
-/*                LatLng(),
-                LatLng(),
-                LatLng(),
-                LatLng(),*/
             )
         )
 
