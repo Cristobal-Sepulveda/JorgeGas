@@ -27,23 +27,33 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:text="@string/crear_nueva_cuenta"
-        app:layout_constraintEnd_toStartOf="@+id/button_eliminarCuenta"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_editarCuenta"
+        app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+
+    <Button
+        android:id="@+id/button_editarCuenta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/space_small"
+        android:layout_marginTop="24dp"
+        android:text="@string/editar_cuenta"
+        app:layout_constraintEnd_toStartOf="@id/button_eliminarCuenta"
+        app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
         app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
 
     <Button
         android:id="@+id/button_eliminarCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:text="@string/eliminar_cuenta"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
+        app:layout_constraintStart_toEndOf="@+id/button_editarCuenta"
         app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

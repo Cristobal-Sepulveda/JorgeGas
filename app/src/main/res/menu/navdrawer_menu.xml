@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:title="@string/administrar_cuentas"
         android:id="@+id/navigation_administrar_cuentas"
         android:icon="@drawable/ic_baseline_person_24"
         />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
-    <item android:title="" />
     <item
         android:title="@string/cerrar_sesion"
         android:id="@+id/logout_item"

@@ -1,17 +1,14 @@
 package com.example.conductor
 
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import android.view.View
-import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.animation.doOnEnd
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import com.example.conductor.utils.Constants.REQUEST_TURN_DEVICE_LOCATION_ON
 import com.example.conductor.utils.Constants.SIGN_IN_RESULT_CODE
@@ -23,45 +20,24 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 
-/**
- * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
- * signed in users to the RemindersActivity.
- */
 class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var error: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        splashScreen.setOnExitAnimationListener { splashScreenView ->
-            // Create your custom animation.
-            val slideUp = ObjectAnimator.ofFloat(
-                splashScreenView,
-                View.TRANSLATION_Y,
-                0f,
-                -splashScreenView.height.toFloat()
-            )
-            slideUp.interpolator = AnticipateInterpolator()
-            slideUp.duration = 2000L
-
-            // Call SplashScreenView.remove at the end of your custom animation.
-            slideUp.doOnEnd { splashScreenView.remove() }
-
-            // Run your animation.
-            slideUp.start()
-        }
-        setTheme(R.style.AppTheme_NoActionBar)
-        firebaseAuth = FirebaseAuth.getInstance()
-        hayUsuarioLogeado()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
+        firebaseAuth = FirebaseAuth.getInstance()
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
+
+        hayUsuarioLogeado()
         checkDeviceLocationSettings()
     }
 
@@ -98,7 +74,6 @@ class AuthenticationActivity : AppCompatActivity() {
             Toast.makeText(this, "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
