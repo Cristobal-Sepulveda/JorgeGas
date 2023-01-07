@@ -6,6 +6,6 @@ import java.util.*
 
 @Entity
 data class PERMISSION_DENIED_DBO(
-    val timesDenied: Int,
+    var timesDenied: Int,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
     )

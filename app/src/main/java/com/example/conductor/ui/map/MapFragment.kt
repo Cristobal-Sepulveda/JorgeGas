@@ -13,6 +13,8 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
@@ -37,15 +39,21 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private val defaultLocation = LatLng(-33.6256, -70.5841)
     private val cameraDefaultZoom = 13
     private var lastKnownLocation: Location? = null
+    private var enviarAOpciones = false
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()){ isGranted ->
         when{
             isGranted -> {
-                Toast.makeText(requireActivity(), "Permiso otorgado", Toast.LENGTH_LONG).show()
                 locationPermissionGranted = true
                 getDeviceLocation()
             }
-            else -> sendAlert()
+            else -> {
+                if(!enviarAOpciones){
+                    sendAlert()
+                }else{
+
+                }
+            }
         }
     }
 
@@ -67,6 +75,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        _viewModel.locationPermissionRequests.observe(viewLifecycleOwner, Observer {
+            if (it>1) enviarAOpciones = true
+        })
 
         return _binding!!.root
     }
@@ -76,7 +87,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         Log.i("MapFragment", "MapFragment onDestroyView")
         _binding = null
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -2585,12 +2595,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         }
     }
 
-    private fun sendAlert(){
-
+    private  fun sendAlert(){
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.perm_request_rationale_title)
             .setMessage(R.string.perm_request_rationale)
             .setPositiveButton(R.string.request_perm_again) { _, _ ->
+                //_viewModel.
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
             .setNegativeButton(R.string.dismiss, null)
@@ -2604,7 +2614,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
         if(isPermissionGranted){
-            Toast.makeText(requireActivity(),"Ya tenemos permisos", Toast.LENGTH_LONG).show()
             locationPermissionGranted = true
             getDeviceLocation()
         }else{

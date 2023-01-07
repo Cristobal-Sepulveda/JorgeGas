@@ -11,14 +11,14 @@
 
         <ImageView
             android:id="@+id/imageview_logoAbastible"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
+            android:layout_width="201dp"
+            android:layout_height="70dp"
             android:layout_marginTop="@dimen/space_bigger"
             android:contentDescription="@string/logo_abastible"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/logo_abastible" />
+            app:srcCompat="@drawable/logo_normal" />
 
         <ImageView
             android:id="@+id/imageview_logoJorgeGas"
@@ -27,7 +27,7 @@
             android:contentDescription="@string/logo_abastible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/space_big"
             app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
             app:srcCompat="@drawable/logo_jorge_gas" />
 
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/space_bigger"
             android:layout_marginEnd="@dimen/space_bigger"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/space_big"
             android:background="@drawable/edittext_border"
             android:autofillHints="email"
             android:hint="@string/email"

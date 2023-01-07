@@ -8,6 +8,7 @@ import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingReso
 import com.example.conductor.utils.Result
 import kotlinx.coroutines.*
 
+@Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val fieldDao: FieldDao,
                     private val permissionDeniedDao: PermissionDeniedDao,
                     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDataSource {
@@ -50,8 +51,19 @@ class AppRepository(private val fieldDao: FieldDao,
 
     }
 
-    override suspend fun obtenerIntentoDePermisos(): List<PERMISSION_DENIED_DBO> {
-        TODO("Not yet implemented")
+    override suspend fun obtenerIntentoDePermisos(): List<PERMISSION_DENIED_DBO> =  withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                try {
+                    val list = Result.Success(permissionDeniedDao.getPermission())
+                    return@withContext list.data
+                } catch (ex: Exception) {
+                    val listError : List<PERMISSION_DENIED_DBO> = listOf()
+                    Result.Error(ex.localizedMessage)
+                    return@withContext listError
+                }
+            }
+        }
     }
 
 
