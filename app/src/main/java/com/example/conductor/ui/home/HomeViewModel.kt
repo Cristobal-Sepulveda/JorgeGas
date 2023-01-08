@@ -9,8 +9,4 @@ import com.example.conductor.data.AppDataSource
 
 class HomeViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
 }

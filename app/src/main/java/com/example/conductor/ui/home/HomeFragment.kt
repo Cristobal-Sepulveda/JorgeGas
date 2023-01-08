@@ -20,41 +20,15 @@ class HomeFragment : BaseFragment() {
 
     private var _binding: FragmentHomeBinding? = null
     override val _viewModel: HomeViewModel by inject()
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i("MapFragment", "HomeFragment onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        _viewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-
-/*        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)*/
-        return root
+        return _binding!!.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.i("MapFragment", "HomeFragment onDestroyView")
-        _binding = null
-    }
-
-/*    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.overflow_menu,menu )
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return NavigationUI.onNavDestinationSelected(
-            menuItem,
-            requireView().findNavController()) }*/
 }

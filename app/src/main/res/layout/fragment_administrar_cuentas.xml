@@ -21,6 +21,7 @@
 
 
     <Button
+        style="@style/buttons"
         android:id="@+id/button_crearCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,6 +33,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
 
     <Button
+        style="@style/buttons"
         android:id="@+id/button_editarCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -43,6 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
 
     <Button
+        style="@style/buttons"
         android:id="@+id/button_eliminarCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
