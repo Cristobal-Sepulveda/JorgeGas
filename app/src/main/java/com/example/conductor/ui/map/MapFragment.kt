@@ -2,12 +2,15 @@ package com.example.conductor.ui.map
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 
 
@@ -48,11 +52,19 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                 getDeviceLocation()
             }
             else -> {
-                if(!enviarAOpciones){
-                    sendAlert()
-                }else{
-
-                }
+                Snackbar.make(
+                    _binding!!.root,
+                    R.string.permission_denied_explanation,
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.settings) {
+                    startActivityForResult(Intent().apply {
+                        action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        data = Uri.fromParts("package",
+                            "com.example.android.onematchproject",
+                            null)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    },1001)
+                }.show()
             }
         }
     }
@@ -2600,7 +2612,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             .setTitle(R.string.perm_request_rationale_title)
             .setMessage(R.string.perm_request_rationale)
             .setPositiveButton(R.string.request_perm_again) { _, _ ->
-                //_viewModel.
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
             .setNegativeButton(R.string.dismiss, null)
@@ -2609,7 +2620,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     }
 
     private fun enableMyLocation(){
-        sendAlert()
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -2623,10 +2633,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 )*/
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION,
-                )
+                //requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                sendAlert()
             }else{
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                sendAlert()
+                //requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }

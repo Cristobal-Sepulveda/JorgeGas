@@ -24,10 +24,11 @@ class MapViewModel(val app: Application, val dataSource: AppDataSource) : BaseVi
     val status: LiveData<CloudDownloadComplete>
         get()= _status
 
-    suspend fun saveLocationPermissionRequest(){
+    fun saveLocationPermissionRequest(){
         viewModelScope.launch {
             val intentosDeObtenerPermisos = dataSource.obtenerIntentoDePermisos()
             if(intentosDeObtenerPermisos.isEmpty()){
+                _locationPermissionRequests.value = 1
                 return@launch dataSource.registrarIntentoDeObtenerPermisos(PERMISSION_DENIED_DBO(1))
             }
             val intento = intentosDeObtenerPermisos[0]
