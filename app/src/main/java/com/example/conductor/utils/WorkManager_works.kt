@@ -17,22 +17,6 @@
 
 package com.example.conductor.utils
 
-import android.content.Context
-import android.util.Log
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
-import com.example.conductor.data.AppDataSource
-import com.example.conductor.data.data_objects.DTO.FIELD_DTO
-import com.example.conductor.data.data_objects.DTO.asDataBaseModel
-import com.example.conductor.utils.Constants.firebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
-import kotlinx.coroutines.*
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
-
 
 /*class updatingFIELD_DBO_IN_APP_DATABASE(appContext: Context, params: WorkerParameters):
     CoroutineWorker(appContext, params), KoinComponent {

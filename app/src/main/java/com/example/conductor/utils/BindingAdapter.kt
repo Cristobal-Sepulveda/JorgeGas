@@ -17,37 +17,20 @@ package com.example.conductor.utils
  *
  */
 
-import android.util.Log
-import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.conductor.adapter.UsuarioAdapter
+import com.example.conductor.data.data_objects.domainObjects.Usuario
 
 /** useful methods to bind viewModel variables to the UI */
 /**
  * When there is no Asteroid data (data is null), hide the [RecyclerView], otherwise show it.
  */
-
-
-/*@BindingAdapter("cloudDownloadComplete")
-fun bindStatus(imageView: ImageView, status: CloudDownloadComplete?) {
-    when (status) {
-        CloudDownloadComplete.LOADING ->{
-            imageView.visibility = View.GONE
-        }
-
-        CloudDownloadComplete.ERROR -> {
-            Log.i("BindingAdapter", "image_gone")
-            imageView.visibility = View.VISIBLE
-        }
-
-        CloudDownloadComplete.DONE -> {
-            Log.i("BindingAdapter", "image_visible")
-            imageView.visibility = View.GONE
-        }
-    }
-}*/
+@BindingAdapter("listData")
+fun bindRecyclerView(recyclerView: RecyclerView, data: List<Usuario>?) {
+    val adapter = recyclerView.adapter as UsuarioAdapter
+    adapter.submitList(data)
+}
 
 /*@BindingAdapter("fieldsStatus")
 fun bindStatus(progressBar: ProgressBar, status: CloudDownloadComplete?) {

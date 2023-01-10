@@ -1,74 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
 
-    <TextView
-        android:id="@+id/textview_tituloAdministracionDeCuentas"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/imageview_logoJorgeGas"
-        android:layout_marginTop="@dimen/space_big"
-        android:text="@string/administraci_n_de_cuentas"
-        android:textSize="24sp"
-        android:textColor="@color/black"/>
-    <ImageView
-        android:id="@+id/imageview_logoJorgeGas"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginTop="@dimen/space_normal"
-        android:contentDescription="@string/logo_jorge_gas"
-        android:src="@drawable/logo_jorge_gas"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
+        <TextView
+            android:id="@+id/textview_tituloAdministracionDeCuentas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/imageview_logoJorgeGas"
+            android:layout_marginTop="@dimen/space_big"
+            android:text="@string/administraci_n_de_cuentas"
+            android:textSize="24sp"
+            android:textColor="@color/black"/>
 
+        <ImageView
+            android:id="@+id/imageview_logoJorgeGas"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/space_normal"
+            android:contentDescription="@string/logo_jorge_gas"
+            android:src="@drawable/logo_jorge_gas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
 
-    <Button
-        style="@style/buttons"
-        android:id="@+id/button_crearCuenta"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
-        android:text="@string/crear_nueva_cuenta"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button_editarCuenta"
-        app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+        <Button
+            style="@style/buttons"
+            android:id="@+id/button_crearCuenta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_normal"
+            android:text="@string/crear_nueva_cuenta"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_editarCuenta"
+            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
 
-    <Button
-        style="@style/buttons"
-        android:id="@+id/button_editarCuenta"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/space_small"
-        android:layout_marginTop="@dimen/space_normal"
-        android:text="@string/editar_cuenta"
-        app:layout_constraintEnd_toStartOf="@id/button_eliminarCuenta"
-        app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
-        app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+        <Button
+            style="@style/buttons"
+            android:id="@+id/button_editarCuenta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_normal"
+            android:text="@string/editar_cuenta"
+            app:layout_constraintEnd_toStartOf="@id/button_eliminarCuenta"
+            app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
+            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas"
+            />
 
-    <Button
-        style="@style/buttons"
-        android:id="@+id/button_eliminarCuenta"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_normal"
-        android:layout_marginEnd="@dimen/space_big"
-        android:text="@string/eliminar_cuenta"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button_editarCuenta"
-        app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+        <Button
+            style="@style/buttons"
+            android:id="@+id/button_eliminarCuenta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_normal"
+            android:layout_marginEnd="@dimen/space_big"
+            android:text="@string/eliminar_cuenta"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/button_editarCuenta"
+            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas"
+            />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_listaUsuarios"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_editarCuenta"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="@dimen/space_big"
+            android:background="@drawable/edittext_border"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:listData="@{viewModel.domainUsuariosInScreen}"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

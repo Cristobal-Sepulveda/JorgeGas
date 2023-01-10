@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name ="usuarioItem"
+            type ="com.example.conductor.data.data_objects.domainObjects.Usuario"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_normal"
+        android:background="@color/black"
+        android:contentDescription="@{usuarioItem.nombre}">
+
+        <TextView
+            android:id="@+id/textview_usuarioNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:text="@{usuarioItem.nombre}"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="TEXTTEXTTEXT" />
+
+        <TextView
+            android:id="@+id/textview_usuarioApellidoPaterno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="@{usuarioItem.apellidoPaterno}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_usuarioNombre"
+            tools:text="TEXTTEXTTEXT" />
+
+        <TextView
+            android:id="@+id/textview_usuarioApellidoMaterno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="@{usuarioItem.apellidoMaterno}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_usuarioApellidoPaterno"
+            tools:text="TEXTTEXTTEXT" />
+        <TextView
+            android:id="@+id/textview_usuarioUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="@{usuarioItem.usuario}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_usuarioApellidoMaterno"
+            tools:text="TEXTTEXTTEXT" />
+        <TextView
+            android:id="@+id/textview_usuarioPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:text="@{usuarioItem.password}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_usuarioUsuario"
+            tools:text="TEXTTEXTTEXT" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

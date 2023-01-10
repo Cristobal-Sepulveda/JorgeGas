@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
-
+    id 'kotlin-parcelize'
 }
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))

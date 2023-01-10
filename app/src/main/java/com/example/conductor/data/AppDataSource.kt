@@ -2,6 +2,9 @@ package com.example.conductor.data
 
 import com.example.conductor.data.data_objects.DBO.FIELD_DBO
 import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
+import com.example.conductor.data.data_objects.dataTransferObjects.NetworkUsuario
+import com.example.conductor.data.data_objects.domainObjects.Usuario
+import com.google.firebase.firestore.QueryDocumentSnapshot
 
 interface AppDataSource {
 
@@ -13,5 +16,6 @@ interface AppDataSource {
     suspend fun deletingSavedFieldsInLocalDatabase()
     suspend fun registrarIntentoDeObtenerPermisos(permissionDenied: PERMISSION_DENIED_DBO)
     suspend fun obtenerIntentoDePermisos(): List<PERMISSION_DENIED_DBO>
+    suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
 
 }
