@@ -3,14 +3,14 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/orange</item>
         <!--<item name="colorPrimaryDark">@color/orange</item>-->
-        <item name="colorPrimaryDark">@color/orange</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <item name="android:navigationBarColor">@color/orange</item>
         <!-- this is to set the status bar in white
-           <item name="colorPrimaryDark">@color/white</item>
-           <item name="android:windowLightStatusBar">true</item> -->
+           <item name="colorPrimaryDark">@color/white</item>-->
+        <item name="android:windowLightStatusBar">true</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="colorControlNormal">#FFFFFF</item>
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+        <!--<item name="colorControlNormal">#000000</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -18,8 +18,15 @@
         <item name="windowNoTitle">true</item>
      </style>
 
+    <style name="ActionBar">
+        <item name="colorPrimary">@color/white</item>
+        <!--<item name="colorPrimaryDark">@color/orange</item>-->
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/white</item>
+        <item name="color">@color/black</item>
     </style>
     <style name="CustomOverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="color">@color/white</item>

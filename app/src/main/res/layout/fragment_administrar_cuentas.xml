@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -7,17 +8,28 @@
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
 
-
+    <TextView
+        android:id="@+id/textview_tituloAdministracionDeCuentas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/imageview_logoJorgeGas"
+        android:layout_marginTop="@dimen/space_big"
+        android:text="@string/administraci_n_de_cuentas"
+        android:textSize="24sp"
+        android:textColor="@color/black"/>
     <ImageView
         android:id="@+id/imageview_logoJorgeGas"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginTop="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_normal"
         android:contentDescription="@string/logo_jorge_gas"
-        android:src="@drawable/logo_normal"
+        android:src="@drawable/logo_jorge_gas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
 
 
     <Button
@@ -25,8 +37,8 @@
         android:id="@+id/button_crearCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_normal"
         android:text="@string/crear_nueva_cuenta"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_editarCuenta"
@@ -38,7 +50,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/space_small"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="@dimen/space_normal"
         android:text="@string/editar_cuenta"
         app:layout_constraintEnd_toStartOf="@id/button_eliminarCuenta"
         app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
@@ -49,8 +61,8 @@
         android:id="@+id/button_eliminarCuenta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginEnd="@dimen/space_big"
         android:text="@string/eliminar_cuenta"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

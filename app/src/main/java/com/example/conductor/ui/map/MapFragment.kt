@@ -16,6 +16,9 @@ import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
@@ -43,7 +46,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private val defaultLocation = LatLng(-33.6256, -70.5841)
     private val cameraDefaultZoom = 13
     private var lastKnownLocation: Location? = null
-    private var enviarAOpciones = false
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()){ isGranted ->
         when{
@@ -55,12 +58,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                 Snackbar.make(
                     _binding!!.root,
                     R.string.permission_denied_explanation,
-                    Snackbar.LENGTH_INDEFINITE
+                    Snackbar.LENGTH_LONG
                 ).setAction(R.string.settings) {
                     startActivityForResult(Intent().apply {
                         action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                         data = Uri.fromParts("package",
-                            "com.example.android.onematchproject",
+                            "com.example.conductor",
                             null)
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     },1001)
@@ -74,7 +77,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.i("MapFragment", "MapFragment onCreateView")
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         // Specify the current fragment as the lifecycle owner of the binding. This is used so that
         // the binding can observe LiveData updates
@@ -87,17 +89,16 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        _viewModel.locationPermissionRequests.observe(viewLifecycleOwner, Observer {
-            if (it>1) enviarAOpciones = true
-        })
+        _binding!!.buttonReiniciarMapa.setOnClickListener{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                fragmentManager?.beginTransaction()?.detach(this)?.commitNow();
+                fragmentManager?.beginTransaction()?.attach(this)?.commitNow();
+            }else{
+                fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
+            }
+        }
 
         return _binding!!.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.i("MapFragment", "MapFragment onDestroyView")
-        _binding = null
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -105,6 +106,17 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         enableMyLocation()
         //setMapStyle(map)
         markingPolygons()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding!!.buttonReiniciarMapa.isGone = true
     }
 
     private fun markingPolygons(){
@@ -2614,7 +2626,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             .setPositiveButton(R.string.request_perm_again) { _, _ ->
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
-            .setNegativeButton(R.string.dismiss, null)
+            .setNegativeButton(R.string.dismiss){_, _ ->
+                sendAlert()
+            }
             .create()
             .show()
     }

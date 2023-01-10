@@ -68,10 +68,10 @@ class MyApp : Application() {
             modules(listOf(myModule))
         }
 
-        val notificationManager = ContextCompat.getSystemService(
+/*        val notificationManager = ContextCompat.getSystemService(
             applicationContext,
             NotificationManager::class.java
-        ) as NotificationManager
+        ) as NotificationManager*/
 
         //delayedInit()
 

@@ -15,9 +15,9 @@
     <string name="logo_jorge_gas">Logo Jorge Gas</string>
     <string name="logout_button">Logout Button</string>
     <string name="cerrar_modal">cerrar modal</string>
-    <string name="permission_denied_explanation">Para usar la App debes aceptar los permisos solicitados.</string>
+    <string name="permission_denied_explanation">Haz click en settings para otorgar el permiso de localización.</string>
     <string name="perm_request_rationale_title">¡Aviso!</string>
-    <string name="perm_request_rationale">Para poder utilizar la aplicación tienes que aceptar el permiso solicitado.</string>
+    <string name="perm_request_rationale">Para poder utilizar la aplicación debes aceptar el permiso de ubicación.</string>
     <string name="request_perm_again">ACEPTAR</string>
     <string name="dismiss">CANCELAR</string>
     <string name="crear_nueva_cuenta">Crear cuenta</string>
@@ -36,4 +36,6 @@
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="esta_ser_una_ventana_para_una_futura_utilidad_a_definir">Esta será una ventana para una futura utilidad a definir</string>
     <string name="esta_ser_la_vista_general">Esta será la vista general</string>
+    <string name="administraci_n_de_cuentas">Administración de cuentas</string>
+    <string name="reiniciar">Reiniciar Mapa</string>
 </resources>

@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         NavigationUI.setupActionBarWithNavController(this, navController, binding.drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
-        bottomNavigationView = binding.bottomNavigationView
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
