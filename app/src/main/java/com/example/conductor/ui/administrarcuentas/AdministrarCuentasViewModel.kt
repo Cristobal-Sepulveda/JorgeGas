@@ -31,8 +31,7 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
     init{
         viewModelScope.launch{
             _domainUsuariosInScreen.value = dataSource.obtenerUsuariosDesdeFirestore()
-            Log.i("asd","${_domainUsuariosInScreen.value}")
-            usuariosInScreen.addSource(_domainUsuariosInScreen){
+            usuariosInScreen.addSource(domainUsuariosInScreen){
                 usuariosInScreen.value = it
             }
         }

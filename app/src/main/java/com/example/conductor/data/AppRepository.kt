@@ -1,6 +1,7 @@
 package com.example.conductor.data
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.DBO.FIELD_DBO
 import com.example.conductor.data.daos.FieldDao
 import com.example.conductor.data.daos.PermissionDeniedDao
@@ -10,6 +11,7 @@ import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingReso
 import com.example.conductor.utils.Result
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val fieldDao: FieldDao,
@@ -76,25 +78,18 @@ class AppRepository(private val fieldDao: FieldDao,
             withContext(ioDispatcher){
                 val listAux = mutableListOf<Usuario>()
                 try{
-                    val colRef = cloudDB.collection("Usuarios")
-                    colRef.get()
-                        .addOnSuccessListener {
-                            for (document in it) {
-                                val usuario = Usuario(
-                                    document.id,
-                                    document.get("nombre") as String,
-                                    document.get("apellidoPaterno") as String,
-                                    document.get("apellidoMaterno") as String,
-                                    document.get("usuario") as String,
-                                    document.get("password") as String,
-                                )
-                                listAux.add(usuario)
-                            }
-                        }
-                        .addOnFailureListener {
-                                Log.i("asd",it.message!!)
-                        }
-                    listAux.add(Usuario("asd","asd","asd","ads","asd","asd"))
+                    val colRef = cloudDB.collection("Usuarios").get().await()
+                    for (document in colRef){
+                        val usuario = Usuario(
+                            document.id,
+                            document.get("nombre") as String,
+                            document.get("apellidoPaterno") as String,
+                            document.get("apellidoMaterno") as String,
+                            document.get("usuario") as String,
+                            document.get("password") as String,
+                        )
+                        listAux.add(usuario)
+                    }
                     return@withContext listAux
                 }catch(ex: Exception){
                     Log.i("asd", ex.message!!)

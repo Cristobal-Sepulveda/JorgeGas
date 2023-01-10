@@ -21,7 +21,7 @@ class UsuarioAdapter(private val onClickListener: OnClickListener)
         }
     }
 
-    companion object DiffCallBack: DiffUtil.ItemCallback<Usuario>(){
+    object DiffCallBack: DiffUtil.ItemCallback<Usuario>(){
         override fun areItemsTheSame(oldItem: Usuario, newItem: Usuario): Boolean {
             return oldItem === newItem
         }
