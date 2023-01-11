@@ -21,18 +21,26 @@
         />
 
     <fragment
-        android:id="@+id/navigation_administrar_cuentas"
-        android:name="com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragment"
-        android:label="@string/administracion_cuentas"
-        tools:layout="@layout/fragment_administrar_cuentas"
-        />
-
-    <fragment
         android:id="@+id/navigation_nueva_utilidad"
         android:name="com.example.conductor.ui.nuevautilidad.NuevaUtilidadFragment"
         android:label="@string/nueva_utilidad"
         tools:layout="@layout/fragment_nueva_utilidad"
         />
-
+    <fragment
+        android:id="@+id/navigation_administrar_cuentas"
+        android:name="com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragment"
+        android:label="@string/administracion_cuentas"
+        tools:layout="@layout/fragment_administrar_cuentas"
+        >
+        <action
+            android:id="@+id/action_navigation_administrar_cuentas_to_navigation_data_usuario"
+            app:destination="@id/navigation_data_usuario" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_data_usuario"
+        android:name="com.example.conductor.ui.datausuario.DataUsuarioFragment"
+        android:label="@string/data_usuario"
+        tools:layout="@layout/fragment_data_usuario"
+        />
 
 </navigation>

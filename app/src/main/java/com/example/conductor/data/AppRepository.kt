@@ -98,4 +98,18 @@ class AppRepository(private val fieldDao: FieldDao,
             }
         }
     }
+
+    override suspend fun ingresarUsuarioAFirestore(usuario: Usuario) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                try{
+                    cloudDB.collection("Usuarios")
+                        .document(usuario.id).set(usuario)
+                    return@withContext true
+                }catch(e:Exception){
+                    return@withContext false
+                }
+            }
+        }
+    }
 }

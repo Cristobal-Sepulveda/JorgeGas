@@ -7,6 +7,7 @@ import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
+import com.example.conductor.ui.datausuario.DataUsuarioViewModel
 import com.example.conductor.ui.home.HomeViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.nuevautilidad.NuevaUtilidadViewModel
@@ -53,7 +54,12 @@ class MyApp : Application() {
                     get() as AppDataSource
                 )
             }
-
+            single {
+                DataUsuarioViewModel(
+                    get(),
+                    get() as AppDataSource
+                )
+            }
             //LOCAL_DATABASE, here im creating the local database in the first start and
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).fieldDao }

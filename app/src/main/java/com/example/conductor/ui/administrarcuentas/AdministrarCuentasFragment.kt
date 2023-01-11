@@ -8,6 +8,8 @@ import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
+import com.example.conductor.ui.datausuario.DataUsuarioFragment
+import com.example.conductor.utils.NavigationCommand
 import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.android.inject
 
@@ -37,12 +39,20 @@ class AdministrarCuentasFragment : BaseFragment() {
             }
         }
 
-/*        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner, Observer {
-            if (null != it){
-                this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
-                viewModel.displayAsteroidDetailsComplete()
-            }
-        })*/
+        /*_binding!!.buttonCrearCuenta.setOnClickListener {
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(AdministrarCuentasFragmentDirections
+                    .actionNavigationAdministrarCuentasToNavigationDataUsuario())
+        }*/
+        _binding!!.buttonCrearCuenta.setOnClickListener {
+            val modalBottomSheet = DataUsuarioFragment()
+            modalBottomSheet.show(requireActivity().supportFragmentManager, "asd")
+        }
+        _binding!!.buttonEditarCuenta.setOnClickListener {
+            val modalBottomSheet = DataUsuarioFragment()
+            modalBottomSheet.show(requireActivity().supportFragmentManager, "asd")
+        }
+
         return _binding!!.root
     }
 

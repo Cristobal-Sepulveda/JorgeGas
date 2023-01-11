@@ -15,6 +15,7 @@
         android:contentDescription="@{usuarioItem.nombre}">
 
         <TextView
+            style="@style/recyclerViewItem"
             android:id="@+id/textview_usuarioNombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,6 +27,7 @@
             tools:text="TEXTTEXTTEXT" />
 
         <TextView
+            style="@style/recyclerViewItem"
             android:id="@+id/textview_usuarioApellidoPaterno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,6 +39,7 @@
             tools:text="TEXTTEXTTEXT" />
 
         <TextView
+            style="@style/recyclerViewItem"
             android:id="@+id/textview_usuarioApellidoMaterno"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,6 +50,7 @@
             app:layout_constraintTop_toBottomOf="@id/textview_usuarioApellidoPaterno"
             tools:text="TEXTTEXTTEXT" />
         <TextView
+            style="@style/recyclerViewItem"
             android:id="@+id/textview_usuarioUsuario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,6 +61,7 @@
             app:layout_constraintTop_toBottomOf="@id/textview_usuarioApellidoMaterno"
             tools:text="TEXTTEXTTEXT" />
         <TextView
+            style="@style/recyclerViewItem"
             android:id="@+id/textview_usuarioPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

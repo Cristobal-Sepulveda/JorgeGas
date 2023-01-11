@@ -17,5 +17,5 @@ interface AppDataSource {
     suspend fun registrarIntentoDeObtenerPermisos(permissionDenied: PERMISSION_DENIED_DBO)
     suspend fun obtenerIntentoDePermisos(): List<PERMISSION_DENIED_DBO>
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
-
+    suspend fun ingresarUsuarioAFirestore(usuario:Usuario)
 }

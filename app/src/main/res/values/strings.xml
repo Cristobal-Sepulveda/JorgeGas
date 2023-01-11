@@ -38,4 +38,11 @@
     <string name="esta_ser_la_vista_general">Esta será la vista general</string>
     <string name="administraci_n_de_cuentas">Administración de cuentas</string>
     <string name="reiniciar">Reiniciar Mapa</string>
+    <string name="data_usuario">data usuario</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellido_paterno">Apellido paterno</string>
+    <string name="apellido_materno">Apellido materno</string>
+    <string name="confirmar_password">Reingresa la contraseña</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="volver">Volver</string>
 </resources>
