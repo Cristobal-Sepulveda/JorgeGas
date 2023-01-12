@@ -43,39 +43,13 @@
             android:id="@+id/button_crearCuenta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginHorizontal="@dimen/space_big"
             android:layout_marginTop="@dimen/space_normal"
             android:text="@string/crear_nueva_cuenta"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_editarCuenta"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
 
-        <Button
-            style="@style/buttons"
-            android:id="@+id/button_editarCuenta"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/space_small"
-            android:layout_marginTop="@dimen/space_normal"
-            android:text="@string/editar_cuenta"
-            app:layout_constraintEnd_toStartOf="@id/button_eliminarCuenta"
-            app:layout_constraintStart_toEndOf="@+id/button_crearCuenta"
-            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas"
-            />
-
-        <Button
-            style="@style/buttons"
-            android:id="@+id/button_eliminarCuenta"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_normal"
-            android:layout_marginEnd="@dimen/space_big"
-            android:text="@string/eliminar_cuenta"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/button_editarCuenta"
-            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas"
-            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_listaUsuarios"
@@ -83,7 +57,7 @@
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_editarCuenta"
+            app:layout_constraintTop_toBottomOf="@id/button_crearCuenta"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_margin="@dimen/space_big"
             android:background="@drawable/edittext_border"

@@ -17,7 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="@dimen/space_big"
-        android:text="@string/administraci_n_de_cuentas"
+        android:text="@string/crear_nueva_cuenta"
         android:textSize="24sp"
         android:textColor="@color/black"/>
 
@@ -48,7 +48,7 @@
         android:background="@drawable/edittext_border"
         android:autofillHints="apellido paterno"
         android:hint= "@string/apellido_paterno"
-        android:inputType="textPassword"
+        android:inputType="text"
         
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +65,7 @@
         android:background="@drawable/edittext_border"
         android:autofillHints="Apellido materno"
         android:hint="@string/apellido_materno"
-        android:inputType="textPassword"
+        android:inputType="text"
         
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

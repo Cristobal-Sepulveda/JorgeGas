@@ -38,9 +38,9 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_data_usuario"
-        android:name="com.example.conductor.ui.datausuario.DataUsuarioFragment"
+        android:name="com.example.conductor.ui.crearusuario.CrearUsuarioFragment"
         android:label="@string/data_usuario"
-        tools:layout="@layout/fragment_data_usuario"
+        tools:layout="@layout/fragment_crear_usuario"
         />
 
 </navigation>

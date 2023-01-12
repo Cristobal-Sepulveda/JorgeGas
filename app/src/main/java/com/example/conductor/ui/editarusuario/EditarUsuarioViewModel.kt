@@ -1,6 +1,7 @@
-package com.example.conductor.ui.datausuario
+package com.example.conductor.ui.editarusuario
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
@@ -9,12 +10,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DataUsuarioViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
+class EditarUsuarioViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
 
-    fun ingresarUsuarioAFirestore(usuario: Usuario){
+    fun editarUsuarioEnFirestore(usuario: Usuario){
         viewModelScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.ingresarUsuarioAFirestore(usuario)
+            }
+        }
+    }
+
+    fun eliminarUsuarioDeFirebase(usuario: Usuario) {
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                usuario.deshabilitada = true
+                dataSource.eliminarUsuarioDeFirebase(usuario)
             }
         }
     }

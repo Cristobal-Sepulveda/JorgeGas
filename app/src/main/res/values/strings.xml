@@ -45,4 +45,10 @@
     <string name="confirmar_password">Reingresa la contraseña</string>
     <string name="confirmar">Confirmar</string>
     <string name="volver">Volver</string>
+    <string name="editar_boton">editar boton</string>
+    <string name="editar_o_eliminar_cuenta">Edita o elimina esta cuenta</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="borrar_cuenta">¿Estas seguro que deseas borrar esta cuenta?</string>
+    <string name="cuenta_deshabilitada">Su cuenta se encuentra deshabilitada. Para mayor información contacte a soporte.</string>
 </resources>

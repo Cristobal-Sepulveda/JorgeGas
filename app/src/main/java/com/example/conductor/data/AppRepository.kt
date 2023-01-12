@@ -9,6 +9,7 @@ import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import com.example.conductor.utils.Result
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -19,6 +20,7 @@ class AppRepository(private val fieldDao: FieldDao,
                     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDataSource {
 
     val cloudDB = FirebaseFirestore.getInstance()
+    val firebaseAuth = FirebaseAuth.getInstance()
 
     override suspend fun savingFieldToLocalDatabase(field: FIELD_DBO) {
         wrapEspressoIdlingResource {
@@ -87,12 +89,13 @@ class AppRepository(private val fieldDao: FieldDao,
                             document.get("apellidoMaterno") as String,
                             document.get("usuario") as String,
                             document.get("password") as String,
+                            document.get("deshabilitada") as Boolean,
                         )
                         listAux.add(usuario)
                     }
                     return@withContext listAux
                 }catch(ex: Exception){
-                    Log.i("asd", ex.message!!)
+                    Log.i("AppRepository", ex.message!!)
                     return@withContext listAux
                 }
             }
@@ -102,6 +105,20 @@ class AppRepository(private val fieldDao: FieldDao,
     override suspend fun ingresarUsuarioAFirestore(usuario: Usuario) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
+                try{
+                    cloudDB.collection("Usuarios")
+                        .document(usuario.id).set(usuario)
+                    return@withContext true
+                }catch(e:Exception){
+                    return@withContext false
+                }
+            }
+        }
+    }
+
+    override suspend fun eliminarUsuarioDeFirebase(usuario: Usuario) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
                 try{
                     cloudDB.collection("Usuarios")
                         .document(usuario.id).set(usuario)

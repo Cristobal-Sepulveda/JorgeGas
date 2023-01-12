@@ -10,59 +10,90 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
+import com.example.conductor.databinding.ActivityAuthenticationBinding
 import com.example.conductor.utils.Constants.REQUEST_TURN_DEVICE_LOCATION_ON
 import com.example.conductor.utils.Constants.SIGN_IN_RESULT_CODE
 import com.example.conductor.utils.Constants.TAG
-import com.example.conductor.databinding.ActivityAuthenticationBinding
+import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
-    private lateinit var firebaseAuth: FirebaseAuth
+    private val firebaseAuth = FirebaseAuth.getInstance()
+    private val cloudDB = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        lifecycleScope.launch {
+            withContext(Dispatchers.Default){
+                hayUsuarioLogeado()
+            }
+        }
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
-        firebaseAuth = FirebaseAuth.getInstance()
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
-
-        hayUsuarioLogeado()
         checkDeviceLocationSettings()
     }
 
-    private fun hayUsuarioLogeado(){
-        if (firebaseAuth.currentUser!= null){
-            val intent = Intent(this, MainActivity::class.java)
-            finish()
-            startActivity(intent)
-        }
+    private suspend fun hayUsuarioLogeado(){
+        val user = firebaseAuth.currentUser
+        if (user!= null) {
+            val userInValid = cloudDB.collection("Usuarios")
+                .document(user.uid).get().await().get("deshabilitada")
+            if(!(userInValid as Boolean)) {
+                val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                finish()
+                startActivity(intent)
+            }else{
+                runOnUiThread {
+                    Toast.makeText(this@AuthenticationActivity,
+                        getString(R.string.cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
+                }
 
+            }
+        }
     }
+
     /** Give users the option to sign in / register with their email or Google account.
     * If users choose to register with their email, they will need to create a password as well.*/
     private fun launchSignInFlow() {
         val email = binding.edittextEmail.text.toString()
         val password = binding.edittextPassword.text.toString()
-
         if(!TextUtils.isEmpty(email) || !TextUtils.isEmpty(password)){
-            Log.i("login", "Iniciando login")
             firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        val intent = Intent(this, MainActivity::class.java)
-                        finish()
-                        startActivity(intent)
+                        lifecycleScope.launch{
+                            withContext(Dispatchers.IO){
+                                val userInValid = cloudDB.collection("Usuarios")
+                                    .whereEqualTo("usuario",email).get().await()
+                                if(userInValid.documents[0].get("deshabilitada") as Boolean){
+                                    runOnUiThread {
+                                        Toast.makeText(this@AuthenticationActivity,
+                                            getString(R.string.cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
+                                    }
+                                    return@withContext
+                                }else{
+                                    val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                                    finish()
+                                    startActivity(intent)
+                                }
+                            }
+                        }
                     } else {
                         Toast.makeText(
                             this,
