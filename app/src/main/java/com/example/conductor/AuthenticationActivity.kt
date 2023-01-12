@@ -48,7 +48,7 @@ class AuthenticationActivity : AppCompatActivity() {
         }
         checkDeviceLocationSettings()
     }
-
+    //prueba2
     private suspend fun hayUsuarioLogeado(){
         val user = firebaseAuth.currentUser
         if (user!= null) {
