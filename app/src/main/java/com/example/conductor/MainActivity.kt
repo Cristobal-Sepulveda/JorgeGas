@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
+import androidx.loader.app.LoaderManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
@@ -20,7 +21,8 @@ import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity(), MenuProvider {
+
+class MainActivity : AppCompatActivity(), MenuProvider,  {
 
     //val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivityMainBinding
@@ -44,7 +46,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
-
+        val a = LoaderManager.getInstance(this)
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
             true
