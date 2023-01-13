@@ -31,6 +31,8 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.conductor.MainActivity
+import com.example.conductor.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -85,11 +87,11 @@ class ForegroundOnlyLocationService : Service() {
             // IMPORTANT NOTE: Apps running on Android 8.0 and higher devices (regardless of
             // targetSdkVersion) may receive updates less frequently than this interval when the app
             // is no longer in the foreground.
-            interval = TimeUnit.SECONDS.toMillis(60)
+            interval = TimeUnit.SECONDS.toMillis(20)
 
             // Sets the fastest rate for active location updates. This interval is exact, and your
             // application will never receive updates more frequently than this value.
-            fastestInterval = TimeUnit.SECONDS.toMillis(30)
+            fastestInterval = TimeUnit.SECONDS.toMillis(10)
 
             // Sets the maximum time when batched location updates are delivered. Updates may be
             // delivered sooner than this interval.
@@ -225,7 +227,15 @@ class ForegroundOnlyLocationService : Service() {
 
         try {
             // TODO: Step 1.6, Unsubscribe to location changes.
-
+            val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+            removeTask.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "Location Callback removed.")
+                    stopSelf()
+                } else {
+                    Log.d(TAG, "Failed to remove Location Callback.")
+                }
+            }
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
 
         } catch (unlikely: SecurityException) {
@@ -289,12 +299,12 @@ class ForegroundOnlyLocationService : Service() {
             .setStyle(bigTextStyle)
             .setContentTitle(titleText)
             .setContentText(mainNotificationText)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.icono_app)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setOngoing(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(
-                R.drawable.ic_launch, getString(R.string.launch_activity),
+                R.drawable.ic_baseline_launch_24, getString(R.string.launch_activity),
                 activityPendingIntent
             )
             .addAction(

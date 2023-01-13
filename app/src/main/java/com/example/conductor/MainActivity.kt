@@ -22,7 +22,7 @@ import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.firebase.auth.FirebaseAuth
 
 
-class MainActivity : AppCompatActivity(), MenuProvider,  {
+class MainActivity : AppCompatActivity(), MenuProvider{
 
     //val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivityMainBinding
