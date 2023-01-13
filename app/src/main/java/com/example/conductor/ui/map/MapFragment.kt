@@ -24,6 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
+import com.example.conductor.utils.polygonsList
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -120,7 +121,17 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     }
 
     private fun markingPolygons(){
-        val polygon1 = map.addPolygon(PolygonOptions()
+        for((index,polygon) in polygonsList.withIndex()){
+            val polygonOptions = PolygonOptions()
+            /*polygon1.fillColor = Color.argb(100,0,255,0)
+            polygon1.strokeColor = -0xc771c4*/
+            polygonOptions.addAll(polygon)
+            polygonOptions.fillColor(Color.argb(100,0,255,0))
+            polygonOptions.strokeColor(Color.argb(100,0,255,0))
+            map.addPolygon(polygonOptions)
+        }
+
+        /*val polygon1 = map.addPolygon(PolygonOptions()
             .clickable(true)
             .add(
                 LatLng(-33.60628468696749, -70.60392740281233),
@@ -2597,7 +2608,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         )
 
         polygon56.fillColor = Color.argb(100,128,64,0)
-        polygon56.strokeColor = -0xc771c4
+        polygon56.strokeColor = -0xc771c4*/
     }
 
     private fun setMapStyle(map: GoogleMap) {
