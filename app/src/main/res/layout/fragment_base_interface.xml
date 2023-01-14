@@ -49,6 +49,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
             app:navGraph="@navigation/mobile_navigation"
+
             />
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation_view"
@@ -59,6 +60,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:menu="@menu/bottom_nav_menu"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

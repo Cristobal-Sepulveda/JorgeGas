@@ -2732,9 +2732,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         }
     }
 
-    //function that sends notification to all users in firestore
-
-
 }
 
 

@@ -1,6 +1,7 @@
 package com.example.conductor.ui.administrarcuentas
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,14 +28,15 @@ class AdministrarCuentasFragment : BaseFragment() {
         /************************ Inicializando Variables del fragmento****************************/
         _binding = FragmentAdministrarCuentasBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
-        val adapter = UsuarioAdapter(UsuarioAdapter.OnClickListener{
-                _viewModel.displayUsuarioDetails(it)
-            })
-        _binding!!.recyclerviewListaUsuarios.adapter = adapter
-        /******************************************************************************************/
 
-        /***********************************Observers**********************************************/
-        _viewModel.usuariosInScreen.observe(requireActivity()) {
+        val adapter = UsuarioAdapter(UsuarioAdapter.OnClickListener{
+            _viewModel.displayUsuarioDetails(it)
+        })
+        _binding!!.recyclerviewListaUsuarios.adapter = adapter
+        _viewModel.displayUsuariosInRecyclerView()
+
+
+        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
             it.let {
                 adapter.submitList(it as MutableList<Usuario>)
             }
@@ -49,17 +51,18 @@ class AdministrarCuentasFragment : BaseFragment() {
                 modalBottomSheet.show(requireActivity().supportFragmentManager, "EditarUsuarioFragment")
             }
         })
-        /******************************************************************************************/
-
-        /**********************************ClickListeners******************************************/
         _binding!!.buttonCrearCuenta.setOnClickListener {
             val modalBottomSheet = CrearUsuarioFragment()
             modalBottomSheet.show(requireActivity().supportFragmentManager, "CrearUsuarioFragment")
         }
-        /******************************************************************************************/
 
+        Log.i("AdministrarCuentasFragment", "onCreateView")
         return _binding!!.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
 
+        _viewModel.removeUsuariosInRecyclerView()
+    }
 }

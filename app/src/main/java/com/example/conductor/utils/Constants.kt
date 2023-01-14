@@ -10,5 +10,5 @@ object Constants {
     val firebaseAuth = FirebaseAuth.getInstance()
 }
 
-var polygonsColor: ArrayList<ArrayList<Color>> =
+
 
