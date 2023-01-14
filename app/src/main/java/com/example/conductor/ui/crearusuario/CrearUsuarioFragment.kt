@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -21,7 +22,7 @@ import org.koin.android.ext.android.inject
 class CrearUsuarioFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentCrearUsuarioBinding? = null
-    private val _viewModel: CrearUsuarioViewModel by inject()
+    private val _viewModel: AdministrarCuentasViewModel by inject()
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
@@ -43,13 +44,21 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+        Log.i("CrearUsuarioFragment", "onCreateView")
         return _binding!!.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _viewModel.removeUsuariosInRecyclerView()
+        _viewModel.displayUsuariosInRecyclerView()
+        Log.i("CrearUsuarioFragment", "onDestroy")
+    }
+
     private suspend fun canICreateANewAccountValidator() {
-        val nombre = _binding!!.editTextDataUsuarioPassword.text.toString()
-        val aPaterno = _binding!!.editTextDataUsuarioPassword.text.toString()
-        val aMaterno = _binding!!.editTextDataUsuarioPassword.text.toString()
+        val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
+        val aPaterno = _binding!!.editTextDataUsuarioAPaterno.text.toString()
+        val aMaterno = _binding!!.editTextDataUsuarioAMaterno.text.toString()
         val email = _binding!!.editTextDataUsuarioUsuario.text.toString()
         val password = _binding!!.editTextDataUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()

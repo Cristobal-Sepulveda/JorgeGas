@@ -77,22 +77,27 @@ class AuthenticationActivity : AppCompatActivity() {
             firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        lifecycleScope.launch{
-                            withContext(Dispatchers.IO){
-                                val userInValid = cloudDB.collection("Usuarios")
-                                    .whereEqualTo("usuario",email).get().await()
-                                if(userInValid.documents[0].get("deshabilitada") as Boolean){
-                                    runOnUiThread {
-                                        Toast.makeText(this@AuthenticationActivity,
-                                            getString(R.string.cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
+                        try{
+                            lifecycleScope.launch{
+                                withContext(Dispatchers.IO){
+                                    val userInValid = cloudDB.collection("Usuarios")
+                                        .whereEqualTo("usuario",email).get().await()
+                                    if(userInValid.documents[0].get("deshabilitada") as Boolean){
+                                        runOnUiThread {
+                                            Toast.makeText(this@AuthenticationActivity,
+                                                getString(R.string.cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
+                                        }
+                                        return@withContext
+                                    }else{
+                                        val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                                        finish()
+                                        startActivity(intent)
                                     }
-                                    return@withContext
-                                }else{
-                                    val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
-                                    finish()
-                                    startActivity(intent)
                                 }
                             }
+                        }catch(e:Exception){
+                            Toast.makeText(this@AuthenticationActivity,
+                                e.message,Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         Toast.makeText(

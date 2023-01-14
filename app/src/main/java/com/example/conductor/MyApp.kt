@@ -5,8 +5,6 @@ import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
-import com.example.conductor.ui.crearusuario.CrearUsuarioViewModel
-import com.example.conductor.ui.editarusuario.EditarUsuarioViewModel
 import com.example.conductor.ui.home.HomeViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.nuevautilidad.NuevaUtilidadViewModel
@@ -49,18 +47,6 @@ class MyApp : Application() {
             }
             single {
                 AdministrarCuentasViewModel(
-                    get(),
-                    get() as AppDataSource
-                )
-            }
-            single {
-                CrearUsuarioViewModel(
-                    get(),
-                    get() as AppDataSource
-                )
-            }
-            single{
-                EditarUsuarioViewModel(
                     get(),
                     get() as AppDataSource
                 )

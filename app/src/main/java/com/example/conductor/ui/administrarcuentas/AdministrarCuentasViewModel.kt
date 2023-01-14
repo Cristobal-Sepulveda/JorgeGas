@@ -8,12 +8,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
 
-    private val _navigateToSelectedUsuario = MutableLiveData<Usuario>()
-    val navigateToSelectedUsuario: LiveData<Usuario>
+    private val _navigateToSelectedUsuario = MutableLiveData<Usuario?>()
+    val navigateToSelectedUsuario: MutableLiveData<Usuario?>
         get() = _navigateToSelectedUsuario
 
     val usuariosInScreen: MediatorLiveData<List<Usuario>> = MediatorLiveData()
@@ -26,8 +28,11 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
     fun displayUsuarioDetails(usuario: Usuario) {
         _navigateToSelectedUsuario.value = usuario
     }
+    fun cleanUsuarioDetails() {
+        _navigateToSelectedUsuario.value = null
+    }
 
-    init{
+    fun displayUsuariosInRecyclerView(){
         viewModelScope.launch{
             _domainUsuariosInScreen.value = dataSource.obtenerUsuariosDesdeFirestore()
             usuariosInScreen.addSource(domainUsuariosInScreen){
@@ -35,4 +40,37 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
             }
         }
     }
+
+    fun removeUsuariosInRecyclerView(){
+        usuariosInScreen.removeSource(domainUsuariosInScreen)
+    }
+
+    fun editarUsuarioEnFirestore(usuario: Usuario){
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                dataSource.ingresarUsuarioAFirestore(usuario)
+            }
+        }
+    }
+
+    fun eliminarUsuarioDeFirebase(usuario: Usuario) {
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                usuario.deshabilitada = true
+                dataSource.eliminarUsuarioDeFirebase(usuario)
+            }
+        }
+    }
+
+    fun ingresarUsuarioAFirestore(usuario: Usuario){
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                dataSource.ingresarUsuarioAFirestore(usuario)
+            }
+        }
+    }
+    init{
+
+    }
+
 }

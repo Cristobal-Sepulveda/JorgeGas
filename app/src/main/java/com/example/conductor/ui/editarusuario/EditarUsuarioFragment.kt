@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.example.conductor.R
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentEditarUsuarioBinding
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +19,7 @@ import org.koin.android.ext.android.inject
 class EditarUsuarioFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentEditarUsuarioBinding? = null
-    private val _viewModel: EditarUsuarioViewModel by inject()
+    private val _viewModel: AdministrarCuentasViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +48,13 @@ class EditarUsuarioFragment : BottomSheetDialogFragment() {
         /*****************************************************************************************/
 
         return _binding!!.root
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        _viewModel.cleanUsuarioDetails()
+        _viewModel.removeUsuariosInRecyclerView()
+        _viewModel.displayUsuariosInRecyclerView()
+        Log.i("EditarUsuarioFragment", "onDestroy")
     }
 
     private  fun sendAlert(bundle:Usuario){
