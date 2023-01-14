@@ -1,6 +1,5 @@
 package com.example.conductor.ui.editarusuario
 
-import android.Manifest
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,6 @@ import com.example.conductor.databinding.FragmentEditarUsuarioBinding
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import org.koin.android.ext.android.inject
 
 class EditarUsuarioFragment : BottomSheetDialogFragment() {

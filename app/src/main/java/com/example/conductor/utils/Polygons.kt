@@ -1,5 +1,6 @@
 package com.example.conductor.utils
 
+import android.graphics.Color
 import com.google.android.gms.maps.model.LatLng
 
 var polygonsList : ArrayList<ArrayList<LatLng>> = arrayListOf(
@@ -2185,3 +2186,61 @@ var polygonsList : ArrayList<ArrayList<LatLng>> = arrayListOf(
     ),
 )
 
+var polygonsColor : ArrayList<Int> = arrayListOf(
+    Color.argb(100,0,255,0),
+    Color.argb(100,255,0,0),
+    Color.argb(100,255,255,0),
+    Color.argb(100,128,64,0),
+    Color.argb(100,0,150,0),
+    Color.argb(75,255,0,0),
+    Color.argb(75,255,200,0),
+    Color.argb(65,118,118,245),
+    Color.argb(35,234,39,245),
+    Color.argb(85,0,0,245),
+    Color.argb(100,0,150,0),
+    Color.argb(50,175,0,0),
+    Color.argb(100,128,64,0),
+    Color.argb(100,0,0,255),
+    Color.argb(100,0,200,80),
+    Color.argb(100,200,0,0),
+    Color.argb(100,255,255,0),
+    Color.argb(100,128,64,0),
+    Color.argb(100,150,0,0),
+    Color.argb(100,150,200,0),
+    Color.argb(100,230,100,230),
+    Color.argb(100,0,250,0),
+    Color.argb(100,255,165,0),
+    Color.argb(75,255,0,0),
+    Color.argb(75,255,100,0),
+    Color.argb(100,128,64,0),
+    Color.argb(100,250,100,0),
+    Color.argb(100, 0, 100, 0),
+    Color.argb(100, 255,255,0),
+    Color.argb(100,0,100,255),
+    Color.argb(100, 255,0,128 ),
+    Color.argb(50,0,255,0),
+    Color.argb(100,255,0,0),
+    Color.argb(50,0,0,230),
+    Color.argb(100,255,125,0),
+    Color.argb(100,255,0,0),
+    Color.argb(100, 0, 255,0),
+    Color.argb(100,255,255,0),
+    Color.argb(100,0,255,0),
+    Color.argb(100,255,125,0),
+    Color.argb(100,200,0,200),
+    Color.argb(100,0,0,240),
+    Color.argb(100,255,50,50),
+    Color.argb(100,200,50,255),
+    Color.argb(100,250,180,0),
+    Color.argb(100,30,255,0),
+    Color.argb(100,255,255,0),
+    Color.argb(100,150,150,150),
+    Color.argb(100,255,0,50),
+    Color.argb(100,0,0,255),
+    Color.argb(100,255,0,30),
+    Color.argb(100,0,255,0),
+    Color.argb(100,0,120,255),
+    Color.argb(100,255,175,0),
+    Color.argb(100,255,0,255),
+    Color.argb(100,128,64,0)
+)
