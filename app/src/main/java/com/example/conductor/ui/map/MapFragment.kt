@@ -92,12 +92,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             LocationServices.getFusedLocationProviderClient(requireActivity())
 
         _binding!!.buttonReiniciarMapa.setOnClickListener{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                fragmentManager?.beginTransaction()?.detach(this)?.commitNow();
-                fragmentManager?.beginTransaction()?.attach(this)?.commitNow();
-            }else{
-                fragmentManager?.beginTransaction()?.detach(this)?.attach(this)?.commit();
-            }
+            fragmentManager?.beginTransaction()?.detach(this)?.commitNow();
+            fragmentManager?.beginTransaction()?.attach(this)?.commitNow();
         }
 
         return _binding!!.root

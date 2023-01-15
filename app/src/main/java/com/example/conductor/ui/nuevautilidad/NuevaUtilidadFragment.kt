@@ -16,9 +16,12 @@ import com.example.conductor.utils.SharedPreferenceUtil
 import com.example.conductor.utils.toText
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.BuildConfig
@@ -228,8 +231,10 @@ class NuevaUtilidadFragment : Fragment(),SharedPreferences.OnSharedPreferenceCha
     private fun updateButtonState(trackingLocation: Boolean) {
         if (trackingLocation) {
             _binding!!.buttonForegroundOnlyLocationButton.text = getString(R.string.stop_location_updates_button_text)
+            _binding!!.buttonForegroundOnlyLocationButton.setBackgroundColor(Color.argb(100, 255, 0, 0))
         } else {
             _binding!!.buttonForegroundOnlyLocationButton.text = getString(R.string.start_location_updates_button_text)
+            _binding!!.buttonForegroundOnlyLocationButton.setBackgroundColor(Color.argb(100, 0, 255, 0))
         }
     }
 
@@ -239,7 +244,6 @@ class NuevaUtilidadFragment : Fragment(),SharedPreferences.OnSharedPreferenceCha
     }
 
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
-
         override fun onReceive(context: Context, intent: Intent) {
             val location = intent.getParcelableExtra<Location>(
                 ForegroundOnlyLocationService.EXTRA_LOCATION

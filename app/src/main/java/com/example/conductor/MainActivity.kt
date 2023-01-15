@@ -46,7 +46,9 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
-        val a = LoaderManager.getInstance(this)
+        //val a = LoaderManager.getInstance(this)
+
+
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
             true
