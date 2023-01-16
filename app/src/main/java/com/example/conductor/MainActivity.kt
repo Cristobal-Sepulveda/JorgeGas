@@ -1,38 +1,48 @@
 package com.example.conductor
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
-import androidx.loader.app.LoaderManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.utils.Constants.firebaseAuth
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 
 class MainActivity : AppCompatActivity(), MenuProvider{
 
-    //val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var binding: ActivityMainBinding
     private var menuHost: MenuHost = this
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
     private lateinit var firebaseUser: String
+    // The entry point to the Fused Location Provider.
+    private var locationPermissionGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.i("MainActivity", "onCreate")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         definingDrawableMenu()
@@ -47,8 +57,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
         //val a = LoaderManager.getInstance(this)
-
-
+        startingPermissionCheck()
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
             true
@@ -90,6 +99,35 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         firebaseUser = firebaseAuth.currentUser!!.email.toString()
         if( firebaseUser != "1@1.1"){
             binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
+        }
+    }
+
+    private fun startingPermissionCheck() {
+        val isPermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if(!isPermissionGranted){
+            val requestPermissionLauncher = registerForActivityResult(
+                ActivityResultContracts.RequestPermission()){ isGranted ->
+                when{
+                    !isGranted -> {
+                        Snackbar.make(
+                            binding.root,
+                            R.string.permission_denied_explanation,
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setAction(R.string.settings) {
+                            startActivityForResult(Intent().apply {
+                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                data = Uri.fromParts("package",
+                                    "com.example.conductor",
+                                    null)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            },1001)
+                        }.show()
+                    }
+                }
+            }
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 

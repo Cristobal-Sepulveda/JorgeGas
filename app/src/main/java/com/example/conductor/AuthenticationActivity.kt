@@ -42,6 +42,7 @@ class AuthenticationActivity : AppCompatActivity() {
             }
         }
         super.onCreate(savedInstanceState)
+        Log.i("AuthenticationActivity", "onCreate")
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
@@ -49,6 +50,46 @@ class AuthenticationActivity : AppCompatActivity() {
         checkDeviceLocationSettings()
     }
     //prueba2
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("AuthenticationActivity", "onDestroy")
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        /** Here im specifically listening for the sign-in request code to come back,
+         * if its still the same, process the login, else, its because the login was unsuccessful*/
+        if (requestCode == SIGN_IN_RESULT_CODE){
+            //we start by getting the response from the resulting intent
+            val response = IdpResponse.fromResultIntent(data)
+            //then we check the resultCode to see what the result of the login was
+            if(resultCode == Activity.RESULT_OK){
+                //User successfully signed in
+                //          TODO: If the user was authenticated, send him to RemindersActivity
+                Log.i(
+                    TAG,
+                    "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}")
+                val firebaseAuth = FirebaseAuth.getInstance()
+                if(firebaseAuth.currentUser != null) {
+                    val intent = Intent(this, MainActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                }
+            }else{
+                Log.i(TAG, "Sign in was unsuccessful ${response?.error?.errorCode}")
+            }
+        }
+        if(requestCode == REQUEST_TURN_DEVICE_LOCATION_ON ){
+            if(resultCode == Activity.RESULT_CANCELED){
+                checkDeviceLocationSettings()
+            }
+        }
+    }
+    //          TODO: a bonus is to customize the sign in flow to look nice using :
+    //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
+
     private suspend fun hayUsuarioLogeado(){
         val user = firebaseAuth.currentUser
         if (user!= null) {
@@ -110,40 +151,6 @@ class AuthenticationActivity : AppCompatActivity() {
             Toast.makeText(this, "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show()
         }
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        /** Here im specifically listening for the sign-in request code to come back,
-         * if its still the same, process the login, else, its because the login was unsuccessful*/
-        if (requestCode == SIGN_IN_RESULT_CODE){
-            //we start by getting the response from the resulting intent
-            val response = IdpResponse.fromResultIntent(data)
-            //then we check the resultCode to see what the result of the login was
-            if(resultCode == Activity.RESULT_OK){
-                //User successfully signed in
-                //          TODO: If the user was authenticated, send him to RemindersActivity
-                Log.i(
-                    TAG,
-                    "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}")
-                val firebaseAuth = FirebaseAuth.getInstance()
-                if(firebaseAuth.currentUser != null) {
-                    val intent = Intent(this, MainActivity::class.java)
-                    finish()
-                    startActivity(intent)
-                }
-            }else{
-                Log.i(TAG, "Sign in was unsuccessful ${response?.error?.errorCode}")
-            }
-        }
-        if(requestCode == REQUEST_TURN_DEVICE_LOCATION_ON ){
-            if(resultCode == Activity.RESULT_CANCELED){
-                checkDeviceLocationSettings()
-            }
-        }
-    }
-//          TODO: a bonus is to customize the sign in flow to look nice using :
-        //https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md#custom-layout
 
     /**
      * Uses the Location Client to check the current state of location settings, and gives the user
