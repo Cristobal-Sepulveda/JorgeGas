@@ -3,22 +3,18 @@ package com.example.conductor.ui.map
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Color
-import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
-import com.example.conductor.MainActivity
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
+import com.example.conductor.utils.Constants.cameraDefaultZoom
+import com.example.conductor.utils.Constants.defaultLocation
 import com.example.conductor.utils.polygonsColor
 import com.example.conductor.utils.polygonsList
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -32,9 +28,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
     private lateinit var map: GoogleMap
-    //esta ubicación esta en san francisco con placer
-    private val defaultLocation = LatLng(-33.47536870666403, -70.64367761577908)
-    private val cameraDefaultZoom = 10.7
+
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,

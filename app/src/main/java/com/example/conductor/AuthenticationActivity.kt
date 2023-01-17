@@ -9,6 +9,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.databinding.ActivityAuthenticationBinding
+import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,6 @@ import kotlinx.coroutines.withContext
 class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
-    private val firebaseAuth = FirebaseAuth.getInstance()
     private val cloudDB = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
