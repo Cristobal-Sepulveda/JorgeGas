@@ -11,7 +11,8 @@ data class Usuario(
     val apellidoMaterno: String,
     val usuario: String,
     val password: String,
-    var deshabilitada: Boolean
+    var deshabilitada: Boolean,
+    val rol: String,
 ) : Parcelable{
     fun longConverterToString(id: Long): String{
         return id.toString()

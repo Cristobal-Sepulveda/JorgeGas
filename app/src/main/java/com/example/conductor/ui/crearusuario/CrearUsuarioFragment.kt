@@ -59,13 +59,15 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
         val aPaterno = _binding!!.editTextDataUsuarioAPaterno.text.toString()
         val aMaterno = _binding!!.editTextDataUsuarioAMaterno.text.toString()
+        val rol = _binding!!.editTextDataUsuarioRol.text.toString()
         val email = _binding!!.editTextDataUsuarioUsuario.text.toString()
         val password = _binding!!.editTextDataUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()
 
         if (nombre.isEmpty() || aPaterno.isEmpty() ||
-            aMaterno.isEmpty() || email.isEmpty() ||
-            password.isEmpty() || password2.isEmpty()
+            aMaterno.isEmpty() || rol.isEmpty() ||
+            email.isEmpty() || password.isEmpty() ||
+            password2.isEmpty()
         ) {
             dialog?.window?.let {
                 Snackbar.make(
@@ -116,7 +118,8 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
                 aMaterno,
                 email,
                 password,
-                false
+                false,
+                rol
             )
             _viewModel.ingresarUsuarioAFirestore(usuario)
             dialog?.window?.let {

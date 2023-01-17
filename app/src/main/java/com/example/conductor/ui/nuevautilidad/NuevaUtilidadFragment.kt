@@ -25,7 +25,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.BuildConfig
-import com.example.conductor.utils.Constants.TAG
 import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
 
@@ -83,7 +82,7 @@ class NuevaUtilidadFragment : Fragment(),SharedPreferences.OnSharedPreferenceCha
                 // TODO: Step 1.0, Review Permissions: Checks and requests if needed.
                 if (foregroundPermissionApproved()) {
                     foregroundOnlyLocationService?.subscribeToLocationUpdates()
-                        ?: Log.d(TAG, "Service Not Bound")
+                        ?: Log.d("asd", "Service Not Bound")
                 } else {
                     requestForegroundPermissions()
                 }
@@ -172,7 +171,7 @@ class NuevaUtilidadFragment : Fragment(),SharedPreferences.OnSharedPreferenceCha
                 }
                 .show()
         } else {
-            Log.d(TAG, "Request foreground only permission")
+            Log.d("asd", "Request foreground only permission")
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -189,14 +188,14 @@ class NuevaUtilidadFragment : Fragment(),SharedPreferences.OnSharedPreferenceCha
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d(TAG, "onRequestPermissionResult")
+        Log.d("asd", "onRequestPermissionResult")
 
         when (requestCode) {
             REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE -> when {
                 grantResults.isEmpty() ->
                     // If user interaction was interrupted, the permission request
                     // is cancelled and you receive empty arrays.
-                    Log.d(TAG, "User interaction was cancelled.")
+                    Log.d("asd", "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED ->
                     // Permission was granted.
                     foregroundOnlyLocationService?.subscribeToLocationUpdates()

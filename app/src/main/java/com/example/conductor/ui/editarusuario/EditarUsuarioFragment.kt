@@ -80,14 +80,16 @@ class EditarUsuarioFragment : BottomSheetDialogFragment() {
         val nombre = _binding!!.editTextEditarUsuarioNombre.text.toString()
         val aPaterno = _binding!!.editTextEditarUsuarioAPaterno.text.toString()
         val aMaterno = _binding!!.editTextEditarUsuarioAMaterno.text.toString()
+        val rol = _binding!!.editTextEditarUsuarioRol.text.toString()
         val email = bundle!!.usuario
         val password = _binding!!.editTextEditarUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextEditarUsuarioConfirmarPassword.text.toString()
         val deshabilitada = false
-        val usuario = Usuario(bundle.id, nombre, aPaterno, aMaterno, email, password,deshabilitada)
 
-        if (nombre.isEmpty() || aPaterno.isEmpty() ||
-            aMaterno.isEmpty() || password.isEmpty() || password2.isEmpty()
+        val usuario = Usuario(bundle.id, nombre, aPaterno, aMaterno, email, password,deshabilitada, rol)
+
+        if (nombre.isEmpty() || aPaterno.isEmpty() || aMaterno.isEmpty() ||
+            rol.isEmpty() || password.isEmpty() || password2.isEmpty()
         ) {
             dialog?.window?.let {
                 Snackbar.make(
@@ -148,7 +150,7 @@ class EditarUsuarioFragment : BottomSheetDialogFragment() {
         _binding!!.editTextEditarUsuarioNombre.setText(bundle.nombre)
         _binding!!.editTextEditarUsuarioAPaterno.setText(bundle.apellidoPaterno)
         _binding!!.editTextEditarUsuarioAMaterno.setText(bundle.apellidoMaterno)
-        //_binding!!.editTextEditarUsuarioUsuario.setText(bundle.usuario)
+        _binding!!.editTextEditarUsuarioRol.setText(bundle.rol)
         _binding!!.editTextEditarUsuarioPassword.setText(bundle.password)
         _binding!!.editTextEditarUsuarioConfirmarPassword.setText(bundle.password)
     }

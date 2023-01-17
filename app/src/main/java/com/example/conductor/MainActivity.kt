@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -22,19 +23,28 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.isGone
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.databinding.ActivityMainBinding
+import com.example.conductor.ui.nuevautilidad.NuevaUtilidadFragment
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), MenuProvider{
 
@@ -42,14 +52,14 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private var menuHost: MenuHost = this
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
-    private lateinit var firebaseUser: String
+    private val cloudDB = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        definingDrawableMenu()
+        binding.navView
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         navController = navHostFragment.navController
@@ -60,6 +70,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
+        definingDrawableMenu()
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
@@ -114,9 +125,28 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     }
 
     private fun definingDrawableMenu(){
-        firebaseUser = firebaseAuth.currentUser!!.email.toString()
-        if( firebaseUser != "1@1.1"){
+        try{
+            lifecycleScope.launch{
+                withContext(Dispatchers.Main) {
+                    val userInValid = cloudDB.collection("Usuarios")
+                        .whereEqualTo("usuario", firebaseAuth.currentUser!!.email.toString()).get()
+                        .await()
+                    Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
+                    if(userInValid.documents[0].get("rol") != "Administrador") {
+                        binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
+                    }
+                    if(userInValid.documents[0].get("rol") == "Volantero"){
+                        binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
+                        supportFragmentManager.beginTransaction().replace(
+                            binding.fragmentBaseInterface.navHostFragmentActivityMain.id,
+                            NuevaUtilidadFragment()).commit()
+                    }
+                }
+            }
+        }catch(e:Exception){
             binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
+            binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
+            e.message?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_INDEFINITE).show() }
         }
     }
 

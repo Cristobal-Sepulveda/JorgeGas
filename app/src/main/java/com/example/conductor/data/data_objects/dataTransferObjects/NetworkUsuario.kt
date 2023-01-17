@@ -50,6 +50,7 @@ data class NetworkUsuario(
     val usuario: String,
     val password: String,
     val deshabilitada: Boolean,
+    val rol: String,
     )
 
 /**
@@ -64,7 +65,8 @@ fun NetworkUsuariosContainer.asDomainModel(): List<Usuario> {
             apellidoMaterno = it.apellidoMaterno,
             usuario = it.usuario,
             password = it.password,
-            deshabilitada = it.deshabilitada
+            deshabilitada = it.deshabilitada,
+            rol = it.rol,
         )
     }
 }

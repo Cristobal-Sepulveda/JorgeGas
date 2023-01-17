@@ -62,7 +62,6 @@ class AdministrarCuentasFragment : BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         _viewModel.removeUsuariosInRecyclerView()
     }
 }
