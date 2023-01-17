@@ -1,7 +1,9 @@
 package com.example.conductor
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -24,7 +26,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.databinding.ActivityMainBinding
+import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.firebaseAuth
+import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
@@ -58,6 +66,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         bottomNavigationView.setupWithNavController(navController)
         //val a = LoaderManager.getInstance(this)
         startingPermissionCheck()
+        checkDeviceLocationSettings()
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
             true
@@ -95,6 +104,16 @@ class MainActivity : AppCompatActivity(), MenuProvider{
 
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == Constants.REQUEST_TURN_DEVICE_LOCATION_ON){
+            if(resultCode == Activity.RESULT_CANCELED){
+                checkDeviceLocationSettings()
+            }
+        }
+    }
+
     private fun definingDrawableMenu(){
         firebaseUser = firebaseAuth.currentUser!!.email.toString()
         if( firebaseUser != "1@1.1"){
@@ -128,6 +147,40 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 }
             }
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+    }
+
+    private fun checkDeviceLocationSettings(resolve:Boolean = true) {
+        val locationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_LOW_POWER
+        }
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+
+        val settingsClient = LocationServices.getSettingsClient(this)
+        val locationSettingsResponseTask =
+            settingsClient.checkLocationSettings(builder.build())
+
+        locationSettingsResponseTask.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException && resolve){
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    exception.startResolutionForResult(this,
+                        Constants.REQUEST_TURN_DEVICE_LOCATION_ON
+                    )
+                } catch (sendEx: IntentSender.SendIntentException) {
+                    Log.d("asd", "Error geting location settings resolution: " + sendEx.message)
+                }
+            } else {
+                Snackbar.make(
+                    binding.root,
+                    R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                ).setAction(android.R.string.ok) {
+                    checkDeviceLocationSettings()
+                }.show()
+            }
         }
     }
 

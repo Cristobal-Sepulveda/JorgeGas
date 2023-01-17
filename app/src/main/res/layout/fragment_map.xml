@@ -26,17 +26,30 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+        <ImageView
+            android:id="@+id/imageview_mapaSinPermisos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/mapa_sin_permisos"
+            android:visibility="gone"
+            android:contentDescription="@string/mapa_sin_permisos_autorizados" />
         <Button
             style="@style/buttons"
-            android:id="@+id/button_reiniciarMapa"
+            android:id="@+id/button_mapaReiniciarActividad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_bigger"
+            android:padding="10dp"
             android:visibility="gone"
-            android:text="@string/reiniciar"
+            android:text="@string/mapa_solicitar_permisos"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

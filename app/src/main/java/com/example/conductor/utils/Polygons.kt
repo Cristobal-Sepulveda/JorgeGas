@@ -2187,60 +2187,116 @@ var polygonsList : ArrayList<ArrayList<LatLng>> = arrayListOf(
 )
 
 var polygonsColor : ArrayList<Int> = arrayListOf(
+    //polygon 1
     Color.argb(100,0,255,0),
+    //polygon 2
     Color.argb(100,255,0,0),
+    //polygon 3
     Color.argb(100,255,255,0),
+    //polygon 4
     Color.argb(100,128,64,0),
+    //polygon 5
     Color.argb(100,0,150,0),
+    //polygon 6
     Color.argb(75,255,0,0),
+    //polygon 7
     Color.argb(75,255,200,0),
+    //polygon 8
     Color.argb(65,118,118,245),
+    //polygon 9
     Color.argb(35,234,39,245),
+    //polygon 10
     Color.argb(85,0,0,245),
+    //polygon 11
     Color.argb(100,0,150,0),
+    //polygon 12
     Color.argb(50,175,0,0),
+    //polygon 13
     Color.argb(100,128,64,0),
+    //polygon 14
     Color.argb(100,0,0,255),
+    //polygon 15
     Color.argb(100,0,200,80),
+    //polygon 16
     Color.argb(100,200,0,0),
+    //polygon 17
     Color.argb(100,255,255,0),
+    //polygon 18
     Color.argb(100,128,64,0),
+    //polygon 19
     Color.argb(100,150,0,0),
+    //polygon 20
     Color.argb(100,150,200,0),
+    //polygon 21
     Color.argb(100,230,100,230),
+    //polygon 22
     Color.argb(100,0,250,0),
+    //polygon 23
     Color.argb(100,255,165,0),
+    //polygon 24
     Color.argb(75,255,0,0),
+    //polygon 25
     Color.argb(75,255,100,0),
+    //polygon 26
     Color.argb(100,128,64,0),
+    //polygon 27
     Color.argb(100,250,100,0),
+    //polygon 28
     Color.argb(100, 0, 100, 0),
+    //polygon 29
     Color.argb(100, 255,255,0),
+    //polygon 30
     Color.argb(100,0,100,255),
+    //polygon 31
     Color.argb(100, 255,0,128 ),
-    Color.argb(50,0,255,0),
+    //polygon 32
+    Color.argb(100,0,255,0),
+    //polygon 33
     Color.argb(100,255,0,0),
+    //polygon 34
     Color.argb(50,0,0,230),
+    //polygon 35
     Color.argb(100,255,125,0),
+    //polygon 36
     Color.argb(100,255,0,0),
+    //polygon 37
     Color.argb(100, 0, 255,0),
+    //polygon 38
     Color.argb(100,255,255,0),
+    //polygon 39
     Color.argb(100,0,255,0),
+    //polygon 40
     Color.argb(100,255,125,0),
+    //polygon 41
     Color.argb(100,200,0,200),
+    //polygon 42
     Color.argb(100,0,0,240),
+    //polygon 43
     Color.argb(100,255,50,50),
+    //polygon 44
     Color.argb(100,200,50,255),
+    //polygon 45
     Color.argb(100,250,180,0),
+    //polygon 46
     Color.argb(100,30,255,0),
+    //polygon 47
     Color.argb(100,255,255,0),
+    //polygon 48
     Color.argb(100,150,150,150),
+    //polygon 49
     Color.argb(100,255,0,50),
+    //polygon 50
     Color.argb(100,0,0,255),
+    //polygon 51
     Color.argb(100,255,0,30),
+    //polygon 52
     Color.argb(100,0,255,0),
+    //polygon 53
     Color.argb(100,0,120,255),
+    //polygon 54
     Color.argb(100,255,175,0),
+    //polygon 55
     Color.argb(100,255,0,255),
+    //polygon 56
     Color.argb(100,128,64,0)
 )

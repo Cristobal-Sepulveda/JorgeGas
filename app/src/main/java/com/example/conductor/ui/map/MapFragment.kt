@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import com.example.conductor.MainActivity
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
@@ -31,26 +32,23 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
     private lateinit var map: GoogleMap
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val defaultLocation = LatLng(-33.6256, -70.5841)
-    private val cameraDefaultZoom = 13
-    private var lastKnownLocation: Location? = null
+    //esta ubicación esta en san francisco con placer
+    private val defaultLocation = LatLng(-33.47536870666403, -70.64367761577908)
+    private val cameraDefaultZoom = 10.7
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+
         _binding = FragmentMapBinding.inflate(inflater, container, false)
-        // Specify the current fragment as the lifecycle owner of the binding. This is used so that
-        // the binding can observe LiveData updates
         _binding!!.lifecycleOwner = this
-
-        //Adding  the map setup implementation
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
 
-        // Construct a FusedLocationProviderClient.
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        _binding!!.buttonMapaReiniciarActividad.setOnClickListener {
+            val intent = Intent(requireActivity(), requireActivity().javaClass)
+            startActivity(intent)
+            requireActivity().finish()
+        }
 
         return _binding!!.root
     }
@@ -65,42 +63,24 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        Log.i("MapFragment","" + isPermissionGranted)
+
         if(isPermissionGranted){
             try{
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(requireActivity()) { task ->
-                    if (task.isSuccessful) {
-                        Log.i("MapFragment","task.IsSuccessful")
-                        lastKnownLocation = task.result
-                        if (lastKnownLocation != null) {
-                            Log.i("MapFragment","task.IsSuccessful && lastKnownLocation != null")
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-                                , cameraDefaultZoom.toFloat())
-                            )
-                            map.addMarker(MarkerOptions()
-                                .position(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude))
-                                .title("Marker in your actual location")
-                            )
-                            map.uiSettings.isMyLocationButtonEnabled = true
-                        }else{
-                            Log.i("MapFragment","task.IsSuccessful && lastKnownLocation == null")
-                            _binding!!.map.isGone = true
-                        }
-                    }
-                    else {
-                        Log.i("MapFragment","task.IsSuccessful false")
-                        _binding!!.map.isGone = true
-                    }
-                }
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    LatLng(defaultLocation.latitude, defaultLocation.longitude)
+                    , cameraDefaultZoom.toFloat())
+                )
+                map.uiSettings.isMyLocationButtonEnabled = true
             }catch(e: SecurityException){
-                Log.i("MapFragment","$e.message")
                 _binding!!.map.isGone = true
+                _binding!!.imageviewMapaSinPermisos.isGone = false
+                _binding!!.buttonMapaReiniciarActividad.isGone = false
+
             }
         }else {
-            Log.i("MapFragment","$isPermissionGranted")
             _binding!!.map.isGone = true
+            _binding!!.imageviewMapaSinPermisos.isGone = false
+            _binding!!.buttonMapaReiniciarActividad.isGone = false
         }
     }
 
@@ -114,24 +94,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         }
     }
 
-    private fun setMapStyle(map: GoogleMap) {
-        try {
-            // Customize the styling of the base map using a JSON object defined
-            // in a raw resource file.
-            val success = map.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    requireActivity(),
-                    R.raw.map_style
-                )
-            )
 
-            if (!success) {
-                Log.e("SelectLocationFragment", "Style parsing failed.")
-            }
-        } catch (e: Resources.NotFoundException) {
-            Log.e("SelectLocationFragment", "Can't find style. Error: ", e)
-        }
-    }
 }
 
 
