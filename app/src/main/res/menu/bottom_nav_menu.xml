@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_vista_general"
         android:icon="@drawable/ic_baseline_home_24"
         android:title="@string/vista_general" />
     <item

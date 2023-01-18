@@ -4,14 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_vista_general">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.conductor.ui.home.HomeFragment"
+        android:id="@+id/navigation_vista_general"
+        android:name="com.example.conductor.ui.vistageneral.VistaGeneralFragment"
         android:label="@string/vista_general"
-        tools:layout="@layout/fragment_home"
-        />
+        tools:layout="@layout/fragment_vista_general" />
 
     <fragment
         android:id="@+id/navigation_map"

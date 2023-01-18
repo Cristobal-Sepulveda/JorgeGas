@@ -2,6 +2,7 @@ package com.example.conductor.utils
 import android.graphics.Color
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 object Constants {
 

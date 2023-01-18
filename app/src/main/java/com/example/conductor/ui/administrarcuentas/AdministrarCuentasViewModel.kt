@@ -69,8 +69,4 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
             }
         }
     }
-    init{
-
-    }
-
 }
