@@ -58,4 +58,6 @@
     <string name="start_location_updates_button_text">Start receiving location updates</string>
     <string name="mapa_sin_permisos_autorizados">Mapa sin permisos autorizados</string>
     <string name="rol">Rol</string>
+    <string name="iniciar_turno">Iniciar Turno</string>
+    <string name="finalizar_turno">Finalizar Turno</string>
 </resources>

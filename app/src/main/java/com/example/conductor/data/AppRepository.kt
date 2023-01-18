@@ -50,7 +50,7 @@ class AppRepository(private val fieldDao: FieldDao,
         }
     }
 
-    override suspend fun ingresarUsuarioAFirestore(usuario: Usuario) {
+    override suspend fun ingresarUsuarioAFirestore(usuario: Usuario){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 try{
@@ -76,5 +76,20 @@ class AppRepository(private val fieldDao: FieldDao,
                 }
             }
         }
+    }
+
+    override suspend fun obtenerRolDelUsuarioActual(): String {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                try{
+                    val user = FirebaseAuth.getInstance().currentUser
+                    val docRef = cloudDB.collection("Usuarios").document(user!!.uid).get().await()
+                    return@withContext docRef.get("rol") as String
+                }catch(e:Exception){
+                    return@withContext "Error"
+                }
+            }
+        }
+        return "Error"
     }
 }

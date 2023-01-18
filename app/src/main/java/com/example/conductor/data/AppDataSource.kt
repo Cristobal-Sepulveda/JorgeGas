@@ -12,4 +12,5 @@ interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
     suspend fun ingresarUsuarioAFirestore(usuario:Usuario)
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
+    suspend fun obtenerRolDelUsuarioActual(): String
 }

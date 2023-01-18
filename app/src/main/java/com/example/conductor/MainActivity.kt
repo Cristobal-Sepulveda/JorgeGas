@@ -134,9 +134,9 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                     }
                     if(userInValid.documents[0].get("rol") == "Volantero"){
                         binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
-                        supportFragmentManager.beginTransaction().replace(
+/*                        supportFragmentManager.beginTransaction().replace(
                             binding.fragmentBaseInterface.navHostFragmentActivityMain.id,
-                            NuevaUtilidadFragment()).commit()
+                            NuevaUtilidadFragment()).commit()*/
                     }
                 }
             }

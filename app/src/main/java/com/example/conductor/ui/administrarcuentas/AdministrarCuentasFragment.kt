@@ -12,7 +12,6 @@ import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
 import com.example.conductor.ui.crearusuario.CrearUsuarioFragment
 import com.example.conductor.ui.editarusuario.EditarUsuarioFragment
-import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.android.inject
 
 class AdministrarCuentasFragment : BaseFragment() {
@@ -51,6 +50,7 @@ class AdministrarCuentasFragment : BaseFragment() {
                 modalBottomSheet.show(requireActivity().supportFragmentManager, "EditarUsuarioFragment")
             }
         })
+
         _binding!!.buttonCrearCuenta.setOnClickListener {
             val modalBottomSheet = CrearUsuarioFragment()
             modalBottomSheet.show(requireActivity().supportFragmentManager, "CrearUsuarioFragment")
