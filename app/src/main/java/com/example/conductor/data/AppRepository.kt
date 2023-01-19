@@ -21,7 +21,6 @@ class AppRepository(private val fieldDao: FieldDao,
 
     private val cloudDB = FirebaseFirestore.getInstance()
 
-
     override suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -78,7 +77,7 @@ class AppRepository(private val fieldDao: FieldDao,
         }
     }
 
-    override suspend fun obtenerRolDelUsuarioActual(): String {
+    override suspend fun obtenerRolDelUsuarioActual(): String = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 try{
@@ -86,10 +85,9 @@ class AppRepository(private val fieldDao: FieldDao,
                     val docRef = cloudDB.collection("Usuarios").document(user!!.uid).get().await()
                     return@withContext docRef.get("rol") as String
                 }catch(e:Exception){
+                    Log.i("AppRepository", e.message!!) }
                     return@withContext "Error"
                 }
             }
         }
-        return "Error"
-    }
 }

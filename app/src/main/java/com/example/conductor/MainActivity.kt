@@ -1,6 +1,7 @@
 package com.example.conductor
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -29,8 +31,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.example.conductor.data.AppDataSource
 import com.example.conductor.databinding.ActivityMainBinding
-import com.example.conductor.ui.nuevautilidad.NuevaUtilidadFragment
+import com.example.conductor.ui.vistageneral.VistaGeneralFragment
+import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.android.gms.common.api.ResolvableApiException
@@ -42,6 +46,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.inject
 
 class MainActivity : AppCompatActivity(), MenuProvider{
 
@@ -50,6 +56,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
     private val cloudDB = FirebaseFirestore.getInstance()
+    val appDataSource: AppDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +74,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
-        definingDrawableMenu()
+        vistaGeneralDrawableMenuYBottomNavigationView()
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             logout()
@@ -121,7 +128,8 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
     }
 
-    private fun definingDrawableMenu(){
+    @SuppressLint("UseRequireInsteadOfGet")
+    private fun vistaGeneralDrawableMenuYBottomNavigationView(){
         try{
             lifecycleScope.launch{
                 withContext(Dispatchers.Main) {
@@ -134,9 +142,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                     }
                     if(userInValid.documents[0].get("rol") == "Volantero"){
                         binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
-/*                        supportFragmentManager.beginTransaction().replace(
-                            binding.fragmentBaseInterface.navHostFragmentActivityMain.id,
-                            NuevaUtilidadFragment()).commit()*/
                     }
                 }
             }

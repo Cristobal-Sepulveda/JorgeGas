@@ -11,6 +11,7 @@ object Constants {
     val defaultLocation = LatLng(-33.47536870666403, -70.64367761577908)
     const val cameraDefaultZoom = 10.7
     val firebaseAuth = FirebaseAuth.getInstance()
+
 }
 
 
