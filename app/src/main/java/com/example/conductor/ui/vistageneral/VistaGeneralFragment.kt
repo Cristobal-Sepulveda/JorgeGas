@@ -146,11 +146,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private fun logResultsToScreen(output: String) {
-        val outputWithPreviousLogs = "$output\n${_binding!!.outputTextView.text}"
-        _binding!!.outputTextView.text = outputWithPreviousLogs
-    }
-
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val location = intent.getParcelableExtra<Location>(
@@ -158,23 +153,22 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             )
             if (location != null) {
                 try{
-                    logResultsToScreen(location.toString())
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO){
-                            LocalDate.now().monthValue
                             cloudDB.collection("RegistroTrayectoVolanteros")
                                 .document(Constants.firebaseAuth.currentUser!!.uid).get()
                                 .addOnSuccessListener { documentSnapshot ->
-
-                                    if(documentSnapshot.exists()){
-                                        //val mapaLocalizaciones = documentSnapshot.get("historicoLatLngs") as HashMap<*, *>
-                                        //val fechaUltimoRegistro = documentSnapshot.get("fecha") as HashMap<*, *>
-                                        val fechaDeHoy = LocalDate.now().dayOfMonth.toString()
+                                    val data = documentSnapshot.data
+                                    val fechaDeHoy = LocalDate.now().dayOfMonth.toString()
+                                    if(data!=null){
+                                        val latLngs = data["historicoLatLngs"] as Map<*,*>
+                                        val arrayAEditar = latLngs[fechaDeHoy] as ArrayList<GeoPoint>
+                                        arrayAEditar.add(GeoPoint(location.latitude, location.longitude))
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(Constants.firebaseAuth.currentUser!!.uid)
-                                            .update("historicoLatLngs.${fechaDeHoy}", FieldValue.arrayUnion(GeoPoint(location.latitude, location.longitude)))
-                                        Log.i("RegistrandoLatLng","${location.latitude}${location.longitude},${LocalDate.now()}")
+                                            .update("historicoLatLngs.$fechaDeHoy", arrayAEditar)
                                     }
+
                                 }
                         }
                     }
