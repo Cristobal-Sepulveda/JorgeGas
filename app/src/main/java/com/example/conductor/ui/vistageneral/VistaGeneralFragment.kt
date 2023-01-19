@@ -159,16 +159,25 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                 .document(Constants.firebaseAuth.currentUser!!.uid).get()
                                 .addOnSuccessListener { documentSnapshot ->
                                     val data = documentSnapshot.data
-                                    val fechaDeHoy = LocalDate.now().dayOfMonth.toString()
+                                    val fechaDeHoy = LocalDate.now().dayOfMonth
+                                    val fechaDeAyer = LocalDate.now().minusDays(1)
                                     if(data!=null){
                                         val latLngs = data["historicoLatLngs"] as Map<*,*>
-                                        val arrayAEditar = latLngs[fechaDeHoy] as ArrayList<GeoPoint>
+                                        val arrayAEditar = latLngs[fechaDeHoy.toString()] as ArrayList<GeoPoint>
                                         arrayAEditar.add(GeoPoint(location.latitude, location.longitude))
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(Constants.firebaseAuth.currentUser!!.uid)
                                             .update("historicoLatLngs.$fechaDeHoy", arrayAEditar)
-                                    }
 
+                                        if(data["ultimoDiaEnOperacion"] != fechaDeHoy.toString()) {
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(Constants.firebaseAuth.currentUser!!.uid)
+                                                .update("historicoLatLngs.${fechaDeAyer}", emptyList<GeoPoint>())
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(Constants.firebaseAuth.currentUser!!.uid)
+                                                .update("ultimoDiaEnOperacion", fechaDeHoy.toString())
+                                        }
+                                    }
                                 }
                         }
                     }
