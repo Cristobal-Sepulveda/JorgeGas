@@ -73,8 +73,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
         _binding = FragmentNuevaUtilidadBinding.inflate(inflater, container, false)
 
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
-        sharedPreferences = requireActivity().getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         _binding!!.buttonForegroundOnlyLocationButton.setOnClickListener {
             val enabled = sharedPreferences.getBoolean(

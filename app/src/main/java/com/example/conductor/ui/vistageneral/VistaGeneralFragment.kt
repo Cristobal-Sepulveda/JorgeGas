@@ -11,18 +11,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
-import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.ForegroundOnlyLocationService
 import com.example.conductor.utils.SharedPreferenceUtil
-import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
@@ -52,7 +48,46 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             foregroundOnlyLocationServiceBound = false
         }
     }
-
+    private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val location = intent.getParcelableExtra<Location>(
+                ForegroundOnlyLocationService.EXTRA_LOCATION
+            )
+            if (location != null) {
+                try{
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO){
+                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                .document(Constants.firebaseAuth.currentUser!!.uid).get()
+                                .addOnSuccessListener { documentSnapshot ->
+                                    val data = documentSnapshot.data
+                                    val fechaDeHoy = LocalDate.now().toString()
+                                    val diaDeHoy = fechaDeHoy.subSequence(8, 10)
+                                    if(data!=null){
+                                        val latLngs = data["historicoLatLngs"] as Map<*,*>
+                                        val arrayAEditar = latLngs[diaDeHoy] as ArrayList<GeoPoint>
+                                        arrayAEditar.add(GeoPoint(location.latitude, location.longitude))
+                                        cloudDB.collection("RegistroTrayectoVolanteros")
+                                            .document(Constants.firebaseAuth.currentUser!!.uid)
+                                            .update("historicoLatLngs.$diaDeHoy", arrayAEditar)
+                                        /*if(data["ultimoDiaEnOperacion"] != fechaDeHoy) {
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(Constants.firebaseAuth.currentUser!!.uid)
+                                                .update("historicoLatLngs.${diaDeHoy.toInt()}", emptyList<GeoPoint>())
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(Constants.firebaseAuth.currentUser!!.uid)
+                                                .update("ultimoDiaEnOperacion", fechaDeHoy.toString())
+                                        }*/
+                                    }
+                                }
+                        }
+                    }
+                }catch(e: Exception){
+                    Log.i("NuevaUtilidadFragment", "registrar la localización en la nube fallo.")
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +95,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
-        sharedPreferences =
-            requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        sharedPreferences = requireActivity().getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
 
         lifecycleScope.launch{
@@ -70,8 +106,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setOnClickListener {
             val enabled = sharedPreferences.getBoolean(
-                SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-            Log.i("buttonVistaGeneralRegistroJornadaVolantero.setOnClickListener","$enabled")
+                SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
+                false)
             if (enabled) {
                 foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
             } else {
@@ -104,7 +140,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         )
     }
 
-    override fun onPause() {
+/*    override fun onPause() {
         LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(
             foregroundOnlyBroadcastReceiver
         )
@@ -117,9 +153,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             foregroundOnlyLocationServiceBound = false
         }
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-
         super.onStop()
-    }
+    }*/
 
     private suspend fun visibilidadDelButtonVistaGeneralRegistroJornadaVolantero(){
         if(_viewModel.obtenerRolDelUsuarioActual() == "Volantero") {
@@ -146,45 +181,5 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(
-                ForegroundOnlyLocationService.EXTRA_LOCATION
-            )
-            if (location != null) {
-                try{
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO){
-                            cloudDB.collection("RegistroTrayectoVolanteros")
-                                .document(Constants.firebaseAuth.currentUser!!.uid).get()
-                                .addOnSuccessListener { documentSnapshot ->
-                                    val data = documentSnapshot.data
-                                    val fechaDeHoy = LocalDate.now().toString()
-                                    val diaDeHoy = LocalDate.now().toString().subSequence(8, 10)
-                                    val fechaDeAyer = LocalDate.now().minusDays(1)
-                                    if(data!=null){
-                                        val latLngs = data["historicoLatLngs"] as Map<*,*>
-                                        val arrayAEditar = latLngs[fechaDeHoy] as ArrayList<GeoPoint>
-                                        arrayAEditar.add(GeoPoint(location.latitude, location.longitude))
-                                        cloudDB.collection("RegistroTrayectoVolanteros")
-                                            .document(Constants.firebaseAuth.currentUser!!.uid)
-                                            .update("historicoLatLngs.$diaDeHoy", arrayAEditar)
-                                        if(data["ultimoDiaEnOperacion"] != fechaDeHoy) {
-                                            cloudDB.collection("RegistroTrayectoVolanteros")
-                                                .document(Constants.firebaseAuth.currentUser!!.uid)
-                                                .update("historicoLatLngs.${diaDeHoy.toInt()}", emptyList<GeoPoint>())
-                                            cloudDB.collection("RegistroTrayectoVolanteros")
-                                                .document(Constants.firebaseAuth.currentUser!!.uid)
-                                                .update("ultimoDiaEnOperacion", fechaDeHoy.toString())
-                                        }
-                                    }
-                                }
-                        }
-                    }
-                }catch(e: Exception){
-                    Log.i("NuevaUtilidadFragment", "registrar la localización en la nube fallo.")
-                }
-            }
-        }
-    }
+
 }

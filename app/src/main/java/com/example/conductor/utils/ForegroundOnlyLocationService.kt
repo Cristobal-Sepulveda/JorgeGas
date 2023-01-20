@@ -15,6 +15,7 @@
  */
 package com.example.conductor.utils
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -57,14 +58,9 @@ class ForegroundOnlyLocationService : Service() {
     private var serviceRunningInForeground = false
     private val localBinder = LocalBinder()
     private lateinit var notificationManager: NotificationManager
-
-    // TODO: Step 1.1, Review variables (no changes).
-    // FusedLocationProviderClient - Main class for receiving location updates.
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    // LocationRequest - Requirements for the location updates, i.e., how often you should receive
-    // updates, the priority, etc.
     private lateinit var locationRequest: LocationRequest
-    // LocationCallback - Called when FusedLocationProviderClient has a new Location.
+
     private lateinit var locationCallback: LocationCallback
     // Used only for local storage of the last known location. Usually, this would be saved to your
     // database, but because this is a simplified sample without a full database, we only need the
@@ -74,9 +70,10 @@ class ForegroundOnlyLocationService : Service() {
     override fun onCreate() {
         Log.d(TAG, "onCreate()")
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // TODO: Step 1.2, Review the FusedLocationProviderClient.
+        // FusedLocationProviderClient - Main class for receiving location updates.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        // TODO: Step 1.3, Create a LocationRequest.
+        // LocationRequest - Requirements for the location updates, i.e., how often you should receive
+        // updates, the priority, etc.
         locationRequest = LocationRequest.create().apply {
             // Sets the desired interval for active location updates. This interval is inexact. You
             // may not receive updates at all if no location sources are available, or you may
@@ -100,24 +97,21 @@ class ForegroundOnlyLocationService : Service() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        // TODO: Step 1.4, Initialize the LocationCallback.
+        // LocationCallback - Called when FusedLocationProviderClient has a new Location.
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-
-                // Normally, you want to save a new location to a database. We are simplifying
-                // things a bit and just saving it as a local variable, as we only need it again
-                // if a Notification is created (when the user navigates away from app).
+                /* Normally, you want to save a new location to a database. We are simplifying
+                   things a bit and just saving it as a local variable, as we only need it again
+                   if a Notification is created (when the user navigates away from app).*/
                 currentLocation = locationResult.lastLocation
-
-                // Notify our Activity that a new location was added. Again, if this was a
-                // production app, the Activity would be listening for changes to a database
-                // with new locations, but we are simplifying things a bit to focus on just
-                // learning the location side of things.
+                /* Notify our Activity that a new location was added. Again, if this was a
+                   production app, the Activity would be listening for changes to a database
+                   with new locations, but we are simplifying things a bit to focus on just
+                   learning the location side of things. */
                 val intent = Intent(ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST)
                 intent.putExtra(EXTRA_LOCATION, currentLocation)
                 LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
-
                 // Updates notification content if this service is running as a foreground
                 // service.
                 if (serviceRunningInForeground) {
@@ -128,6 +122,10 @@ class ForegroundOnlyLocationService : Service() {
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy()")
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -184,47 +182,33 @@ class ForegroundOnlyLocationService : Service() {
         return true
     }
 
-    override fun onDestroy() {
-        Log.d(TAG, "onDestroy()")
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         configurationChange = true
     }
 
+    @SuppressLint("MissingPermission")
     fun subscribeToLocationUpdates() {
         Log.d(TAG, "subscribeToLocationUpdates()")
-
         SharedPreferenceUtil.saveLocationTrackingPref(this, true)
-
         // Binding to this service doesn't actually trigger onStartCommand(). That is needed to
         // ensure this Service can be promoted to a foreground service, i.e., the service needs to
         // be officially started (which we do here).
         startService(Intent(applicationContext, ForegroundOnlyLocationService::class.java))
-
-        try {
-            // TODO: Step 1.5, Subscribe to location changes.
-            /* The requestLocationUpdates() call lets the FusedLocationProviderClient know that
-             you want to receive location updates. You probably recognize the LocationRequest and
-              LocationCallback that you defined earlier. Those let the FusedLocationProviderClient
-              know the quality-of-service parameters for your request and what it should call when
-               it has an update. Finally, the Looper object specifies the thread for the callback.
-
-            You may also notice that this code is within a try/catch statement. This method
-            requires such a block because a SecurityException occurs when your app doesn't have
-            permission to access location information.*/
+        /* The requestLocationUpdates() call lets the FusedLocationProviderClient know that
+        you want to receive location updates. You probably recognize the LocationRequest and
+        LocationCallback that you defined earlier. Those let the FusedLocationProviderClient
+        know the quality-of-service parameters for your request and what it should call when
+        it has an update. Finally, the Looper object specifies the thread for the callback.*/
+        try{
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-
-        } catch (unlikely: SecurityException) {
-            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
-            Log.e(TAG, "Lost location permissions. Couldn't remove updates. $unlikely")
+        }catch(e:Exception){
+            Log.d(TAG, "subscribeToLocationUpdates() error: ${e.message}")
         }
     }
 
     fun unsubscribeToLocationUpdates() {
         Log.d(TAG, "unsubscribeToLocationUpdates()")
-
         try {
             // TODO: Step 1.6, Unsubscribe to location changes.
             val removeTask = fusedLocationProviderClient.removeLocationUpdates(locationCallback)
@@ -237,7 +221,6 @@ class ForegroundOnlyLocationService : Service() {
                 }
             }
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
-
         } catch (unlikely: SecurityException) {
             SharedPreferenceUtil.saveLocationTrackingPref(this, true)
             Log.e(TAG, "Lost location permissions. Couldn't remove updates. $unlikely")
@@ -327,7 +310,7 @@ class ForegroundOnlyLocationService : Service() {
     companion object {
         private const val TAG = "ForegroundOnlyLocationService"
 
-        private const val PACKAGE_NAME = "com.example.android.whileinuselocation"
+        private const val PACKAGE_NAME = "com.example.conductor"
 
         internal const val ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST =
             "$PACKAGE_NAME.action.FOREGROUND_ONLY_LOCATION_BROADCAST"
