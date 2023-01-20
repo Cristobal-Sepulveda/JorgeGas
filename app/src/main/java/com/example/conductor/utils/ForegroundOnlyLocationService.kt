@@ -75,6 +75,7 @@ class ForegroundOnlyLocationService : Service() {
         // LocationRequest - Requirements for the location updates, i.e., how often you should receive
         // updates, the priority, etc.
         locationRequest = LocationRequest.create().apply {
+
             // Sets the desired interval for active location updates. This interval is inexact. You
             // may not receive updates at all if no location sources are available, or you may
             // receive them less frequently than requested. You may also receive updates more
@@ -133,6 +134,7 @@ class ForegroundOnlyLocationService : Service() {
 
         val cancelLocationTrackingFromNotification =
             intent.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)
+        startForeground(1, generateNotification(currentLocation))
 
         if (cancelLocationTrackingFromNotification) {
             unsubscribeToLocationUpdates()
@@ -194,7 +196,7 @@ class ForegroundOnlyLocationService : Service() {
         // Binding to this service doesn't actually trigger onStartCommand(). That is needed to
         // ensure this Service can be promoted to a foreground service, i.e., the service needs to
         // be officially started (which we do here).
-        startService(Intent(applicationContext, ForegroundOnlyLocationService::class.java))
+        startForegroundService(Intent(applicationContext, ForegroundOnlyLocationService::class.java))
         /* The requestLocationUpdates() call lets the FusedLocationProviderClient know that
         you want to receive location updates. You probably recognize the LocationRequest and
         LocationCallback that you defined earlier. Those let the FusedLocationProviderClient
@@ -227,9 +229,7 @@ class ForegroundOnlyLocationService : Service() {
         }
     }
 
-    /*
-     * Generates a BIG_TEXT_STYLE Notification that represent latest location.
-     */
+    /* Generates a Notification that displays the location parameters. */
     private fun generateNotification(location: Location?): Notification {
         Log.d(TAG, "generateNotification()")
 
@@ -245,39 +245,28 @@ class ForegroundOnlyLocationService : Service() {
         val titleText = getString(R.string.app_name)
 
         // 1. Create Notification Channel for O+ and beyond devices (26+).
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            val notificationChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
-
-            // Adds NotificationChannel to system. Attempting to create an
-            // existing notification channel with its original values performs
-            // no operation, so it's safe to perform the below sequence.
-            notificationManager.createNotificationChannel(notificationChannel)
-        }
-
+        val notificationChannel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
+        // Adds NotificationChannel to system. Attempting to create an
+        // existing notification channel with its original values performs
+        // no operation, so it's safe to perform the below sequence.
+        notificationManager.createNotificationChannel(notificationChannel)
         // 2. Build the BIG_TEXT_STYLE.
         val bigTextStyle = NotificationCompat.BigTextStyle()
             .bigText(mainNotificationText)
             .setBigContentTitle(titleText)
-
         // 3. Set up main Intent/Pending Intents for notification.
         val launchActivityIntent = Intent(this, MainActivity::class.java)
-
         val cancelIntent = Intent(this, ForegroundOnlyLocationService::class.java)
         cancelIntent.putExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, true)
-
         val servicePendingIntent = PendingIntent.getService(
-            this, 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
+            this, 0, cancelIntent, PendingIntent.FLAG_IMMUTABLE)
         val activityPendingIntent = PendingIntent.getActivity(
-            this, 0, launchActivityIntent, 0)
-
+            this, 0, launchActivityIntent, PendingIntent.FLAG_IMMUTABLE)
         // 4. Build and issue the notification.
         // Notification Channel Id is ignored for Android pre O (26).
         val notificationCompatBuilder =
             NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
-
         return notificationCompatBuilder
             .setStyle(bigTextStyle)
             .setContentTitle(titleText)
@@ -297,7 +286,6 @@ class ForegroundOnlyLocationService : Service() {
             )
             .build()
     }
-
     /**
      * Class used for the client Binder.  Since this service runs in the same process as its
      * clients, we don't need to deal with IPC.
