@@ -3,20 +3,22 @@ package com.example.conductor.ui.map
 import android.app.Application
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
-import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
-import kotlinx.coroutines.launch
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 enum class CloudDownloadComplete{LOADING, ERROR, DONE}
 class MapViewModel(val app: Application, val dataSource: AppDataSource) : BaseViewModel(app) {
 
+
     private val _status = MutableLiveData<CloudDownloadComplete>(CloudDownloadComplete.LOADING)
     val status: LiveData<CloudDownloadComplete>
         get()= _status
+
+    suspend fun dibujarVolanteros() {
+            dataSource.observarTrayectoVolanteros()
+    }
 
 }

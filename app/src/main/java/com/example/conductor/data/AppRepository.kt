@@ -9,8 +9,11 @@ import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import com.example.conductor.utils.Result
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
@@ -79,15 +82,24 @@ class AppRepository(private val fieldDao: FieldDao,
 
     override suspend fun obtenerRolDelUsuarioActual(): String = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                try{
+            withContext(ioDispatcher) {
+                try {
                     val user = FirebaseAuth.getInstance().currentUser
                     val docRef = cloudDB.collection("Usuarios").document(user!!.uid).get().await()
                     return@withContext docRef.get("rol") as String
-                }catch(e:Exception){
-                    Log.i("AppRepository", e.message!!) }
+                } catch (e: Exception) {
+                    Log.i("AppRepository", e.message!!)
                     return@withContext "Error"
                 }
             }
         }
+    }
+
+    override suspend fun observarTrayectoVolanteros() {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+
+            }
+        }
+    }
 }
