@@ -129,9 +129,9 @@ class ForegroundOnlyLocationService : Service() {
         Log.d(TAG, "onDestroy()")
     }
 
+    //Called by the system every time a client explicitly starts the service by calling startForegroundService(Intent),
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand()")
-
         val cancelLocationTrackingFromNotification =
             intent.getBooleanExtra(EXTRA_CANCEL_LOCATION_TRACKING_FROM_NOTIFICATION, false)
         startForeground(1, generateNotification(currentLocation))
@@ -144,46 +144,6 @@ class ForegroundOnlyLocationService : Service() {
         return START_NOT_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        Log.d(TAG, "onBind()")
-
-        // MainActivity (client) comes into foreground and binds to service, so the service can
-        // become a background services.
-        stopForeground(true)
-        serviceRunningInForeground = false
-        configurationChange = false
-        return localBinder
-    }
-
-    override fun onRebind(intent: Intent) {
-        Log.d(TAG, "onRebind()")
-
-        // MainActivity (client) returns to the foreground and rebinds to service, so the service
-        // can become a background services.
-        stopForeground(true)
-        serviceRunningInForeground = false
-        configurationChange = false
-        super.onRebind(intent)
-    }
-
-    override fun onUnbind(intent: Intent): Boolean {
-        Log.d(TAG, "onUnbind()")
-
-        // MainActivity (client) leaves foreground, so service needs to become a foreground service
-        // to maintain the 'while-in-use' label.
-        // NOTE: If this method is called due to a configuration change in MainActivity,
-        // we do nothing.
-        if (!configurationChange && SharedPreferenceUtil.getLocationTrackingPref(this)) {
-            Log.d(TAG, "Start foreground service")
-            val notification = generateNotification(currentLocation)
-            startForeground(NOTIFICATION_ID, notification)
-            serviceRunningInForeground = true
-        }
-
-        // Ensures onRebind() is called if MainActivity (client) rebinds.
-        return true
-    }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         configurationChange = true
@@ -193,16 +153,17 @@ class ForegroundOnlyLocationService : Service() {
     fun subscribeToLocationUpdates() {
         Log.d(TAG, "subscribeToLocationUpdates()")
         SharedPreferenceUtil.saveLocationTrackingPref(this, true)
-        // Binding to this service doesn't actually trigger onStartCommand(). That is needed to
-        // ensure this Service can be promoted to a foreground service, i.e., the service needs to
-        // be officially started (which we do here).
-        startForegroundService(Intent(applicationContext, ForegroundOnlyLocationService::class.java))
-        /* The requestLocationUpdates() call lets the FusedLocationProviderClient know that
-        you want to receive location updates. You probably recognize the LocationRequest and
-        LocationCallback that you defined earlier. Those let the FusedLocationProviderClient
-        know the quality-of-service parameters for your request and what it should call when
-        it has an update. Finally, the Looper object specifies the thread for the callback.*/
         try{
+            // Binding to this service doesn't actually trigger onStartCommand(). That is needed to
+            // ensure this Service can be promoted to a foreground service, i.e., the service needs to
+            // be officially started (which we do here).
+            Log.d(TAG, "Starting foreground service")
+            startForegroundService(Intent(applicationContext, ForegroundOnlyLocationService::class.java))
+            /* The requestLocationUpdates() call lets the FusedLocationProviderClient know that
+                you want to receive location updates. You probably recognize the LocationRequest and
+                LocationCallback that you defined earlier. Those let the FusedLocationProviderClient
+                know the quality-of-service parameters for your request and what it should call when
+                it has an update. Finally, the Looper object specifies the thread for the callback.*/
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
         }catch(e:Exception){
             Log.d(TAG, "subscribeToLocationUpdates() error: ${e.message}")
@@ -286,10 +247,7 @@ class ForegroundOnlyLocationService : Service() {
             )
             .build()
     }
-    /**
-     * Class used for the client Binder.  Since this service runs in the same process as its
-     * clients, we don't need to deal with IPC.
-     */
+
     inner class LocalBinder : Binder() {
         internal val service: ForegroundOnlyLocationService
             get() = this@ForegroundOnlyLocationService
@@ -311,5 +269,45 @@ class ForegroundOnlyLocationService : Service() {
         private const val NOTIFICATION_ID = 12345678
 
         private const val NOTIFICATION_CHANNEL_ID = "while_in_use_channel_01"
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        Log.d(TAG, "onBind()")
+
+        // MainActivity (client) comes into foreground and binds to service, so the service can
+        // become a background services.
+        stopForeground(true)
+        serviceRunningInForeground = false
+        configurationChange = false
+        return localBinder
+    }
+
+    override fun onRebind(intent: Intent) {
+        Log.d(TAG, "onRebind()")
+
+        // MainActivity (client) returns to the foreground and rebinds to service, so the service
+        // can become a background services.
+        stopForeground(true)
+        serviceRunningInForeground = false
+        configurationChange = false
+        super.onRebind(intent)
+    }
+
+    override fun onUnbind(intent: Intent): Boolean {
+        Log.d(TAG, "onUnbind()")
+
+        // MainActivity (client) leaves foreground, so service needs to become a foreground service
+        // to maintain the 'while-in-use' label.
+        // NOTE: If this method is called due to a configuration change in MainActivity,
+        // we do nothing.
+        if (!configurationChange && SharedPreferenceUtil.getLocationTrackingPref(this)) {
+            Log.d(TAG, "Start foreground service")
+            val notification = generateNotification(currentLocation)
+            startForeground(NOTIFICATION_ID, notification)
+            serviceRunningInForeground = true
+        }
+
+        // Ensures onRebind() is called if MainActivity (client) rebinds.
+        return true
     }
 }

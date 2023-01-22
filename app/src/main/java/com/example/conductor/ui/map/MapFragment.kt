@@ -37,6 +37,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private lateinit var map: GoogleMap
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
