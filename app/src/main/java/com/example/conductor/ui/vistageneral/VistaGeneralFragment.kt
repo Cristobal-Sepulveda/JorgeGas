@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
@@ -19,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
@@ -55,64 +57,80 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             val location = intent.getParcelableExtra<Location>(
                 ForegroundOnlyLocationService.EXTRA_LOCATION
             )
-
             if (location != null) {
                 try{
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO){
-                             cloudDB.collection("RegistroTrayectoVolanteros")
+                             val aux = cloudDB.collection("RegistroTrayectoVolanteros")
                                 .document(firebaseAuth.currentUser!!.uid )
-                                .get()
-                                .addOnSuccessListener { documentSnapshot ->
-                                    val data = documentSnapshot.data
-                                    val fechaDeHoy = LocalDate.now().toString()
-                                    if (data != null) {
-                                        val registroJornada =
-                                            data["registroJornada"] as ArrayList<Map<*, *>>
-                                        Log.i("asd", "registroJornada: $registroJornada")
-                                        for (mapa in registroJornada) {
-                                            if (mapa["fecha"] == fechaDeHoy) {
-                                                val geoPoints =
-                                                    mapa["registroLatLngs"] as ArrayList<GeoPoint>
-                                                geoPoints.add(
-                                                    GeoPoint(
-                                                        location.latitude,
-                                                        location.longitude
-                                                    )
-                                                )
-                                                cloudDB.collection("RegistroTrayectoVolanteros")
-                                                    .document(firebaseAuth.currentUser!!.uid)
-                                                    .update("registroJornada", registroJornada)
-                                                Log.i("asd", "se intentara guardar una latlng")
-                                                return@addOnSuccessListener
-                                            }
-                                        }
-                                        registroJornada.add(
-                                            mapOf(
-                                                "fecha" to fechaDeHoy,
-                                                "registroLatLngs" to arrayListOf(
-                                                    GeoPoint(
-                                                        location.latitude,
-                                                        location.longitude
-                                                    )
-                                                )
+                                .get().await()
+                            val data = aux.data
+                            val fechaDeHoy = LocalDate.now().toString()
+                            if (data != null) {
+                                val registroJornada =
+                                    data["registroJornada"] as ArrayList<Map<*, *>>
+                                Log.i("asd", "registroJornada: $registroJornada")
+                                for (mapa in registroJornada) {
+                                    if (mapa["fecha"] == fechaDeHoy) {
+                                        val geoPoints =
+                                            mapa["registroLatLngs"] as ArrayList<GeoPoint>
+                                        geoPoints.add(
+                                            GeoPoint(
+                                                location.latitude,
+                                                location.longitude
                                             )
                                         )
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(firebaseAuth.currentUser!!.uid)
                                             .update("registroJornada", registroJornada)
-                                        Log.i("asd", "se añadio una nueva fecha al registroLatLngs del usuario.")
+                                        Log.i("asd", "se intentara guardar una latlng")
+                                        return@withContext
                                     }
-                                }.addOnFailureListener { exception ->
-                                        Log.d(
-                                            "VistaGeneralFragment",
-                                            "Error al obtener el historico de trayectos del volantero: $exception"
-                                        )
                                 }
+                                registroJornada.add(
+                                    mapOf(
+                                        "fecha" to fechaDeHoy,
+                                        "registroLatLngs" to arrayListOf(
+                                            GeoPoint(
+                                                location.latitude,
+                                                location.longitude
+                                            )
+                                        )
+                                    )
+                                )
+                                cloudDB.collection("RegistroTrayectoVolanteros")
+                                    .document(firebaseAuth.currentUser!!.uid)
+                                    .update("registroJornada", registroJornada)
+                                Log.i("asd", "se añadio una nueva fecha al registroLatLngs del usuario.")
+                            }else{
+                                try{
+                                    cloudDB.collection("RegistroTrayectoVolanteros")
+                                        .document(firebaseAuth.currentUser!!.uid)
+                                        .set(
+                                            mapOf(
+                                                "registroJornada" to arrayListOf(
+                                                    mapOf(
+                                                        "fecha" to fechaDeHoy,
+                                                        "registroLatLngs" to arrayListOf(
+                                                            GeoPoint(
+                                                                location.latitude,
+                                                                location.longitude
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    Log.i("asd", "se creo un nuevo registroLatLngs para el usuario.")
+                                }catch(e:Exception){
+                                    Log.i("asd", "error al crear un nuevo registroLatLngs para el usuario.")
+                                }
+                            }
                         }
                     }
                 }catch(e: Exception){
-                    Log.i("NuevaUtilidadFragment", "registrar la localización en la nube fallo.")
+                    Log.i("asd","Error al guardar la ubicación: ${e.message}")
+                    Toast.makeText(requireActivity(), "No se pudo guardar la ubicación: $e", Toast.LENGTH_SHORT).show()
                 }
             }
         }

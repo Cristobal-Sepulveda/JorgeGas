@@ -110,10 +110,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                             }
                         }
                         DocumentChange.Type.MODIFIED -> {
-                            val a = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
-                            for (element in a) {
+                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString()){
-                                    val e = element["registroLatLngs"]?.get(0) as GeoPoint
+                                    val e = element["registroLatLngs"]?.last() as GeoPoint
                                     map.addMarker(
                                         MarkerOptions()
                                             .position(LatLng(e.latitude, e.longitude))
