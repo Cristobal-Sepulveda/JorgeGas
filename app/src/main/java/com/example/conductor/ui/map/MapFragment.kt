@@ -96,27 +96,23 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             if (snapshot != null && !snapshot.isEmpty) {
                 for (documentChange in snapshot.documentChanges) {
                     when (documentChange.type) {
-
-
                         DocumentChange.Type.ADDED -> {
-
                             val documento = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            val estaActivo = documentChange.document.data["activo"] as Boolean
                             for (element in documento) {
-                                if(element["fecha"].toString() == LocalDate.now().toString()){
+                                if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
                                     volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, element["registroLatLngs"]!!.last())
                                     marcarVolanterosEnElMapa()
                                     Log.i("Firestore","Se ha marcado un documento: ${nuevoVolanteroGeopoint.latitude} ${nuevoVolanteroGeopoint.longitude}")
                                 }
                             }
-
-
-
                         }
                         DocumentChange.Type.MODIFIED -> {
                             val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            val estaActivo = documentChange.document.data["activo"] as Boolean
                             for (element in listOfGeopoints) {
-                                if(element["fecha"].toString() == LocalDate.now().toString()){
+                                if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val geoPointActualizado = element["registroLatLngs"]?.last() as GeoPoint
                                     volanterosActivosAMarcarEnElMapa[documentChange.document.id] =
                                         geoPointActualizado

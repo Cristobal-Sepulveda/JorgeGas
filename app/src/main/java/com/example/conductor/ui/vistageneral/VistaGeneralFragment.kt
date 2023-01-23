@@ -158,50 +158,30 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
             if (enabled) {
                 foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
+                lifecycleScope.launch{
+                    withContext(Dispatchers.IO){
+                        _viewModel.modificarEstadoVolantero(false)
+                    }
+                }
             } else {
                 foregroundOnlyLocationService?.subscribeToLocationUpdates()
-                //_viewModel.modificarEstadoVolantero(true)
+                lifecycleScope.launch{
+                    withContext(Dispatchers.IO){
+                        _viewModel.modificarEstadoVolantero(true)
+                    }
+                }
             }
         }
 
         return _binding!!.root
     }
 
-
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-        // Updates button states if new while in use location is added to SharedPreferences.
-        if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
-            updateButtonState(sharedPreferences!!.getBoolean(
-                SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-            )
-        }
-    }
-
-/*    override fun onPause() {
-        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(
-            foregroundOnlyBroadcastReceiver
-        )
-        super.onPause()
-    }
-
-    override fun onStop() {
-        if (foregroundOnlyLocationServiceBound) {
-            requireActivity().unbindService(foregroundOnlyServiceConnection)
-            foregroundOnlyLocationServiceBound = false
-        }
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        super.onStop()
-    }*/
-
     override fun onStart() {
         super.onStart()
-
         updateButtonState(
             sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
         )
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-
         val serviceIntent = Intent(requireActivity(), ForegroundOnlyLocationService::class.java)
         requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
     }
@@ -216,8 +196,30 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     }
 
     override fun onDestroy() {
+        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(
+            foregroundOnlyBroadcastReceiver
+        )
+        if (foregroundOnlyLocationServiceBound) {
+            requireActivity().unbindService(foregroundOnlyServiceConnection)
+            foregroundOnlyLocationServiceBound = false
+        }
+        lifecycleScope.launch{
+            withContext(Dispatchers.IO){
+                _viewModel.modificarEstadoVolantero(false)
+            }
+        }
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onDestroy()
 
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        // Updates button states if new while in use location is added to SharedPreferences.
+        if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
+            updateButtonState(sharedPreferences!!.getBoolean(
+                SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+            )
+        }
     }
 
     private fun updateButtonState(trackingLocation: Boolean) {
@@ -229,6 +231,5 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setBackgroundColor(Color.argb(100, 0, 255, 0))
         }
     }
-
 
 }

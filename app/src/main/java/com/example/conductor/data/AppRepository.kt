@@ -7,6 +7,7 @@ import com.example.conductor.data.daos.FieldDao
 import com.example.conductor.data.daos.PermissionDeniedDao
 import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
+import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
 import com.example.conductor.utils.Result
 import com.google.firebase.Timestamp
@@ -99,6 +100,20 @@ class AppRepository(private val fieldDao: FieldDao,
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
 
+            }
+        }
+    }
+
+    override suspend fun editarEstadoVolantero(estaActivo: Boolean) {
+        wrapEspressoIdlingResource{
+            withContext(ioDispatcher){
+                try{
+                    cloudDB.collection("RegistroTrayectoVolanteros")
+                    .document(firebaseAuth.currentUser!!.uid)
+                    .update("activo", estaActivo)
+                }catch(e:Exception){
+                    Log.i("AppRepository", e.message!!)
+                }
             }
         }
     }

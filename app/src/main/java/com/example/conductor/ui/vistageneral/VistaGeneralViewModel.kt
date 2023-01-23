@@ -14,4 +14,8 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         }
     }
 
+    suspend fun modificarEstadoVolantero(estaActivo: Boolean){
+        dataSource.editarEstadoVolantero(estaActivo)
+    }
+
 }
