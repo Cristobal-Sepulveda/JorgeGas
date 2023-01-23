@@ -66,6 +66,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                 .get().await()
                             val data = aux.data
                             val fechaDeHoy = LocalDate.now().toString()
+
                             if (data != null) {
                                 val registroJornada =
                                     data["registroJornada"] as ArrayList<Map<*, *>>
@@ -80,13 +81,18 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                 location.longitude
                                             )
                                         )
+                                        val nuevoGeoPoint = mapOf(
+                                            "registroJornada" to registroJornada,
+                                            "estaActivo" to true)
+
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(firebaseAuth.currentUser!!.uid)
-                                            .update("registroJornada", registroJornada)
-                                        Log.i("asd", "se intentara guardar una latlng")
+                                            .update(nuevoGeoPoint)
+
                                         return@withContext
                                     }
                                 }
+
                                 registroJornada.add(
                                     mapOf(
                                         "fecha" to fechaDeHoy,
@@ -96,12 +102,17 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                 location.longitude
                                             )
                                         )
-                                    )
+                                    ),
+
                                 )
+                                val nuevoGeoPoint = mapOf(
+                                    "registroJornada" to registroJornada,
+                                    "estaActivo" to true)
                                 cloudDB.collection("RegistroTrayectoVolanteros")
                                     .document(firebaseAuth.currentUser!!.uid)
-                                    .update("registroJornada", registroJornada)
+                                    .update(nuevoGeoPoint)
                                 Log.i("asd", "se añadio una nueva fecha al registroLatLngs del usuario.")
+
                             }else{
                                 try{
                                     cloudDB.collection("RegistroTrayectoVolanteros")
@@ -118,7 +129,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                             )
                                                         )
                                                     )
-                                                )
+                                                ),
+                                                "estaActivo" to true
                                             )
                                         )
                                     Log.i("asd", "se creo un nuevo registroLatLngs para el usuario.")

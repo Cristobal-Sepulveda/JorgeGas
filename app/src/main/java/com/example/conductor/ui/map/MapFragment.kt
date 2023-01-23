@@ -98,7 +98,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                     when (documentChange.type) {
                         DocumentChange.Type.ADDED -> {
                             val documento = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
-                            val estaActivo = documentChange.document.data["activo"] as Boolean
+                            val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             for (element in documento) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
@@ -110,19 +110,20 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                         }
                         DocumentChange.Type.MODIFIED -> {
                             val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
-                            val estaActivo = documentChange.document.data["activo"] as Boolean
+                            val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val geoPointActualizado = element["registroLatLngs"]?.last() as GeoPoint
                                     volanterosActivosAMarcarEnElMapa[documentChange.document.id] =
                                         geoPointActualizado
                                     marcarVolanterosEnElMapa()
-                                    Log.i("Firestore","Un usuario ha añadido un nuevo GeoPoint: ${geoPointActualizado.latitude} ${geoPointActualizado.longitude}")
+                                    Log.i("Firestore","La ubicación de un usuario ha sido actualizada")
                                 }
                             }
                         }
                         DocumentChange.Type.REMOVED -> {
                             volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                            marcarVolanterosEnElMapa()
                             Log.i(
                                 "Firestore",
                                 "Uno de los usuarios del registro ha sido eliminado: ${documentChange.document.data}"
