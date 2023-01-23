@@ -148,7 +148,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
 
         lifecycleScope.launch{
-            visibilidadDelButtonVistaGeneralRegistroJornadaVolantero()
+            if(_viewModel.obtenerRolDelUsuarioActual() == "Volantero") {
+                _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
+            }
         }
 
 
@@ -158,6 +160,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
             } else {
                 foregroundOnlyLocationService?.subscribeToLocationUpdates()
+                //_viewModel.modificarEstadoVolantero(true)
             }
         }
 
@@ -215,12 +218,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     override fun onDestroy() {
         super.onDestroy()
 
-    }
-
-    private suspend fun visibilidadDelButtonVistaGeneralRegistroJornadaVolantero(){
-        if(_viewModel.obtenerRolDelUsuarioActual() == "Volantero") {
-            _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
-        }
     }
 
     private fun updateButtonState(trackingLocation: Boolean) {
