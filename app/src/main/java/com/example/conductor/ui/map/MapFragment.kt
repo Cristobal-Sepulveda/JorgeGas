@@ -37,7 +37,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private lateinit var map: GoogleMap
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
-    private var volanterosActivosAMarcarEnElMapa: HashMap<String,GeoPoint> = HashMap()
+    private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -97,37 +97,46 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                 for (documentChange in snapshot.documentChanges) {
                     when (documentChange.type) {
                         DocumentChange.Type.ADDED -> {
-                            val documento = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
-                            val estaActivo = documentChange.document.data["estaActivo"] as Boolean
-                            for (element in documento) {
-                                if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
-                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
-                                    volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, element["registroLatLngs"]!!.last())
-                                    marcarVolanterosEnElMapa()
-                                    Log.i("Firestore","Se ha marcado un documento: ${nuevoVolanteroGeopoint.latitude} ${nuevoVolanteroGeopoint.longitude}")
-                                }
-                            }
-                        }
-                        DocumentChange.Type.MODIFIED -> {
+                            Log.i("DocumentChange", "ADDED")
                             val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
-                                    val geoPointActualizado = element["registroLatLngs"]?.last() as GeoPoint
-                                    volanterosActivosAMarcarEnElMapa[documentChange.document.id] =
-                                        geoPointActualizado
-                                    marcarVolanterosEnElMapa()
+                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
+                                    val marker = map.addMarker(MarkerOptions().position(LatLng(
+                                        nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                    )
+                                    volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                }
+                            }
+                        }
+                        DocumentChange.Type.MODIFIED -> {
+                            Log.i("DocumentChange", "MODIFIED")
+                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            val estaActivo = documentChange.document.data["estaActivo"] as Boolean
+                            for (element in listOfGeopoints) {
+                                if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
+                                    for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
+                                        if(mapIdMarker.key == documentChange.document.id)
+                                          mapIdMarker.value.remove()
+                                    }
+                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
+                                    volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                                    val marker = map.addMarker(MarkerOptions().position(LatLng(
+                                        nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                    )
+                                    volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
                                     Log.i("Firestore","La ubicación de un usuario ha sido actualizada")
                                 }
                             }
                         }
                         DocumentChange.Type.REMOVED -> {
+                            Log.i("DocumentChange", "Removed")
+                            for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
+                                if(mapIdMarker.key == documentChange.document.id)
+                                    mapIdMarker.value.remove()
+                            }
                             volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
-                            marcarVolanterosEnElMapa()
-                            Log.i(
-                                "Firestore",
-                                "Uno de los usuarios del registro ha sido eliminado: ${documentChange.document.data}"
-                            )
                         }
                     }
                 }
@@ -135,7 +144,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         }
     }
 
-    private fun marcarVolanterosEnElMapa() {
+/*    private fun marcarVolanterosEnElMapa() {
         map.clear()
         for((key, value) in volanterosActivosAMarcarEnElMapa){
             map.addMarker(
@@ -144,7 +153,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                     .title(key)
             )
         }
-    }
+    }*/
 
     private fun detenerSnapshotListenerDelRegistroTrayectoVolanteros(){
         iniciandoSnapshotListener.remove()
