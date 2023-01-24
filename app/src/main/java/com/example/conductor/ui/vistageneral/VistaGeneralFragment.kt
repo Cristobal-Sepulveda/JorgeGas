@@ -54,27 +54,23 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     /* Esta clase recibe el aviso de que se ha obtenido una nueva LatLng */
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(
-                ForegroundOnlyLocationService.EXTRA_LOCATION
-            )
+            val location = intent.getParcelableExtra<Location>(ForegroundOnlyLocationService.EXTRA_LOCATION)
             if (location != null) {
-                try{
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO){
-                             val aux = cloudDB.collection("RegistroTrayectoVolanteros")
-                                .document(firebaseAuth.currentUser!!.uid )
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        try {
+                            val registroTrayectoVolanterosUsuario = cloudDB
+                                .collection("RegistroTrayectoVolanteros")
+                                .document(firebaseAuth.currentUser!!.uid)
                                 .get().await()
-                            val data = aux.data
+                            val dataDocumento = registroTrayectoVolanterosUsuario.data
                             val fechaDeHoy = LocalDate.now().toString()
-
-                            if (data != null) {
+                            if (dataDocumento != null) {
                                 val registroJornada =
-                                    data["registroJornada"] as ArrayList<Map<*, *>>
-                                Log.i("asd", "registroJornada: $registroJornada")
-                                for (mapa in registroJornada) {
-                                    if (mapa["fecha"] == fechaDeHoy) {
-                                        val geoPoints =
-                                            mapa["registroLatLngs"] as ArrayList<GeoPoint>
+                                    dataDocumento["registroJornada"] as ArrayList<Map<*, *>>
+                                for (registroDeUnDia in registroJornada) {
+                                    if (registroDeUnDia["fecha"] == fechaDeHoy) {
+                                        val geoPoints = registroDeUnDia["registroLatLngs"] as ArrayList<GeoPoint>
                                         geoPoints.add(
                                             GeoPoint(
                                                 location.latitude,
@@ -83,66 +79,57 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                         )
                                         val nuevoGeoPoint = mapOf(
                                             "registroJornada" to registroJornada,
-                                            "estaActivo" to true)
-
+                                            "estaActivo" to true
+                                        )
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(firebaseAuth.currentUser!!.uid)
                                             .update(nuevoGeoPoint)
-
                                         return@withContext
                                     }
                                 }
-
                                 registroJornada.add(
                                     mapOf(
                                         "fecha" to fechaDeHoy,
                                         "registroLatLngs" to arrayListOf(
-                                            GeoPoint(
-                                                location.latitude,
-                                                location.longitude
-                                            )
+                                            GeoPoint(location.latitude, location.longitude)
                                         )
-                                    ),
-
+                                    )
                                 )
-                                val nuevoGeoPoint = mapOf(
+                                val nuevoRegistro = mapOf(
                                     "registroJornada" to registroJornada,
-                                    "estaActivo" to true)
+                                    "estaActivo" to true
+                                )
                                 cloudDB.collection("RegistroTrayectoVolanteros")
                                     .document(firebaseAuth.currentUser!!.uid)
-                                    .update(nuevoGeoPoint)
-                                Log.i("asd", "se añadio una nueva fecha al registroLatLngs del usuario.")
-
-                            }else{
-                                try{
-                                    cloudDB.collection("RegistroTrayectoVolanteros")
-                                        .document(firebaseAuth.currentUser!!.uid)
-                                        .set(
-                                            mapOf(
-                                                "registroJornada" to arrayListOf(
-                                                    mapOf(
-                                                        "fecha" to fechaDeHoy,
-                                                        "registroLatLngs" to arrayListOf(
-                                                            GeoPoint(
-                                                                location.latitude,
-                                                                location.longitude
-                                                            )
+                                    .update(nuevoRegistro)
+                            } else {
+                                cloudDB.collection("RegistroTrayectoVolanteros")
+                                    .document(firebaseAuth.currentUser!!.uid)
+                                    .set(
+                                        mapOf(
+                                            "registroJornada" to arrayListOf(
+                                                mapOf(
+                                                    "fecha" to fechaDeHoy,
+                                                    "registroLatLngs" to arrayListOf(
+                                                        GeoPoint(
+                                                            location.latitude,
+                                                            location.longitude
                                                         )
                                                     )
-                                                ),
-                                                "estaActivo" to true
-                                            )
+                                                )
+                                            ),
+                                            "estaActivo" to true
                                         )
-                                    Log.i("asd", "se creo un nuevo registroLatLngs para el usuario.")
-                                }catch(e:Exception){
-                                    Log.i("asd", "error al crear un nuevo registroLatLngs para el usuario.")
-                                }
+                                    )
                             }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                requireActivity(),
+                                "No se pudo guardar la ubicación: $e",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
-                }catch(e: Exception){
-                    Log.i("asd","Error al guardar la ubicación: ${e.message}")
-                    Toast.makeText(requireActivity(), "No se pudo guardar la ubicación: $e", Toast.LENGTH_SHORT).show()
                 }
             }
         }
