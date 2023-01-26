@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
     private val cloudDB = FirebaseFirestore.getInstance()
-    val appDataSource: AppDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +83,8 @@ class MainActivity : AppCompatActivity(), MenuProvider{
 
     override fun onStart() {
         super.onStart()
-        checkingPermissionsAndDeviceLocationSettings()
+        checkingPermissionsSettings()
+        checkingDeviceLocationSettings()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -123,12 +123,11 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == Constants.REQUEST_TURN_DEVICE_LOCATION_ON){
             if(resultCode == Activity.RESULT_CANCELED){
-                checkingPermissionsAndDeviceLocationSettings()
+                checkingDeviceLocationSettings()
             }
         }
     }
 
-    @SuppressLint("UseRequireInsteadOfGet")
     private fun vistaGeneralDrawableMenuYBottomNavigationView(){
         try{
             lifecycleScope.launch{
@@ -152,11 +151,10 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
     }
 
-    private fun checkingPermissionsAndDeviceLocationSettings(resolve:Boolean = true) {
+    private fun checkingPermissionsSettings(resolve:Boolean = true) {
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if(!isPermissionGranted){
             val requestPermissionLauncher = registerForActivityResult(
@@ -181,6 +179,10 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             }
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    private fun checkingDeviceLocationSettings(resolve:Boolean = true){
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,
