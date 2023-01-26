@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.conductor.R
 import com.example.conductor.databinding.FragmentNuevaUtilidadBinding
-import com.example.conductor.utils.ForegroundOnlyLocationService
+import com.example.conductor.utils.LocationService
 import com.example.conductor.utils.SharedPreferenceUtil
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -24,6 +24,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.BuildConfig
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
+import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
+import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
@@ -45,7 +47,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
     private val cloudDB = FirebaseFirestore.getInstance()
     private var foregroundOnlyLocationServiceBound = false
     // Provides location updates for while-in-use feature.
-    private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
+    private var locationService: LocationService? = null
     // Listens for location broadcasts from ForegroundOnlyLocationService.
     private lateinit var foregroundOnlyBroadcastReceiver: ForegroundOnlyBroadcastReceiver
     private lateinit var sharedPreferences: SharedPreferences
@@ -53,13 +55,13 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
     private val foregroundOnlyServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder = service as ForegroundOnlyLocationService.LocalBinder
-            foregroundOnlyLocationService = binder.service
+            val binder = service as LocationService.LocalBinder
+            locationService = binder.service
             foregroundOnlyLocationServiceBound = true
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
-            foregroundOnlyLocationService = null
+            locationService = null
             foregroundOnlyLocationServiceBound = false
         }
     }
@@ -80,11 +82,11 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
                 SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
             Log.i("asd","$enabled")
             if (enabled) {
-                foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
+                locationService?.unsubscribeToLocationUpdates()
             } else {
                 // TODO: Step 1.0, Review Permissions: Checks and requests if needed.
                 if (foregroundPermissionApproved()) {
-                    foregroundOnlyLocationService?.subscribeToLocationUpdates()
+                    locationService?.subscribeToLocationUpdates()
                         ?: Log.d("asd", "Service Not Bound")
                 } else {
                     requestForegroundPermissions()
@@ -102,7 +104,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
         )
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        val serviceIntent = Intent(requireActivity(), ForegroundOnlyLocationService::class.java)
+        val serviceIntent = Intent(requireActivity(), LocationService::class.java)
         requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
@@ -111,7 +113,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
         LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(
             foregroundOnlyBroadcastReceiver,
             IntentFilter(
-                ForegroundOnlyLocationService.ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST)
+                ACTION_LOCATION_BROADCAST)
         )
     }
 
@@ -201,7 +203,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
                     Log.d("asd", "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED ->
                     // Permission was granted.
-                    foregroundOnlyLocationService?.subscribeToLocationUpdates()
+                    locationService?.subscribeToLocationUpdates()
                 else -> {
                     // Permission denied.
                     updateButtonState(false)
@@ -247,9 +249,7 @@ class NuevaUtilidadFragment : BaseFragment(),SharedPreferences.OnSharedPreferenc
 
     private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(
-                ForegroundOnlyLocationService.EXTRA_LOCATION
-            )
+            val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
             if (location != null) {
                 try{
                     logResultsToScreen(location.toString())

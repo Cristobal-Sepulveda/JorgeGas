@@ -13,9 +13,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
+import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
+import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.firebaseAuth
-import com.example.conductor.utils.ForegroundOnlyLocationService
+import com.example.conductor.utils.LocationService
 import com.example.conductor.utils.SharedPreferenceUtil
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
@@ -30,31 +33,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     private var _binding: FragmentVistaGeneralBinding? = null
     override val _viewModel: VistaGeneralViewModel by inject()
     private val cloudDB = FirebaseFirestore.getInstance()
-    private var foregroundOnlyLocationServiceBound = false
-    // Provides location updates for while-in-use feature.
-    private var foregroundOnlyLocationService: ForegroundOnlyLocationService? = null
-    // Listens for location broadcasts from ForegroundOnlyLocationService.
-    private lateinit var foregroundOnlyBroadcastReceiver: ForegroundOnlyBroadcastReceiver
     private lateinit var sharedPreferences: SharedPreferences
-    // Monitors connection to the while-in-use service.
-    private val foregroundOnlyServiceConnection = object : ServiceConnection {
-
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val binder = service as ForegroundOnlyLocationService.LocalBinder
-            foregroundOnlyLocationService = binder.service
-            foregroundOnlyLocationServiceBound = true
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            foregroundOnlyLocationService = null
-            foregroundOnlyLocationServiceBound = false
-        }
-    }
-
-    /* Esta clase recibe el aviso de que se ha obtenido una nueva LatLng */
-    private inner class ForegroundOnlyBroadcastReceiver : BroadcastReceiver() {
+    private var locationServiceBound = false
+    // Listens for location broadcasts from LocationService.
+    private inner class LocationServiceBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(ForegroundOnlyLocationService.EXTRA_LOCATION)
+            val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
             if (location != null) {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {
@@ -134,82 +118,74 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
-        sharedPreferences = requireActivity().getSharedPreferences(
-            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-
-        foregroundOnlyBroadcastReceiver = ForegroundOnlyBroadcastReceiver()
-
-        lifecycleScope.launch{
-            if(_viewModel.obtenerRolDelUsuarioActual() == "Volantero") {
-                _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
-            }
+    private var locationServiceBroadcastReceiver = LocationServiceBroadcastReceiver()
+    // Provides location updates for while-in-use feature.
+    private var locationService: LocationService? = null
+    // Monitors connection to the while-in-use service.
+    private val locationServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as LocationService.LocalBinder
+            locationService = binder.service
+            locationServiceBound = true
         }
 
+        override fun onServiceDisconnected(name: ComponentName) {
+            locationService = null
+            locationServiceBound = false
+        }
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
+        sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key),
+            Context.MODE_PRIVATE)
+        enCasoDeErrorActualizar()
+        preguntarSiUsuarioEsVolantero()
         _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setOnClickListener {
-            val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-            if (enabled) {
-                foregroundOnlyLocationService?.unsubscribeToLocationUpdates()
-                lifecycleScope.launch{
-                    withContext(Dispatchers.IO){
-                        _viewModel.modificarEstadoVolantero(false)
-                    }
-                }
-            } else {
-                foregroundOnlyLocationService?.subscribeToLocationUpdates()
-                lifecycleScope.launch{
-                    withContext(Dispatchers.IO){
-                        _viewModel.modificarEstadoVolantero(true)
-                    }
-                }
-            }
+            iniciarODetenerLocationService()
         }
 
         return _binding!!.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        updateButtonState(
-            sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-        )
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        val serviceIntent = Intent(requireActivity(), ForegroundOnlyLocationService::class.java)
-        requireActivity().bindService(serviceIntent, foregroundOnlyServiceConnection, Context.BIND_AUTO_CREATE)
+    private fun enCasoDeErrorActualizar() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO){
+                val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+                if(!enabled){
+                    if(!_viewModel.modificarEstadoVolantero(false)){
+                        Snackbar.make(requireView(), "Su cuenta presenta problemas en el registro de trayecto. Comunique esta situación a su superior inmediatamente.", Snackbar.LENGTH_INDEFINITE).show()
+                    }
+
+                }
+            }
+        }
+
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
+        updateButtonState(sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false))
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        val serviceIntent = Intent(requireActivity(), LocationService::class.java)
+        requireActivity().bindService(serviceIntent, locationServiceConnection, Context.BIND_AUTO_CREATE)
         LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(
-            foregroundOnlyBroadcastReceiver,
+            locationServiceBroadcastReceiver,
             IntentFilter(
-                ForegroundOnlyLocationService.ACTION_FOREGROUND_ONLY_LOCATION_BROADCAST)
+                ACTION_LOCATION_BROADCAST)
         )
     }
 
     override fun onDestroy() {
-        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(
-            foregroundOnlyBroadcastReceiver
-        )
-        if (foregroundOnlyLocationServiceBound) {
-            requireActivity().unbindService(foregroundOnlyServiceConnection)
-            foregroundOnlyLocationServiceBound = false
+        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(locationServiceBroadcastReceiver)
+        if (locationServiceBound) {
+            requireActivity().unbindService(locationServiceConnection)
+            locationServiceBound = false
         }
-        lifecycleScope.launch{
-            withContext(Dispatchers.IO){
-                _viewModel.modificarEstadoVolantero(false)
-            }
-        }
+        SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        iniciarODetenerLocationService()
         super.onDestroy()
-
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -218,6 +194,45 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             updateButtonState(sharedPreferences!!.getBoolean(
                 SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
             )
+        }
+    }
+
+    private fun iniciarODetenerLocationService() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val enabled =
+                    sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+                if (enabled) {
+                    if (_viewModel.modificarEstadoVolantero(false)) {
+                        locationService?.unsubscribeToLocationUpdates()
+                    } else {
+                        Toast.makeText(
+                            requireActivity(),
+                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    if (_viewModel.modificarEstadoVolantero(true)) {
+                        locationService?.subscribeToLocationUpdates()
+                    } else {
+                        Toast.makeText(
+                            requireActivity(),
+                            "El servicio no será activado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun preguntarSiUsuarioEsVolantero() {
+        lifecycleScope.launch {
+            when(_viewModel.obtenerRolDelUsuarioActual()){
+                "Volantero" -> _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
+                "Error" -> Toast.makeText(requireActivity(), "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

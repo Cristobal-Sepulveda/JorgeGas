@@ -8,5 +8,5 @@ interface AppDataSource {
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun observarTrayectoVolanteros()
-    suspend fun editarEstadoVolantero(estaActivo: Boolean)
+    suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
 }

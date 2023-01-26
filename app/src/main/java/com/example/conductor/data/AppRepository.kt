@@ -1,20 +1,14 @@
 package com.example.conductor.data
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import com.example.conductor.data.data_objects.DBO.FIELD_DBO
+import android.widget.Toast
 import com.example.conductor.data.daos.FieldDao
 import com.example.conductor.data.daos.PermissionDeniedDao
-import com.example.conductor.data.data_objects.DBO.PERMISSION_DENIED_DBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
-import com.example.conductor.utils.Result
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
@@ -89,7 +83,6 @@ class AppRepository(private val fieldDao: FieldDao,
                     val docRef = cloudDB.collection("Usuarios").document(user!!.uid).get().await()
                     return@withContext docRef.get("rol") as String
                 } catch (e: Exception) {
-                    Log.i("AppRepository", e.message!!)
                     return@withContext "Error"
                 }
             }
@@ -104,15 +97,16 @@ class AppRepository(private val fieldDao: FieldDao,
         }
     }
 
-    override suspend fun editarEstadoVolantero(estaActivo: Boolean) {
+    override suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource{
             withContext(ioDispatcher){
                 try{
                     cloudDB.collection("RegistroTrayectoVolanteros")
                     .document(firebaseAuth.currentUser!!.uid)
-                    .update("activo", estaActivo)
+                    .update("estaActivo", estaActivo)
+                    return@withContext true
                 }catch(e:Exception){
-                    Log.i("AppRepository", e.message!!)
+                    return@withContext false
                 }
             }
         }
