@@ -47,12 +47,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         _binding!!.lifecycleOwner = this
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
 
-        _binding!!.buttonMapaReiniciarActividad.setOnClickListener {
-            val intent = Intent(requireActivity(), requireActivity().javaClass)
-            startActivity(intent)
-            requireActivity().finish()
-        }
-
         return _binding!!.root
     }
 
@@ -73,6 +67,27 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         iniciandoSnapshotListener.remove()
     }
 
+    private fun startingPermissionCheck(){
+        val isPermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+        if(isPermissionGranted){
+            try{
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    LatLng(defaultLocation.latitude, defaultLocation.longitude)
+                    , cameraDefaultZoom.toFloat())
+                )
+            }catch(e: SecurityException){
+                _binding!!.map.isGone = true
+                _binding!!.imageviewMapaSinPermisos.isGone = false
+
+            }
+        }else {
+            _binding!!.map.isGone = true
+            _binding!!.imageviewMapaSinPermisos.isGone = false
+        }
+    }
+
     private fun markingPolygons(){
         for((index,polygon) in polygonsList.withIndex()){
             val polygonOptions = PolygonOptions()
@@ -87,11 +102,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         val docRef = cloudDB.collection("RegistroTrayectoVolanteros")
         iniciandoSnapshotListener = docRef.addSnapshotListener { snapshot, FirebaseFirestoreException ->
             if (FirebaseFirestoreException != null) {
-                Log.w(
-                    "AppRepository",
-                    "obtenerSnapshotDelRegistroTrayectoVolanteros: Listen failed.",
-                    FirebaseFirestoreException
-                )
+                _viewModel.showToast.value = "Error: " + FirebaseFirestoreException.localizedMessage
                 return@addSnapshotListener
             }
             if (snapshot != null && !snapshot.isEmpty) {
@@ -144,32 +155,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                     }
                 }
             }
-        }
-    }
-
-
-    private fun startingPermissionCheck(){
-        val isPermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(),
-            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-        if(isPermissionGranted){
-            try{
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    LatLng(defaultLocation.latitude, defaultLocation.longitude)
-                    , cameraDefaultZoom.toFloat())
-                )
-                map.uiSettings.isMyLocationButtonEnabled = true
-            }catch(e: SecurityException){
-                _binding!!.map.isGone = true
-                _binding!!.imageviewMapaSinPermisos.isGone = false
-                _binding!!.buttonMapaReiniciarActividad.isGone = false
-
-            }
-        }else {
-            _binding!!.map.isGone = true
-            _binding!!.imageviewMapaSinPermisos.isGone = false
-            _binding!!.buttonMapaReiniciarActividad.isGone = false
         }
     }
 }

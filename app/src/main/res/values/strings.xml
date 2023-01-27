@@ -65,4 +65,5 @@
     <string name="iniciar">Iniciar</string>
     <string name="login_error_no_internet">No se ha podido iniciar sesión debido a que no hay internet.</string>
     <string name="login_error_credenciales_erroneas">Usuario y/o contraseña incorrectos</string>
+    <string name="esta_screen_esta_disponible_para_contenido">Esta screen esta disponible para contenido</string>
 </resources>
