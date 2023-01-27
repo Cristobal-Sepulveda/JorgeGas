@@ -165,7 +165,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             locationServiceBound = false
         }
         locationService?.unsubscribeToLocationUpdates()
-        if(!sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)) {
+        if(!sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false) && _viewModel.usuarioEstaActivo) {
             notificationGenerator(requireActivity(), "El registro de localización no ha sido detenido antes de cerrar la aplicación. Por favor, vuelva a abrir la aplicación y esto se regularizará.")
         }
         SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
@@ -182,37 +182,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private fun iniciarODetenerLocationService() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                val enabled =
-                    sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-                if (enabled) {
-                    if (_viewModel.modificarEstadoVolantero(false)) {
-                        locationService?.unsubscribeToLocationUpdates()
-                        notificationGenerator(requireActivity(),"El servicio de localización ha sido detenido.")
-                    } else {
-                        Toast.makeText(
-                            requireActivity(),
-                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    if (_viewModel.modificarEstadoVolantero(true)) {
-                        locationService?.subscribeToLocationUpdates()
-                    } else {
-                        Toast.makeText(
-                            requireActivity(),
-                            "El servicio no será activado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
-
     private fun configurandoUISegunRolDelUsuario() {
         lifecycleScope.launch {
             when(_viewModel.obtenerRolDelUsuarioActual()){
@@ -221,7 +190,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     val isServiceEnabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
                     updateButtonState(isServiceEnabled)
                     if(!isServiceEnabled){
-                        if(!_viewModel.modificarEstadoVolantero(false)){
+                        if(!_viewModel.editarEstadoVolantero(false)){
                             Snackbar.make(requireView(), "Su cuenta presenta problemas de internet para acceder al registro de trayecto. Comunique esta situación a su superior inmediatamente.", Snackbar.LENGTH_INDEFINITE).show()
                         }
                     }
@@ -240,5 +209,38 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setBackgroundColor(Color.argb(100, 0, 255, 0))
         }
     }
+
+    private fun iniciarODetenerLocationService() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val enabled =
+                    sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+                if (enabled) {
+                    if (_viewModel.editarEstadoVolantero(false)) {
+                        locationService?.unsubscribeToLocationUpdates()
+                        notificationGenerator(requireActivity(),"El servicio de localización ha sido detenido.")
+                    } else {
+                        Toast.makeText(
+                            requireActivity(),
+                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    if (_viewModel.editarEstadoVolantero(true)) {
+                        locationService?.subscribeToLocationUpdates()
+                    } else {
+                        Toast.makeText(
+                            requireActivity(),
+                            "El servicio no será activado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+
 
 }

@@ -149,11 +149,10 @@ class LocationService : Service() {
         Log.d("LocationService", "unsubscribeToLocationUpdates()")
         try {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
-
             stopSelf()
+            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
         } catch (unlikely: SecurityException) {
-            SharedPreferenceUtil.saveLocationTrackingPref(this, true)
+            Log.d("LocationService", "unsubscribeToLocationUpdates() error: ${unlikely.message}")
         }
     }
 
