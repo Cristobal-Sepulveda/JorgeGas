@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +17,7 @@ import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.LocationService
 import com.example.conductor.utils.SharedPreferenceUtil
+import com.example.conductor.utils.notificationGenerator
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -119,6 +119,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
     private var locationServiceBroadcastReceiver = LocationServiceBroadcastReceiver()
+    /////////////////////////////////////////////////////////////////////////
     // Provides location updates for while-in-use feature.
     private var locationService: LocationService? = null
     // Monitors connection to the while-in-use service.
@@ -136,44 +137,25 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        //binding...
         _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
+        //Obteniendo sharedPreferences y poniendo un listener a cualquier cambio en esta key
         sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key),
             Context.MODE_PRIVATE)
-        enCasoDeErrorActualizar()
-        preguntarSiUsuarioEsVolantero()
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        //bindeando el servicio al fragment y registrando el broadcast receiver
+        val serviceIntent = Intent(requireActivity(), LocationService::class.java)
+        requireActivity().bindService(serviceIntent, locationServiceConnection, Context.BIND_AUTO_CREATE)
+        LocalBroadcastManager.getInstance(requireActivity())
+            .registerReceiver(locationServiceBroadcastReceiver, IntentFilter(ACTION_LOCATION_BROADCAST))
+        //configurando UI según el rol del usuario
+        configurandoUISegunRolDelUsuario()
+
         _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setOnClickListener {
             iniciarODetenerLocationService()
         }
 
         return _binding!!.root
-    }
-
-    private fun enCasoDeErrorActualizar() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO){
-                val enabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-                if(!enabled){
-                    if(!_viewModel.modificarEstadoVolantero(false)){
-                        Snackbar.make(requireView(), "Su cuenta presenta problemas en el registro de trayecto. Comunique esta situación a su superior inmediatamente.", Snackbar.LENGTH_INDEFINITE).show()
-                    }
-
-                }
-            }
-        }
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        updateButtonState(sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false))
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-        val serviceIntent = Intent(requireActivity(), LocationService::class.java)
-        requireActivity().bindService(serviceIntent, locationServiceConnection, Context.BIND_AUTO_CREATE)
-        LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(
-            locationServiceBroadcastReceiver,
-            IntentFilter(
-                ACTION_LOCATION_BROADCAST)
-        )
     }
 
     override fun onDestroy() {
@@ -182,9 +164,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             requireActivity().unbindService(locationServiceConnection)
             locationServiceBound = false
         }
+        locationService?.unsubscribeToLocationUpdates()
+        if(!sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)) {
+            notificationGenerator(requireActivity(), "El registro de localización no ha sido detenido antes de cerrar la aplicación. Por favor, vuelva a abrir la aplicación y esto se regularizará.")
+        }
         SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        iniciarODetenerLocationService()
         super.onDestroy()
     }
 
@@ -205,6 +190,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 if (enabled) {
                     if (_viewModel.modificarEstadoVolantero(false)) {
                         locationService?.unsubscribeToLocationUpdates()
+                        notificationGenerator(requireActivity(),"El servicio de localización ha sido detenido.")
                     } else {
                         Toast.makeText(
                             requireActivity(),
@@ -227,10 +213,19 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private fun preguntarSiUsuarioEsVolantero() {
+    private fun configurandoUISegunRolDelUsuario() {
         lifecycleScope.launch {
             when(_viewModel.obtenerRolDelUsuarioActual()){
-                "Volantero" -> _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
+                "Volantero" -> {
+                    _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
+                    val isServiceEnabled = sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+                    updateButtonState(isServiceEnabled)
+                    if(!isServiceEnabled){
+                        if(!_viewModel.modificarEstadoVolantero(false)){
+                            Snackbar.make(requireView(), "Su cuenta presenta problemas de internet para acceder al registro de trayecto. Comunique esta situación a su superior inmediatamente.", Snackbar.LENGTH_INDEFINITE).show()
+                        }
+                    }
+                }
                 "Error" -> Toast.makeText(requireActivity(), "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"", Toast.LENGTH_SHORT).show()
             }
         }

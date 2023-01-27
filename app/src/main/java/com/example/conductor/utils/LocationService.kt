@@ -14,7 +14,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.MainActivity
@@ -151,6 +150,7 @@ class LocationService : Service() {
         try {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback)
             SharedPreferenceUtil.saveLocationTrackingPref(this, false)
+
             stopSelf()
         } catch (unlikely: SecurityException) {
             SharedPreferenceUtil.saveLocationTrackingPref(this, true)

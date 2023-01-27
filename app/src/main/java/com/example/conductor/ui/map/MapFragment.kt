@@ -69,7 +69,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
 
     override fun onDestroyView() {
         super.onDestroyView()
-        detenerSnapshotListenerDelRegistroTrayectoVolanteros()
+        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
+        iniciandoSnapshotListener.remove()
     }
 
     private fun markingPolygons(){
@@ -84,12 +85,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
 
     private fun iniciarSnapshotListenerDelRegistroTrayectoVolanteros() {
         val docRef = cloudDB.collection("RegistroTrayectoVolanteros")
-        iniciandoSnapshotListener = docRef.addSnapshotListener { snapshot, e ->
-            if (e != null) {
+        iniciandoSnapshotListener = docRef.addSnapshotListener { snapshot, FirebaseFirestoreException ->
+            if (FirebaseFirestoreException != null) {
                 Log.w(
                     "AppRepository",
                     "obtenerSnapshotDelRegistroTrayectoVolanteros: Listen failed.",
-                    e
+                    FirebaseFirestoreException
                 )
                 return@addSnapshotListener
             }
@@ -99,10 +100,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                         DocumentChange.Type.ADDED -> {
                             Log.i("DocumentChange", "ADDED")
                             val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            Log.i("DocumentChange", "ADDED: $listOfGeopoints")
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
+                                    Log.i("DocumentChange", "ADDED: $nuevoVolanteroGeopoint")
                                     val marker = map.addMarker(MarkerOptions().position(LatLng(
                                         nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
                                     )
@@ -144,20 +147,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         }
     }
 
-/*    private fun marcarVolanterosEnElMapa() {
-        map.clear()
-        for((key, value) in volanterosActivosAMarcarEnElMapa){
-            map.addMarker(
-                MarkerOptions()
-                    .position(LatLng(value.latitude, value.longitude))
-                    .title(key)
-            )
-        }
-    }*/
-
-    private fun detenerSnapshotListenerDelRegistroTrayectoVolanteros(){
-        iniciandoSnapshotListener.remove()
-    }
 
     private fun startingPermissionCheck(){
         val isPermissionGranted = ContextCompat.checkSelfPermission(
