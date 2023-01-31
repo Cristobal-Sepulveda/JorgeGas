@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -128,6 +129,15 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                             Log.i("DocumentChange", "MODIFIED")
                             val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
+                            if(!estaActivo){
+                                for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
+                                    if(mapIdMarker.key == documentChange.document.id) {
+                                        mapIdMarker.value.remove()
+                                    }
+                                }
+                                volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                                return@addSnapshotListener
+                            }
                             for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
@@ -150,7 +160,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                                 if(mapIdMarker.key == documentChange.document.id)
                                     mapIdMarker.value.remove()
                             }
-                            volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                            try{
+                                volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                            }catch (e: Exception){
+                                Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
