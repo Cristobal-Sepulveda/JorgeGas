@@ -15,42 +15,77 @@
         android:background="#F0F0F0"
         tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
 
+        <ImageView
+            android:id="@+id/imageview_logoJorgeGas"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/space_big"
+            android:contentDescription="@string/logo_jorge_gas"
+            android:src="@drawable/logo_jorge_gas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck,ImageContrastCheck" />
+
         <TextView
             android:id="@+id/textview_tituloAdministracionDeCuentas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/imageview_logoJorgeGas"
-            android:layout_marginTop="@dimen/space_big"
+            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas"
+            android:layout_marginTop="@dimen/space_normal"
             android:text="@string/administraci_n_de_cuentas"
             android:textSize="24sp"
             android:textColor="@color/black"/>
 
-        <ImageView
-            android:id="@+id/imageview_logoJorgeGas"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
+        <Button
+            android:id="@+id/button_filtro_choferes"
+            style="@style/buttonsAdministrarCuentas"
+            android:layout_marginStart="@dimen/space_big"
             android:layout_marginTop="@dimen/space_normal"
-            android:contentDescription="@string/logo_jorge_gas"
-            android:src="@drawable/logo_jorge_gas"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/choferes"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
 
         <Button
-            style="@style/buttons"
-            android:id="@+id/button_crearCuenta"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_normal"
-            android:text="@string/crear_nueva_cuenta"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageview_logoJorgeGas" />
+            android:id="@+id/button_filtro_peonetas"
+            style="@style/buttonsAdministrarCuentas"
+            android:layout_marginTop="@dimen/text_normal"
+            android:text="@string/peonetas"
+            app:layout_constraintEnd_toStartOf="@+id/button_filtro_volanteros"
+            app:layout_constraintStart_toEndOf="@+id/button_filtro_choferes"
+            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
 
+        <Button
+            style="@style/buttonsAdministrarCuentas"
+            android:id="@+id/button_filtro_volanteros"
+            android:text="@string/volanteros"
+            android:layout_marginTop="@dimen/space_normal"
+            app:layout_constraintStart_toEndOf="@id/button_filtro_peonetas"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas"/>
+
+        <Button
+            style="@style/buttonsAdministrarCuentas"
+            android:id="@+id/button_filtro_secretarias"
+            android:text="@string/secretaria"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_normal"
+            app:layout_constraintEnd_toStartOf="@id/button_filtro_administradores"
+            app:layout_constraintTop_toBottomOf="@id/button_filtro_choferes"/>
+
+        <Button
+            style="@style/buttonsAdministrarCuentas"
+            android:id="@+id/button_filtro_administradores"
+            app:layout_constraintStart_toEndOf="@id/button_filtro_secretarias"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_filtro_volanteros"
+            android:layout_marginEnd="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_normal"
+            android:text="@string/administrador"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_listaUsuarios"
@@ -58,12 +93,24 @@
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_crearCuenta"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_filtro_secretarias"
             android:layout_margin="@dimen/space_big"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:listData="@{viewModel.usuariosInScreen}"/>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button_crearCuenta"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="@dimen/space_normal"
+            android:contentDescription="@string/boton_crear_cuenta"
+            android:src="@drawable/ic_baseline_add_48"
+            app:backgroundTint="@color/orange"
+            app:fabCustomSize="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ImageContrastCheck" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

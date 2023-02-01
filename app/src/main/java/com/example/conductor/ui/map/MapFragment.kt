@@ -1,14 +1,19 @@
 package com.example.conductor.ui.map
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
@@ -20,6 +25,7 @@ import com.example.conductor.utils.polygonsColor
 import com.example.conductor.utils.polygonsList
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -39,6 +45,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
     private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
+    val polygonCenterMarkers = ArrayList<Marker>()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -54,6 +61,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         startingPermissionCheck()
+        setMapStyle(map)
         markingPolygons()
         lifecycleScope.launch{
             withContext(Dispatchers.IO){
@@ -91,11 +99,55 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
 
     private fun markingPolygons(){
         for((index,polygon) in polygonsList.withIndex()){
-            val polygonOptions = PolygonOptions()
-            polygonOptions.addAll(polygon)
-            polygonOptions.fillColor(polygonsColor[index])
-            polygonOptions.strokeColor(Color.argb(50,255,255,255))
-            map.addPolygon(polygonOptions)
+            val newPolygon = PolygonOptions()
+            .addAll(polygon)
+            .fillColor(polygonsColor[index])
+            .strokeColor(Color.argb(50,255,255,255))
+            map.addPolygon(newPolygon)
+            // Get the center of the polygon
+            var centerLatitude = 0.0
+            var centerLongitude = 0.0
+
+            for (point in polygon) {
+                centerLatitude += point.latitude
+                centerLongitude += point.longitude
+            }
+            centerLatitude /= polygon.size
+            centerLongitude /= polygon.size
+            val center = LatLng(centerLatitude, centerLongitude)
+            val textBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(textBitmap)
+            val paint = Paint()
+            paint.color = Color.RED
+            paint.textSize = 100f
+            paint.textAlign = Paint.Align.CENTER
+            canvas.drawText("Polygon Center", 0f, 0f, paint)
+            map.addGroundOverlay(GroundOverlayOptions().image(BitmapDescriptorFactory.fromBitmap(textBitmap)).position(center, 0f, 0f))
+            // Create a marker in the center of the polygon
+/*            val marker = MarkerOptions()
+                .position(LatLng(centerLatitude, centerLongitude))
+                .title("Zona ${index+1}")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            polygonCenterMarkers.add(map.addMarker(marker)!!)
+        }
+        for(marker in polygonCenterMarkers){
+            marker.showInfoWindow()
+        }*/
+        }
+    }
+
+    private fun setMapStyle(map: GoogleMap){
+        try{
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireActivity(), R.raw.map_style
+                )
+            )
+            if(!success){
+                Log.e("MapFragment", "Error al cargar el estilo del mapa")
+            }
+        }catch(e:Exception){
+            Log.e("MapFragment", "Error al cargar el estilo del mapa", e)
         }
     }
 

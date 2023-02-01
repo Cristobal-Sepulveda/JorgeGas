@@ -45,4 +45,13 @@
     <style name="recyclerViewItem">
         <item name="android:textSize">@dimen/text_normal</item>
     </style>
+
+    <style name="buttonsAdministrarCuentas">
+        <item name="android:background">@color/orange</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">11sp</item>
+    </style>
 </resources>

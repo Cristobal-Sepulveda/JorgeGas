@@ -31,6 +31,7 @@ class AdministrarCuentasFragment : BaseFragment() {
         val adapter = UsuarioAdapter(UsuarioAdapter.OnClickListener{
             _viewModel.displayUsuarioDetails(it)
         })
+
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
         _viewModel.displayUsuariosInRecyclerView()
 

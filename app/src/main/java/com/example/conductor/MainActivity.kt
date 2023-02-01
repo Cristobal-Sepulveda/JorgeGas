@@ -37,11 +37,13 @@ import com.example.conductor.ui.vistageneral.VistaGeneralFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.firebaseAuth
+import com.example.conductor.utils.notificationGenerator
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -55,8 +57,8 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private var menuHost: MenuHost = this
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
+    private lateinit var userInValid: QuerySnapshot
     private val cloudDB = FirebaseFirestore.getInstance()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,7 +78,11 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         vistaGeneralDrawableMenuYBottomNavigationView()
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
-            logout()
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    logout()
+                }
+            }
             true
         }
     }
@@ -132,7 +138,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         try{
             lifecycleScope.launch{
                 withContext(Dispatchers.Main) {
-                    val userInValid = cloudDB.collection("Usuarios")
+                    userInValid = cloudDB.collection("Usuarios")
                         .whereEqualTo("usuario", firebaseAuth.currentUser!!.email.toString()).get()
                         .await()
                     Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
@@ -222,7 +228,23 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 Toast.LENGTH_LONG).show()
     }
 
-    private fun logout(){
+    private suspend fun logout(){
+        try{
+            if(userInValid.documents[0].get("rol") == "Volantero"){
+                val registroTrayectoVolanterosUsuario = cloudDB
+                    .collection("RegistroTrayectoVolanteros")
+                    .document(firebaseAuth.currentUser!!.uid)
+                    .get().await()
+                if(registroTrayectoVolanterosUsuario.exists() &&registroTrayectoVolanterosUsuario.data!!["estaActivo"] as Boolean) {
+                    cloudDB
+                        .collection("RegistroTrayectoVolanteros")
+                        .document(firebaseAuth.currentUser!!.uid)
+                        .update("estaActivo", false)
+                }
+            }
+        }catch(e:Exception){
+            notificationGenerator(this, e.message.toString())
+        }
         FirebaseAuth.getInstance().signOut()
         this.finish()
         startActivity(Intent(this, AuthenticationActivity::class.java))

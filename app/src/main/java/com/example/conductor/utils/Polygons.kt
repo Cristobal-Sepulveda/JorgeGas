@@ -46,7 +46,7 @@ var polygonsList : ArrayList<ArrayList<LatLng>> = arrayListOf(
         LatLng(-33.597552469857604, -70.60718237428078),
         LatLng(-33.60254328282471, -70.60484880289525),
     ),
-    //polygon 4
+    //polygon 3
     arrayListOf(
         LatLng(-33.580486029707735, -70.58166952524635),
         LatLng(-33.61220889976072, -70.57540457499513),
