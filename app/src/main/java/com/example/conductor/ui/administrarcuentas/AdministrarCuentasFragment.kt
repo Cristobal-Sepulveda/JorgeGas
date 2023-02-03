@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
 import androidx.lifecycle.Observer
 import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.base.BaseFragment
@@ -65,4 +67,5 @@ class AdministrarCuentasFragment : BaseFragment() {
         super.onDestroyView()
         _viewModel.removeUsuariosInRecyclerView()
     }
+
 }

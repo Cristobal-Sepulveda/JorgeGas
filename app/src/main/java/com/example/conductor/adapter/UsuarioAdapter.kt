@@ -1,5 +1,6 @@
 package com.example.conductor.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -16,6 +17,9 @@ class UsuarioAdapter(private val onClickListener: OnClickListener)
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){
             binding.usuarioItem = usuario
+            binding.imageViewUsuarioItemEdit.setOnClickListener{
+
+            }
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
             binding.executePendingBindings()
