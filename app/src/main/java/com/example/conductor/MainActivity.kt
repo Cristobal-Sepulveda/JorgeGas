@@ -32,6 +32,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.ui.vistageneral.VistaGeneralFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
@@ -46,6 +47,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -59,6 +61,8 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private lateinit var navController: NavController
     private lateinit var userInValid: QuerySnapshot
     private val cloudDB = FirebaseFirestore.getInstance()
+    private val dataSource: AppDataSource by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,6 +95,13 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         super.onStart()
         checkingPermissionsSettings()
         checkingDeviceLocationSettings()
+    }
+
+    override fun onDestroy() {
+        runBlocking {
+            dataSource.eliminarUsuarioEnSqlite()
+        }
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -141,12 +152,21 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                     userInValid = cloudDB.collection("Usuarios")
                         .whereEqualTo("usuario", firebaseAuth.currentUser!!.email.toString()).get()
                         .await()
+                    val usuarioASqlite = UsuarioDBO(
+                        nombre = "${userInValid.documents[0].get("nombre")}",
+                        apellidoPaterno = "${userInValid.documents[0].get("apellidoPaterno")}",
+                        apellidoMaterno = "${userInValid.documents[0].get("apellidoMaterno")}",
+                        rol = "${userInValid.documents[0].get("rol")}")
+
+                    dataSource.guardarUsuarioEnSqlite(usuarioASqlite)
+
                     Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
                     if(userInValid.documents[0].get("rol") != "Administrador") {
                         binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
                     }
                     if(userInValid.documents[0].get("rol") == "Volantero"){
                         binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
+
                     }
                 }
             }

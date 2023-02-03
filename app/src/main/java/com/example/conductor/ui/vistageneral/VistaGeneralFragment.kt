@@ -5,7 +5,10 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -23,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -61,10 +65,13 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                 location.longitude
                                             )
                                         )
+
                                         val nuevoGeoPoint = mapOf(
                                             "registroJornada" to registroJornada,
-                                            "estaActivo" to true
+                                            "estaActivo" to true,
+                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite
                                         )
+
                                         cloudDB.collection("RegistroTrayectoVolanteros")
                                             .document(firebaseAuth.currentUser!!.uid)
                                             .update(nuevoGeoPoint)
@@ -81,7 +88,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                 )
                                 val nuevoRegistro = mapOf(
                                     "registroJornada" to registroJornada,
-                                    "estaActivo" to true
+                                    "estaActivo" to true,
+                                    "nombreCompleto" to _viewModel.usuarioDesdeSqlite
                                 )
                                 cloudDB.collection("RegistroTrayectoVolanteros")
                                     .document(firebaseAuth.currentUser!!.uid)
@@ -102,7 +110,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                     )
                                                 )
                                             ),
-                                            "estaActivo" to true
+                                            "estaActivo" to true,
+                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite
                                         )
                                     )
                             }
@@ -166,7 +175,15 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         locationService?.unsubscribeToLocationUpdates()
         if(!sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false) && _viewModel.usuarioEstaActivo) {
-            notificationGenerator(requireActivity(), "El registro de localización no ha sido detenido antes de cerrar la aplicación. Por favor, vuelva a abrir la aplicación y esto se regularizará.")
+            runBlocking {
+                withContext(Dispatchers.IO) {
+                    try{
+                        _viewModel.editarEstadoVolantero(false)
+                    }catch(e:Exception){
+                        Log.i("sendo error", "sendo error")
+                    }
+                }
+            }
         }
         SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
@@ -228,6 +245,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     }
                 } else {
                     if (_viewModel.editarEstadoVolantero(true)) {
+                        _viewModel.obtenerUsuariosDesdeSqlite()
                         locationService?.subscribeToLocationUpdates()
                     } else {
                         Toast.makeText(

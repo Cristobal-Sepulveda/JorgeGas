@@ -124,11 +124,9 @@ class LocationService : Service() {
         val notificationChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID, titleText, NotificationManager.IMPORTANCE_DEFAULT)
         notificationManager.createNotificationChannel(notificationChannel)
 
-        val activityPendingIntent = PendingIntent.getActivity(this, 0,
+        /*val activityPendingIntent = PendingIntent.getActivity(this, 0,
             Intent(this, MainActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE)
-
-
+            PendingIntent.FLAG_IMMUTABLE)*/
 
         return notificationCompatBuilder
             .setStyle(bigTextStyle)
@@ -136,12 +134,8 @@ class LocationService : Service() {
             .setContentText(mainNotificationText)
             .setSmallIcon(R.mipmap.icono_app_foreground)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
-            .setOngoing(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .addAction(R.drawable.ic_baseline_launch_24,
-                getString(R.string.volver_a_la_app),
-                activityPendingIntent
-            )
+            //.setContentIntent(activityPendingIntent)
             .build()
     }
 

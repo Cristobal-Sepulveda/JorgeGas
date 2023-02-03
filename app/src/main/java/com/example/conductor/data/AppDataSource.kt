@@ -1,5 +1,6 @@
 package com.example.conductor.data
 
+import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 
 interface AppDataSource {
@@ -9,4 +10,7 @@ interface AppDataSource {
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun observarTrayectoVolanteros()
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
+    suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)
+    suspend fun eliminarUsuarioEnSqlite()
+    suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO>
 }

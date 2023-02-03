@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.UsuarioItemViewBinding
 
+
 class UsuarioAdapter(private val onClickListener: OnClickListener)
     : ListAdapter<Usuario, UsuarioAdapter.UsuarioViewHolder>(DiffCallBack){
 

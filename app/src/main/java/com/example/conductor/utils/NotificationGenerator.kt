@@ -14,7 +14,6 @@ import com.example.conductor.utils.Constants.NOTIFICATION_CHANNEL_ID
 fun notificationGenerator(context: Context, messageBody: String) {
     val intent = Intent(context, MainActivity::class.java)
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-    val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
     //val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
@@ -24,7 +23,6 @@ fun notificationGenerator(context: Context, messageBody: String) {
         .setContentText(messageBody)
         .setAutoCancel(true)
         //.setSound(defaultSoundUri)
-        .setContentIntent(pendingIntent)
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     // Since android Oreo notification channel is needed.

@@ -1,9 +1,8 @@
 package com.example.conductor.data
 
 import android.util.Log
-import android.widget.Toast
-import com.example.conductor.data.daos.FieldDao
-import com.example.conductor.data.daos.PermissionDeniedDao
+import com.example.conductor.data.daos.UsuarioDao
+import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
@@ -13,8 +12,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
 @Suppress("LABEL_NAME_CLASH")
-class AppRepository(private val fieldDao: FieldDao,
-                    private val permissionDeniedDao: PermissionDeniedDao,
+class AppRepository(private val usuarioDao: UsuarioDao,
                     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDataSource {
 
     private val cloudDB = FirebaseFirestore.getInstance()
@@ -111,4 +109,29 @@ class AppRepository(private val fieldDao: FieldDao,
             }
         }
     }
+
+    override suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                usuarioDao.guardarUsuario(usuario)
+            }
+        }
+    }
+
+    override suspend fun eliminarUsuarioEnSqlite() {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                usuarioDao.eliminarUsuarios()
+            }
+        }
+    }
+
+    override suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                return@withContext usuarioDao.obtenerUsuarios()
+            }
+        }
+    }
+
 }

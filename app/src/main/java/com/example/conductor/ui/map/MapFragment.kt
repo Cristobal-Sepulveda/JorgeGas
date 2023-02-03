@@ -12,6 +12,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.core.view.isGone
@@ -45,7 +46,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
     private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
-    val polygonCenterMarkers = ArrayList<Marker>()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -98,16 +98,22 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     }
 
     private fun markingPolygons(){
+        val view = _binding!!.mapLayout
         for((index,polygon) in polygonsList.withIndex()){
             val newPolygon = PolygonOptions()
             .addAll(polygon)
             .fillColor(polygonsColor[index])
             .strokeColor(Color.argb(50,255,255,255))
             map.addPolygon(newPolygon)
-            // Get the center of the polygon
+
+            //
+/*            val polygonCenterLabel = TextView(context)
+            polygonCenterLabels.add(polygonCenterLabel)
+            polygonCenterLabel.text = "Polygon $index Center"
+            polygonCenterLabel.visibility = View.GONE
+            (view as ViewGroup).addView(polygonCenterLabel)
             var centerLatitude = 0.0
             var centerLongitude = 0.0
-
             for (point in polygon) {
                 centerLatitude += point.latitude
                 centerLongitude += point.longitude
@@ -115,24 +121,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             centerLatitude /= polygon.size
             centerLongitude /= polygon.size
             val center = LatLng(centerLatitude, centerLongitude)
-            val textBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(textBitmap)
-            val paint = Paint()
-            paint.color = Color.RED
-            paint.textSize = 100f
-            paint.textAlign = Paint.Align.CENTER
-            canvas.drawText("Polygon Center", 0f, 0f, paint)
-            map.addGroundOverlay(GroundOverlayOptions().image(BitmapDescriptorFactory.fromBitmap(textBitmap)).position(center, 0f, 0f))
-            // Create a marker in the center of the polygon
-/*            val marker = MarkerOptions()
-                .position(LatLng(centerLatitude, centerLongitude))
-                .title("Zona ${index+1}")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-            polygonCenterMarkers.add(map.addMarker(marker)!!)
-        }
-        for(marker in polygonCenterMarkers){
-            marker.showInfoWindow()
-        }*/
+            val centerLabel = polygonCenterLabels[index]
+            centerLabel.x = (map.projection.toScreenLocation(center).x - centerLabel.width / 2).toFloat()
+            centerLabel.y = (map.projection.toScreenLocation(center).y - centerLabel.height / 2).toFloat()
+            centerLabel.visibility = View.VISIBLE*/
         }
     }
 
@@ -170,8 +162,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
                                     val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
                                     Log.i("DocumentChange", "ADDED: $nuevoVolanteroGeopoint")
-                                    val marker = map.addMarker(MarkerOptions().position(LatLng(
-                                        nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                    val marker = map.addMarker(MarkerOptions()
+                                        .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero)))
+                                        .title(documentChange.document.data["nombreCompleto"].toString())
                                     )
                                     volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
                                 }
@@ -198,8 +192,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                                     }
                                     val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
                                     volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
-                                    val marker = map.addMarker(MarkerOptions().position(LatLng(
-                                        nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                    val marker = map.addMarker(MarkerOptions()
+                                        .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
+                                        .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero)))
+                                        .title(documentChange.document.data["nombreCompleto"].toString())
                                     )
                                     volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
                                     Log.i("Firestore","La ubicación de un usuario ha sido actualizada")
@@ -222,6 +218,15 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                 }
             }
         }
+    }
+
+    private fun getBitmap(svgResource: Int): Bitmap {
+        val svg = AppCompatResources.getDrawable(requireActivity(), svgResource)
+        val bitmap = Bitmap.createBitmap(svg!!.intrinsicWidth, svg.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        svg.setBounds(0, 0, canvas.width, canvas.height)
+        svg.draw(canvas)
+        return bitmap
     }
 }
 
