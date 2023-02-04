@@ -3,11 +3,14 @@ package com.example.conductor.adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.conductor.R
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.UsuarioItemViewBinding
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 
 
 class UsuarioAdapter(private val onClickListener: OnClickListener)
@@ -17,9 +20,6 @@ class UsuarioAdapter(private val onClickListener: OnClickListener)
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){
             binding.usuarioItem = usuario
-            binding.imageViewUsuarioItemEdit.setOnClickListener{
-
-            }
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
             binding.executePendingBindings()
@@ -38,7 +38,10 @@ class UsuarioAdapter(private val onClickListener: OnClickListener)
 
     override fun onBindViewHolder(holder: UsuarioViewHolder, position: Int) {
         val usuario = getItem(position)
-        holder.itemView.setOnClickListener(){
+        /*holder.itemView.setOnClickListener(){
+            onClickListener.onClick(usuario)
+        }*/
+        holder.itemView.findViewById<ImageView>(R.id.imageView_usuarioItem_edit).setOnClickListener{
             onClickListener.onClick(usuario)
         }
         holder.bind(usuario)
