@@ -29,21 +29,13 @@ class EditarUsuarioFragment : BottomSheetDialogFragment() {
         val bundle = arguments?.getParcelable<Usuario>("key")
         cargarPlanillaConLosDatosDelUsuarioClickeado(bundle!!)
 
-        /****************************** clickListeners ********************************************/
         _binding!!.buttonEditarUsuarioVolver.setOnClickListener {
             this.dismiss()
         }
 
         _binding!!.buttonEditarUsuarioConfirmar.setOnClickListener {
-
             canIEditTheUserValidator(bundle)
         }
-
-        _binding!!.buttonEditarUsuarioBorrar.setOnClickListener {
-            sendAlert(bundle)
-        }
-
-        /*****************************************************************************************/
 
         return _binding!!.root
     }
@@ -53,27 +45,6 @@ class EditarUsuarioFragment : BottomSheetDialogFragment() {
         _viewModel.removeUsuariosInRecyclerView()
         _viewModel.displayUsuariosInRecyclerView()
         Log.i("EditarUsuarioFragment", "onDestroy")
-    }
-
-    private  fun sendAlert(bundle:Usuario){
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.perm_request_rationale_title)
-            .setMessage(R.string.borrar_cuenta)
-            .setPositiveButton(R.string.request_perm_again) { _, _ ->
-                _viewModel.eliminarUsuarioDeFirebase(bundle)
-                dialog?.window?.let {
-                    Snackbar.make(
-                        it.decorView,
-                        "La cuenta ha sido borrada con éxito.",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .setNegativeButton(R.string.dismiss){ _, _ ->
-
-            }
-            .create()
-            .show()
     }
 
     private fun canIEditTheUserValidator(bundle: Usuario?) {

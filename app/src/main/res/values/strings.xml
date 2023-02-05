@@ -72,4 +72,5 @@
     <string name="volanteros">Volanteros</string>
     <string name="secretaria">Secretarias</string>
     <string name="administrador">Administradores</string>
+    <string name="editar_perfil">Editar perfil</string>
 </resources>

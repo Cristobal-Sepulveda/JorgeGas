@@ -1,8 +1,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme"  parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/orange</item>
-        <!--<item name="colorPrimaryDark">@color/orange</item>-->
         <item name="colorPrimaryDark">@color/white</item>
         <item name="android:navigationBarColor">@color/white</item>
         <!-- this is to set the status bar in white

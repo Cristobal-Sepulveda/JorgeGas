@@ -4,67 +4,76 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     >
+
     <data>
         <variable
             name ="usuarioItem"
             type ="com.example.conductor.data.data_objects.domainObjects.Usuario"/>
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/usuarioItemCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/space_normal"
-        android:contentDescription="@{usuarioItem.nombre}"
-        android:background="@drawable/recyclerview_item_border"
+        android:layout_margin="4dp"
+        android:elevation="10dp"
+        app:strokeColor="#c0c0c0"
+        app:strokeWidth="1dp"
         >
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circleImageView_fotoPerfil"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:src="@drawable/ic_baseline_person_24"
-            app:civ_border_width="1dp"
-            app:civ_border_color="#c0c0c0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/textview_usuarioNombre"/>
-
-        <TextView
-            style="@style/recyclerViewItem"
-            android:id="@+id/textview_usuarioNombre"
-            android:layout_width="250dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidoPaterno+' '+usuarioItem.apellidoMaterno}"
-            android:textAppearance="?attr/textAppearanceHeadline5"
-            app:layout_constraintStart_toEndOf="@id/circleImageView_fotoPerfil"
-            app:layout_constraintEnd_toStartOf="@id/imageView_usuarioItem_edit"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="@dimen/space_small"
-            tools:text="Nombre Apellido Apellido" />
+            android:padding="@dimen/activity_horizontal_margin">
 
-        <TextView
-            android:id="@+id/textview_usuarioRol"
-            style="@style/recyclerViewItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{usuarioItem.rol}"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textview_usuarioNombre"
-            app:layout_constraintTop_toBottomOf="@id/textview_usuarioNombre"
-            tools:text="Chofer" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleImageView_fotoPerfil"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginHorizontal="@dimen/space_small"
+                android:src="@drawable/ic_baseline_person_24"
+                app:civ_border_color="#c0c0c0"
+                app:civ_border_width="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView_usuarioItem_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_normal"
-            android:contentDescription="@string/editar_boton"
-            android:src="@drawable/ic_baseline_more_vert_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/textview_usuarioNombre"
+                style="@style/recyclerViewItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidoPaterno+' '+usuarioItem.apellidoMaterno}"
+                android:textAppearance="?attr/textAppearanceHeadline5"
+                android:minWidth="200dp"
+                android:maxLength="22"
+                app:layout_constraintStart_toEndOf="@+id/circleImageView_fotoPerfil"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Nombre Apellido Apellido" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textview_usuarioRol"
+                style="@style/recyclerViewItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{usuarioItem.rol}"
+                app:layout_constraintStart_toStartOf="@+id/textview_usuarioNombre"
+                app:layout_constraintTop_toBottomOf="@id/textview_usuarioNombre"
+                tools:text="Chofer" />
+
+            <ImageView
+                android:id="@+id/imageView_usuarioItem_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/editar_boton"
+                android:src="@drawable/ic_baseline_more_vert_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textview_usuarioNombre"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

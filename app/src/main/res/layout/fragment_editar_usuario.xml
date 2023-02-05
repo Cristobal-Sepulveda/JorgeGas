@@ -130,44 +130,31 @@
         />
 
     <Button
-        style="@style/buttons"
         android:id="@+id/button_editarUsuario_volver"
+        style="@style/buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_editarUsuario_borrar"
-        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword"
         android:layout_marginStart="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_big"
         android:layout_marginTop="@dimen/space_bigger"
         android:text="@string/volver"
-        />
-    <Button
-        android:id="@+id/button_editarUsuario_borrar"
-        style="@style/buttons"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/button_editarUsuario_volver"
-        app:layout_constraintEnd_toStartOf="@id/button_editarUsuario_confirmar"
-        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginBottom="@dimen/space_bigger"
-        android:layout_marginTop="@dimen/space_bigger"
-        android:text="@string/eliminar"/>
+        app:layout_constraintEnd_toStartOf="@+id/button_editarUsuario_confirmar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword" />
+
     <Button
         android:id="@+id/button_editarUsuario_confirmar"
         style="@style/buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/button_editarUsuario_borrar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/space_bigger"
         android:layout_marginEnd="@dimen/space_big"
         android:layout_marginBottom="@dimen/space_bigger"
-        android:layout_marginTop="@dimen/space_bigger"
-        android:text="@string/editar"/>
+        android:layout_marginStart="@dimen/space_small"
+        android:text="@string/editar"
+        app:layout_constraintStart_toEndOf="@id/button_editarUsuario_volver"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

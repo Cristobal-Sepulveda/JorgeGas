@@ -1,25 +1,32 @@
 package com.example.conductor.ui.administrarcuentas
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.lifecycle.Observer
+import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.base.BaseFragment
+import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.AppRepository
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
 import com.example.conductor.ui.crearusuario.CrearUsuarioFragment
 import com.example.conductor.ui.editarusuario.EditarUsuarioFragment
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+
 
 class AdministrarCuentasFragment : BaseFragment() {
 
     private var _binding: FragmentAdministrarCuentasBinding? = null
     override val _viewModel: AdministrarCuentasViewModel by inject()
+    private val _appDataSource: AppDataSource by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,8 +37,8 @@ class AdministrarCuentasFragment : BaseFragment() {
         _binding = FragmentAdministrarCuentasBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
 
-        val adapter = UsuarioAdapter(UsuarioAdapter.OnClickListener{
-            _viewModel.displayUsuarioDetails(it)
+        val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario ->
+
         })
 
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
@@ -67,5 +74,7 @@ class AdministrarCuentasFragment : BaseFragment() {
         super.onDestroyView()
         _viewModel.removeUsuariosInRecyclerView()
     }
+
+
 
 }

@@ -1,10 +1,14 @@
 package com.example.conductor.ui.administrarcuentas
 
+import android.app.AlertDialog
 import android.app.Application
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.conductor.R
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
@@ -49,15 +53,6 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
         viewModelScope.launch{
             withContext(Dispatchers.IO){
                 dataSource.ingresarUsuarioAFirestore(usuario)
-            }
-        }
-    }
-
-    fun eliminarUsuarioDeFirebase(usuario: Usuario) {
-        viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                usuario.deshabilitada = true
-                dataSource.eliminarUsuarioDeFirebase(usuario)
             }
         }
     }
