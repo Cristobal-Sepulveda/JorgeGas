@@ -21,71 +21,46 @@
             android:layout_height="50dp"
             android:layout_marginTop="@dimen/space_big"
             android:contentDescription="@string/logo_jorge_gas"
-            android:src="@drawable/logo_jorge_gas"
+            android:src="@drawable/icono_app_sin_fondo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ImageContrastCheck,ImageContrastCheck" />
 
-        <TextView
-            android:id="@+id/textview_tituloAdministracionDeCuentas"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            app:startIconDrawable="@drawable/ic_baseline_search_24"
+            app:startIconContentDescription="@string/buscar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/space_36"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_small"
+            android:layout_marginEnd="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewMenu"
+            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas"
+            app:boxStrokeColor="@android:color/transparent"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputEditText_buscarUsuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageViewMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas"
-            android:layout_marginTop="@dimen/space_normal"
-            android:text="@string/administraci_n_de_cuentas"
-            android:textSize="24sp"
-            android:textColor="@color/black"/>
-
-        <Button
-            android:id="@+id/button_filtro_choferes"
-            style="@style/buttonsAdministrarCuentas"
-            android:layout_marginStart="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_normal"
-            android:text="@string/choferes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
-
-        <Button
-            android:id="@+id/button_filtro_peonetas"
-            style="@style/buttonsAdministrarCuentas"
-            android:layout_marginTop="@dimen/text_normal"
-            android:text="@string/peonetas"
-            app:layout_constraintEnd_toStartOf="@+id/button_filtro_volanteros"
-            app:layout_constraintStart_toEndOf="@+id/button_filtro_choferes"
-            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas" />
-
-        <Button
-            style="@style/buttonsAdministrarCuentas"
-            android:id="@+id/button_filtro_volanteros"
-            android:text="@string/volanteros"
-            android:layout_marginTop="@dimen/space_normal"
-            app:layout_constraintStart_toEndOf="@id/button_filtro_peonetas"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textview_tituloAdministracionDeCuentas"/>
-
-        <Button
-            style="@style/buttonsAdministrarCuentas"
-            android:id="@+id/button_filtro_secretarias"
-            android:text="@string/secretaria"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_normal"
-            app:layout_constraintEnd_toStartOf="@id/button_filtro_administradores"
-            app:layout_constraintTop_toBottomOf="@id/button_filtro_choferes"/>
-
-        <Button
-            style="@style/buttonsAdministrarCuentas"
-            android:id="@+id/button_filtro_administradores"
-            app:layout_constraintStart_toEndOf="@id/button_filtro_secretarias"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_filtro_volanteros"
+            android:src="@drawable/ic_baseline_menu_24"
             android:layout_marginEnd="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_normal"
-            android:text="@string/administrador"
-            />
+            android:layout_marginTop="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textInputLayout"
+            app:layout_constraintBottom_toBottomOf="@id/textInputLayout"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_listaUsuarios"
@@ -94,10 +69,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_filtro_secretarias"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayout"
             android:layout_margin="@dimen/space_big"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:listData="@{viewModel.usuariosInScreen}"/>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/button_crearCuenta"
@@ -110,7 +84,7 @@
             app:fabCustomSize="48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="ImageContrastCheck" />
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

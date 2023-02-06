@@ -5,9 +5,7 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
@@ -26,10 +24,11 @@ import org.koin.android.ext.android.inject
 
 
 class UsuarioAdapter(viewModel: AdministrarCuentasViewModel, dataSource: AppDataSource, val onClickListener: OnClickListener)
-    : ListAdapter<Usuario, UsuarioAdapter.UsuarioViewHolder>(DiffCallBack){
+    : ListAdapter<Usuario, UsuarioAdapter.UsuarioViewHolder>(DiffCallBack) {
 
     val dataSourcee = dataSource
     val viewModell = viewModel
+
     class UsuarioViewHolder(private var binding: UsuarioItemViewBinding):
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="@string/administrador"
+        android:id="@+id/rolAdministradores"/>
+    <item
+        android:title="@string/conductores"
+        android:id="@+id/rolConductores"/>
+    <item
+        android:title="@string/peonetas"
+        android:id="@+id/rolPeonetas"/>
+    <item
+        android:title="@string/secretarias"
+        android:id="@+id/rolSecretarias"/>
+    <item
+        android:title="@string/volanteros"
+        android:id="@+id/rolVolanteros"/>
+    <item
+        android:title="@string/todos"
+        android:id="@+id/rolTodos"/>
+</menu>

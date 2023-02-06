@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="@dimen/space_big"
             app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
-            app:srcCompat="@drawable/logo_jorge_gas" />
+            app:srcCompat="@drawable/icono_app_sin_fondo" />
 
         <EditText
             android:id="@+id/edittext_email"

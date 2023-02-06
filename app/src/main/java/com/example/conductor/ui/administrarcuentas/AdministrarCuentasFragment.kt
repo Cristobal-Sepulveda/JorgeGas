@@ -1,24 +1,21 @@
 package com.example.conductor.ui.administrarcuentas
 
-import android.app.AlertDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.AppDataSource
-import com.example.conductor.data.AppRepository
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
 import com.example.conductor.ui.crearusuario.CrearUsuarioFragment
 import com.example.conductor.ui.editarusuario.EditarUsuarioFragment
-import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 
 
@@ -51,7 +48,7 @@ class AdministrarCuentasFragment : BaseFragment() {
             }
         }
 
-        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner, Observer{
+        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner, {
             if(null!=it){
                 val modalBottomSheet = EditarUsuarioFragment()
                 val bundle = Bundle()
@@ -66,7 +63,70 @@ class AdministrarCuentasFragment : BaseFragment() {
             modalBottomSheet.show(requireActivity().supportFragmentManager, "CrearUsuarioFragment")
         }
 
-        Log.i("AdministrarCuentasFragment", "onCreateView")
+        _binding!!.imageViewMenu.setOnClickListener{view->
+            val popupMenu = PopupMenu(requireActivity(), view)
+            popupMenu.inflate(R.menu.administracion_de_cuentas_roles_menu)
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.rolAdministradores -> {
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Administrador")
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.rolConductores -> {
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Conductor")
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.rolPeonetas -> {
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Peoneta")
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.rolSecretarias -> {
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Secretaria")
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.rolVolanteros -> {
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Volantero")
+                        return@setOnMenuItemClickListener true
+                    }
+                    R.id.rolTodos ->{
+                        _viewModel.filtrarUsuariosEnRecyclerViewPorMenu("Todos")
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> {
+                        return@setOnMenuItemClickListener true
+                    }
+                }
+            }
+            popupMenu.show()
+        }
+
+        _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
+            var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+/*                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
+                        it.nombre.lowercase().contains(s.toString().lowercase())
+                } as MutableList<Usuario>
+                if(count ==1){
+                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
+                    return
+                }
+                if(before == 1 ){
+                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(listasDeRespaldo.last())
+                    listasDeRespaldo.removeLast()
+                    return
+                }*/
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.i("asd","$start    $count   $after")
+                //listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                return
+            }
+        })
+
         return _binding!!.root
     }
 
@@ -74,6 +134,7 @@ class AdministrarCuentasFragment : BaseFragment() {
         super.onDestroyView()
         _viewModel.removeUsuariosInRecyclerView()
     }
+
 
 
 

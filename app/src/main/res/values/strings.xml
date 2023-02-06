@@ -70,7 +70,11 @@
     <string name="choferes">Choferes</string>
     <string name="peonetas">Peonetas</string>
     <string name="volanteros">Volanteros</string>
-    <string name="secretaria">Secretarias</string>
+    <string name="secretarias">Secretarias</string>
     <string name="administrador">Administradores</string>
     <string name="editar_perfil">Editar perfil</string>
+    <string name="buscar">Buscar</string>
+    <string name="conductor">Conductor</string>
+    <string name="conductores">Conductores</string>
+    <string name="todos">Todos</string>
 </resources>
