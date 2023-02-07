@@ -10,8 +10,8 @@
         android:icon="@drawable/ic_outline_map_24"
         android:title="@string/title_map" />
     <item
-        android:id="@+id/navigation_nueva_utilidad"
-        android:icon="@drawable/ic_baseline_new_releases_24"
-        android:title="@string/nueva_utilidad" />
+        android:id="@+id/navigation_administrar_cuentas"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/cuentas" />
 
 </menu>

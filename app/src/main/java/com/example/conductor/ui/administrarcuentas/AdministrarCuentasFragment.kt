@@ -48,15 +48,18 @@ class AdministrarCuentasFragment : BaseFragment() {
             }
         }
 
-        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner, {
-            if(null!=it){
+        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
+            if (null != it) {
                 val modalBottomSheet = EditarUsuarioFragment()
                 val bundle = Bundle()
-                bundle.putParcelable("key",it)
+                bundle.putParcelable("key", it)
                 modalBottomSheet.arguments = bundle
-                modalBottomSheet.show(requireActivity().supportFragmentManager, "EditarUsuarioFragment")
+                modalBottomSheet.show(
+                    requireActivity().supportFragmentManager,
+                    "EditarUsuarioFragment"
+                )
             }
-        })
+        }
 
         _binding!!.buttonCrearCuenta.setOnClickListener {
             val modalBottomSheet = CrearUsuarioFragment()
@@ -104,7 +107,7 @@ class AdministrarCuentasFragment : BaseFragment() {
             var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-/*                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
+                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
                         it.nombre.lowercase().contains(s.toString().lowercase())
                 } as MutableList<Usuario>
                 if(count ==1){
@@ -115,11 +118,14 @@ class AdministrarCuentasFragment : BaseFragment() {
                     _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(listasDeRespaldo.last())
                     listasDeRespaldo.removeLast()
                     return
-                }*/
+                }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 Log.i("asd","$start    $count   $after")
-                //listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
+                if(after==1){
+                    listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
+                    return
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {

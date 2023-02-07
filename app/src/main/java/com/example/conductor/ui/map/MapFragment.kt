@@ -55,6 +55,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         _binding!!.lifecycleOwner = this
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
 
+        _binding!!.fabVistaOriginal.setOnClickListener{
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(defaultLocation.latitude, defaultLocation.longitude)
+                , cameraDefaultZoom.toFloat())
+            map.animateCamera(cameraUpdate, 300, null)
+        }
+
         return _binding!!.root
     }
 

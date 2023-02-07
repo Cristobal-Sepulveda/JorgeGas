@@ -77,4 +77,11 @@
     <string name="conductor">Conductor</string>
     <string name="conductores">Conductores</string>
     <string name="todos">Todos</string>
+    <string name="cuentas">Cuentas</string>
+    <string name="gestion_de_volanteros">Gestion de Volanteros</string>
+    <string name="inactivos">Inactivos</string>
+    <string name="activos">Activos</string>
+    <string name="llamar_boton">Boton para llamar</string>
+    <string name="notificar_boton">Enviar notificación</string>
+    <string name="zoom_out">zoom_out</string>
 </resources>

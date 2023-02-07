@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/administrar_cuentas"
-        android:id="@+id/navigation_administrar_cuentas"
-        android:icon="@drawable/ic_baseline_person_24"
+        android:title="@string/gestion_de_volanteros"
+        android:id="@+id/navigation_gestion_de_volanteros"
+        android:icon="@drawable/ic_outline_insert_drive_file_24"
         />
     <item
         android:title="@string/cerrar_sesion"

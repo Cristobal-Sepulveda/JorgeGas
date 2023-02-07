@@ -38,5 +38,20 @@
             android:visibility="gone"
             android:contentDescription="@string/mapa_sin_permisos_autorizados" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_vistaOriginal"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="@dimen/space_normal"
+            android:contentDescription="@string/zoom_out"
+            android:src="@drawable/ic_baseline_add_48"
+            app:backgroundTint="@color/orange"
+            app:fabCustomSize="48dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

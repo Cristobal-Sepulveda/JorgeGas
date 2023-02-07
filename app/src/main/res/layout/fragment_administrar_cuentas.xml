@@ -13,19 +13,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         android:background="#F0F0F0"
-        tools:context=".ui.nuevautilidad.NuevaUtilidadFragment">
-
-        <ImageView
-            android:id="@+id/imageview_logoJorgeGas"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginTop="@dimen/space_big"
-            android:contentDescription="@string/logo_jorge_gas"
-            android:src="@drawable/icono_app_sin_fondo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ImageContrastCheck,ImageContrastCheck" />
+        tools:context=".ui.gestiondevolanteros.GestionDeVolanterosFragment">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
@@ -34,11 +22,11 @@
             android:layout_width="0dp"
             android:layout_height="@dimen/space_36"
             android:layout_marginStart="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_big"
             android:layout_marginEnd="@dimen/space_small"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewMenu"
-            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas"
+            app:layout_constraintTop_toTopOf="parent"
             app:boxStrokeColor="@android:color/transparent"
             >
 

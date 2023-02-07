@@ -20,10 +20,10 @@
         />
 
     <fragment
-        android:id="@+id/navigation_nueva_utilidad"
-        android:name="com.example.conductor.ui.nuevautilidad.NuevaUtilidadFragment"
-        android:label="@string/nueva_utilidad"
-        tools:layout="@layout/fragment_nueva_utilidad"
+        android:id="@+id/navigation_gestion_de_volanteros"
+        android:name="com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosFragment"
+        android:label="@string/gestion_de_volanteros"
+        tools:layout="@layout/fragment_gestion_de_volanteros"
         />
     <fragment
         android:id="@+id/navigation_administrar_cuentas"

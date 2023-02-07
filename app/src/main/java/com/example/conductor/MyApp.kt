@@ -7,7 +7,7 @@ import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
-import com.example.conductor.ui.nuevautilidad.NuevaUtilidadViewModel
+import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
@@ -40,7 +40,7 @@ class MyApp : Application() {
                 )
             }
             single {
-                NuevaUtilidadViewModel(
+                GestionDeVolanterosViewModel(
                     get(),
                     get() as AppDataSource
                 )
