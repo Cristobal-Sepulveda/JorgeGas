@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
@@ -32,6 +33,10 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
     ): View {
         _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
         firebaseAuth = FirebaseAuth.getInstance()
+        val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Volantero" )
+        val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        _binding!!.editTextDataUsuarioRol.adapter = adapter
 
         _binding!!.buttonDataUsuarioVolver.setOnClickListener {
             this.dismiss()
@@ -44,7 +49,8 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-        Log.i("CrearUsuarioFragment", "onCreateView")
+
+
 
         return _binding!!.root
     }
@@ -60,7 +66,8 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
         val aPaterno = _binding!!.editTextDataUsuarioAPaterno.text.toString()
         val aMaterno = _binding!!.editTextDataUsuarioAMaterno.text.toString()
-        val rol = _binding!!.editTextDataUsuarioRol.text.toString()
+        val rol = "asd"
+        /*val rol = _binding!!.editTextDataUsuarioRol.text.toString()*/
         val email = _binding!!.editTextDataUsuarioUsuario.text.toString()
         val password = _binding!!.editTextDataUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()

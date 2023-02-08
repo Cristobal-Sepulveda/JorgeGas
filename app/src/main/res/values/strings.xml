@@ -84,4 +84,14 @@
     <string name="llamar_boton">Boton para llamar</string>
     <string name="notificar_boton">Enviar notificación</string>
     <string name="zoom_out">zoom_out</string>
+
+    <!--String arrays-->
+    <string-array name="roles">
+        <item>Administrador</item>
+        <item>Conductor</item>
+        <item>Peoneta</item>
+        <item>Secretaria</item>
+        <item>Volantero</item>
+        <item>Todos</item>
+    </string-array>
 </resources>

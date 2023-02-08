@@ -6,6 +6,7 @@
     <dimen name="nav_header_height">176dp</dimen>
 
     <!--Space dimensions-->
+    <dimen name="space_very_small">4dp</dimen>
     <dimen name="space_small">8dp</dimen>
     <dimen name="space_normal">16dp</dimen>
     <dimen name="space_big">24dp</dimen>
