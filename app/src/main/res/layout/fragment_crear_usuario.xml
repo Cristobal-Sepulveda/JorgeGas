@@ -19,24 +19,30 @@
         android:layout_marginTop="@dimen/space_big"
         android:text="@string/crear_nueva_cuenta"
         android:textSize="24sp"
-        android:textColor="@color/black"/>
+        android:textColor="#283484"/>
 
-    <EditText
-        android:id="@+id/editText_dataUsuario_nombre"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_nombre"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
         android:layout_marginTop="@dimen/space_normal"
         android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="nombre"
-        android:hint= "@string/nombre"
-        android:inputType="text"
+        app:endIconMode="clear_text"
+        android:hint="@string/nombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_DataUsuarioTitle"
-        />
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_dataUsuario_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <EditText
         android:id="@+id/editText_dataUsuario_aPaterno"
         android:layout_width="match_parent"
@@ -52,7 +58,7 @@
         
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_dataUsuario_nombre"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_nombre"
         />
     <EditText
         android:id="@+id/editText_dataUsuario_aMaterno"
@@ -136,13 +142,24 @@
         app:layout_constraintTop_toBottomOf="@+id/editText_dataUsuario_password"
         />
 
+    <TextView
+        android:id="@+id/button_dataUsuario_volver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_dataUsuario_confirmar"
+        app:layout_constraintTop_toBottomOf="@id/editText_dataUsuario_confirmarPassword"
+        android:layout_marginEnd="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_bigger"
+        android:text="@string/volver" />
+
     <Button
         android:id="@+id/button_dataUsuario_confirmar"
         style="@style/buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_dataUsuario_volver"
+        app:layout_constraintStart_toEndOf="@id/button_dataUsuario_volver"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/editText_dataUsuario_confirmarPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="@dimen/space_big"
@@ -150,16 +167,6 @@
         android:layout_marginBottom="@dimen/space_bigger"
         android:layout_marginTop="@dimen/space_bigger"
         android:text="@string/confirmar"/>
-    <Button
-        style="@style/buttons"
-        android:id="@+id/button_dataUsuario_volver"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/button_dataUsuario_confirmar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText_dataUsuario_confirmarPassword"
-        android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_bigger"
-        android:text="@string/volver"
-        />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,7 @@
     <string name="perm_request_rationale">Para poder utilizar la aplicación debes aceptar el permiso de ubicación.</string>
     <string name="request_perm_again">ACEPTAR</string>
     <string name="dismiss">CANCELAR</string>
-    <string name="crear_nueva_cuenta">Crear cuenta</string>
+    <string name="crear_nueva_cuenta">Crear cuentas</string>
     <string name="eliminar_cuenta">Eliminar cuenta</string>
     <string name="perfil">Perfil</string>
     <string name="administrar_cuentas">Administrar cuentas</string>

@@ -45,6 +45,7 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
             }
         }
         Log.i("CrearUsuarioFragment", "onCreateView")
+
         return _binding!!.root
     }
 

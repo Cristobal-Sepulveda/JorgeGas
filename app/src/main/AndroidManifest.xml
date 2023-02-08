@@ -32,7 +32,8 @@
         <activity
             android:name=".AuthenticationActivity"
             android:exported="true"
-            >
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <!--android:theme="@style/AppTheme.NoActionBar">-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,7 +46,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
         </activity>
         <!-- Foreground services in Android 10+ require type. -->
         <!-- TODO: 2.2, Add foreground service type. -->
