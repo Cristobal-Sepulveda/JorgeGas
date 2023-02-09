@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.base.BaseFragment
@@ -51,14 +52,13 @@ class AdministrarCuentasFragment : BaseFragment() {
 
         _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
             if (null != it) {
-                val modalBottomSheet = EditarUsuarioFragment()
-                val bundle = Bundle()
+/*                val bundle = Bundle()
                 bundle.putParcelable("key", it)
-                modalBottomSheet.arguments = bundle
-/*                modalBottomSheet.show(
-                    requireActivity().supportFragmentManager,
-                    "EditarUsuarioFragment"
-                )*/
+                val fragment = EditarUsuarioFragment()
+                fragment.arguments = bundle*/
+                findNavController().navigate(
+                    AdministrarCuentasFragmentDirections
+                        .actionNavigationAdministrarCuentasToEditarUsuarioFragment(it))
             }
         }
 

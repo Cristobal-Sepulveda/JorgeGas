@@ -73,6 +73,11 @@ class AuthenticationActivity : AppCompatActivity() {
                     withContext(Dispatchers.IO){
                         val userInValid = cloudDB.collection("Usuarios")
                             .whereEqualTo("usuario",email).get().await()
+                        if(userInValid.isEmpty){
+                            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                            finish()
+                            startActivity(intent)
+                        }
                         if(userInValid.documents[0].get("deshabilitada") as Boolean){
                             runOnUiThread {
                                 Toast.makeText(this@AuthenticationActivity,

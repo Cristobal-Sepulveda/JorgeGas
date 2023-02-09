@@ -44,6 +44,7 @@ data class NetworkUsuariosContainer(var usuarios: ArrayList<NetworkUsuario>)
 @JsonClass(generateAdapter = true)
 data class NetworkUsuario(
     val id: String,
+    val fotoPerfil: String,
     val nombre: String,
     val apellidos: String,
     val telefono: String,
@@ -60,6 +61,7 @@ fun NetworkUsuariosContainer.asDomainModel(): List<Usuario> {
     return usuarios.map {
         Usuario(
             id = it.id,
+            fotoPerfil = it.fotoPerfil,
             nombre = it.nombre,
             apellidos = it.apellidos,
             telefono = it.telefono,

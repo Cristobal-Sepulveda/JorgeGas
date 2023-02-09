@@ -13,6 +13,9 @@
         android:title="@string/secretarias"
         android:id="@+id/rolSecretarias"/>
     <item
+        android:title="@string/supervisor_volanteros"
+        android:id="@+id/rolSupervisorVolanteros"/>
+    <item
         android:title="@string/volanteros"
         android:id="@+id/rolVolanteros"/>
     <item

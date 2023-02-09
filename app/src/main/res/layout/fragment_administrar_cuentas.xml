@@ -15,29 +15,21 @@
         android:background="#F0F0F0"
         tools:context=".ui.gestiondevolanteros.GestionDeVolanterosFragment">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            app:startIconDrawable="@drawable/ic_baseline_search_24"
-            app:startIconContentDescription="@string/buscar"
+
+        <com.google.android.material.search.SearchView
+            android:id="@+id/searchView_administrarCuentas_barraDeBusqueda"
             android:layout_width="0dp"
             android:layout_height="@dimen/space_36"
             android:layout_marginStart="@dimen/space_big"
             android:layout_marginTop="@dimen/space_big"
             android:layout_marginEnd="@dimen/space_small"
+            android:hint="@string/buscar"
+            android:text="@string/buscar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageViewMenu"
-            app:layout_constraintTop_toTopOf="parent"
-            app:boxStrokeColor="@android:color/transparent"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textInputEditText_buscarUsuario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toTopOf="parent">
+            <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
+        </com.google.android.material.search.SearchView>
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageViewMenu"
@@ -47,8 +39,8 @@
             android:layout_marginEnd="@dimen/space_big"
             android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textInputLayout"
-            app:layout_constraintBottom_toBottomOf="@id/textInputLayout"/>
+            app:layout_constraintTop_toTopOf="@id/searchView_administrarCuentas_barraDeBusqueda"
+            app:layout_constraintBottom_toBottomOf="@id/searchView_administrarCuentas_barraDeBusqueda"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_listaUsuarios"
@@ -57,7 +49,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textInputLayout"
+            app:layout_constraintTop_toBottomOf="@id/searchView_administrarCuentas_barraDeBusqueda"
             android:layout_margin="@dimen/space_big"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

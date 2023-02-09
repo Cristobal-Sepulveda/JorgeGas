@@ -35,7 +35,7 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         if(usuario.isNotEmpty()){
             Log.i("VistaGeneralViewModel", "$usuario")
             Log.i("VistaGeneralViewModel", "isNotEmpty")
-            usuarioDesdeSqlite = "${usuario.first().nombre} ${usuario.first().apellidoPaterno} ${usuario.first().apellidoMaterno}"
+            usuarioDesdeSqlite = "${usuario.first().nombre} ${usuario.first().apellidos}"
         }else{
             Log.i("VistaGeneralViewModel", "$usuario")
             Log.i("VistaGeneralViewModel", "isEmpty")

@@ -145,6 +145,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore:24.4.2'
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    implementation "com.google.firebase:firebase-auth-ktx"
+
     // Add the dependency for the Performance Monitoring library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-perf-ktx'

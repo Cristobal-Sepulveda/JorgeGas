@@ -7,8 +7,7 @@ import java.util.*
 @Entity
 data class UsuarioDBO(
     val nombre: String,
-    val apellidoPaterno: String,
-    val apellidoMaterno: String,
+    val apellidos: String,
     val rol: String,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
     )

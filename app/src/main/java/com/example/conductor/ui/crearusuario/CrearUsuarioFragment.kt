@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -18,8 +19,10 @@ import androidx.lifecycle.lifecycleScope
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragmentDirections
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.utils.Constants.REQUEST_TAKE_PHOTO
+import com.example.conductor.utils.NavigationCommand
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
@@ -36,7 +40,7 @@ class CrearUsuarioFragment : BaseFragment() {
     private var _binding: FragmentCrearUsuarioBinding? = null
     override val _viewModel: AdministrarCuentasViewModel by inject()
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var imageBitmap: Bitmap
+    private var imageBitmap: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,11 +53,16 @@ class CrearUsuarioFragment : BaseFragment() {
         val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Supervisor Volantero", "Volantero" )
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+
         _binding!!.editTextDataUsuarioRol.setAdapter(adapter)
 
 
         _binding!!.buttonDataUsuarioVolver.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(
+                    CrearUsuarioFragmentDirections
+                        .actionNavigationDataUsuarioToNavigationAdministrarCuentas())
         }
 
         _binding!!.buttonDataUsuarioConfirmar.setOnClickListener {
@@ -96,6 +105,14 @@ class CrearUsuarioFragment : BaseFragment() {
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()
         val rol = _binding!!.editTextDataUsuarioRol.text.toString();
 
+        if(imageBitmap == null){
+            Snackbar.make(
+                _binding!!.root,
+                "Debes de tomar una foto para poder guardar un usuario",
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
         if (nombre.isEmpty() || apellidos.isEmpty() ||
             email.isEmpty() || password.isEmpty() ||
             password2.isEmpty() || rol.isEmpty()
@@ -142,8 +159,10 @@ class CrearUsuarioFragment : BaseFragment() {
         }
         try{
             val aux = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
             val usuario = Usuario(
                 aux.user!!.uid,
+                foto,
                 nombre,
                 apellidos,
                 telefono,
@@ -176,5 +195,12 @@ class CrearUsuarioFragment : BaseFragment() {
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
             }
         }
+    }
+
+    private fun parseandoImagenParaSubirlaAFirestore(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        return Base64.encodeToString(data, Base64.DEFAULT)
     }
 }

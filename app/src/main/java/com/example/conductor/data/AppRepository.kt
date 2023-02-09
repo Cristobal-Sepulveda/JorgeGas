@@ -26,9 +26,10 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     for (document in colRef){
                         val usuario = Usuario(
                             document.id,
+                            document.get("fotoPerfil") as String,
                             document.get("nombre") as String,
-                            document.get("apellidoPaterno") as String,
-                            document.get("apellidoMaterno") as String,
+                            document.get("apellidos") as String,
+                            document.get("telefono") as String,
                             document.get("usuario") as String,
                             document.get("password") as String,
                             document.get("deshabilitada") as Boolean,

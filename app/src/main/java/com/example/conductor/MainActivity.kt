@@ -161,15 +161,14 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                         .await()
                     val usuarioASqlite = UsuarioDBO(
                         nombre = "${userInValid.documents[0].get("nombre")}",
-                        apellidoPaterno = "${userInValid.documents[0].get("apellidoPaterno")}",
-                        apellidoMaterno = "${userInValid.documents[0].get("apellidoMaterno")}",
+                        apellidos = "${userInValid.documents[0].get("apellidos")}",
                         rol = "${userInValid.documents[0].get("rol")}")
 
                     dataSource.guardarUsuarioEnSqlite(usuarioASqlite)
 
                     Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
-                    if(userInValid.documents[0].get("rol") != "Administrador") {
-                        binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
+                    if(userInValid.documents[0].get("rol") != "Administrador" || userInValid.documents[0].get("rol") != "Supervisor Volantero") {
+                        /*binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false*/
                     }
                     if(userInValid.documents[0].get("rol") == "Volantero"){
                         binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE

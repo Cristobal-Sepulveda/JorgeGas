@@ -87,6 +87,7 @@
     <string name="apellidos">Apellidos</string>
     <string name="telefono">Teléfono</string>
     <string name="editar_cuentas">Editar cuentas</string>
+    <string name="supervisor_volanteros">Supervisor Volanteros</string>
 
     <!--String arrays-->
     <string-array name="roles">
@@ -94,6 +95,7 @@
         <item>Conductor</item>
         <item>Peoneta</item>
         <item>Secretaria</item>
+        <item>Supervisor Volanteros</item>
         <item>Volantero</item>
         <item>Todos</item>
     </string-array>

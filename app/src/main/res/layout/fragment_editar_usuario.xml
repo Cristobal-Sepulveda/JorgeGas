@@ -21,13 +21,40 @@
         android:textSize="24sp"
         android:textColor="#283484"/>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView_editarUsuario_imagenDePerfil"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:src="@drawable/ic_baseline_person_grey_24"
+        android:layout_marginTop="@dimen/space_small"
+        app:civ_border_color="#c0c0c0"
+        app:civ_border_width="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_editarUsuarioTitle" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView_editarUsuario_iconoTomarFotoUsuario"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/baseline_camera_alt_24"
+        app:civ_border_color="#c0c0c0"
+        app:civ_border_width="1dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.565"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_editarUsuarioTitle" />
+
     <TextView
         android:id="@+id/textview_editarUsuarioMail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_editarUsuarioTitle"
+        app:layout_constraintTop_toBottomOf="@id/circleImageView_editarUsuario_imagenDePerfil"
         android:layout_marginTop="@dimen/space_big"
         android:textSize="24sp"
         android:textColor="@color/black"
@@ -40,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginTop="@dimen/space_small"
         app:endIconMode="clear_text"
         android:hint="@string/nombre"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +89,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginTop="@dimen/space_very_small"
         app:endIconMode="clear_text"
         android:hint="@string/apellidos"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +111,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginTop="@dimen/space_very_small"
         app:endIconMode="clear_text"
         android:hint="@string/telefono"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginTop="@dimen/space_very_small"
         app:endIconMode="clear_text"
         android:hint="@string/password"
         app:layout_constraintStart_toStartOf="parent"
@@ -128,7 +155,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
+        android:layout_marginTop="@dimen/space_very_small"
         app:endIconMode="clear_text"
         android:hint="@string/confirmar_password"
         app:layout_constraintStart_toStartOf="parent"
@@ -145,38 +172,36 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout_editar_rol"
-        style="?attr/textInputOutlinedStyle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_normal"
-        app:endIconMode="clear_text"
-        android:hint="@string/rol"
+        android:layout_marginTop="@dimen/space_very_small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_confirmarContraseña"
         app:expandedHintEnabled="false"
         >
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/editText_editarUsuario_rol"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:hint="@string/rol" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/button_editarUsuario_volver"
-        style="@style/buttons"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/textView_editarUsuario_volver"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
+        android:layout_marginEnd="16dp"
         android:text="@string/volver"
-        app:layout_constraintEnd_toStartOf="@+id/button_editarUsuario_confirmar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayout_editar_rol"
-        />
+        android:textColor="@color/azulMarino"
+        app:layout_constraintBottom_toBottomOf="@+id/button_editarUsuario_confirmar"
+        app:layout_constraintEnd_toStartOf="@id/button_editarUsuario_confirmar"
+        app:layout_constraintTop_toTopOf="@id/button_editarUsuario_confirmar" />
 
     <Button
         android:id="@+id/button_editarUsuario_confirmar"
@@ -188,7 +213,6 @@
         android:layout_marginBottom="@dimen/space_bigger"
         android:layout_marginStart="@dimen/space_small"
         android:text="@string/editar"
-        app:layout_constraintStart_toEndOf="@id/button_editarUsuario_volver"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textInputLayout_editar_rol"/>

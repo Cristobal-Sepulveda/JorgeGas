@@ -43,11 +43,26 @@
         android:name="com.example.conductor.ui.crearusuario.CrearUsuarioFragment"
         android:label="@string/data_usuario"
         tools:layout="@layout/fragment_crear_usuario"
-        />
+        >
+        <action
+            android:id="@+id/action_navigation_data_usuario_to_navigation_administrar_cuentas"
+            app:destination="@id/navigation_administrar_cuentas"
+            app:popUpTo="@id/navigation_administrar_cuentas"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_editar_usuario"
         android:name="com.example.conductor.ui.editarusuario.EditarUsuarioFragment"
         android:label="EditarUsuarioFragment"
-        tools:layout="@layout/fragment_editar_usuario"/>
+        tools:layout="@layout/fragment_editar_usuario">
+        <action
+            android:id="@+id/action_navigation_editar_usuario_to_navigation_administrar_cuentas"
+            app:destination="@id/navigation_administrar_cuentas"
+            app:popUpTo="@id/navigation_administrar_cuentas"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="usuarioDetails"
+            app:argType="com.example.conductor.data.data_objects.domainObjects.Usuario" />
+    </fragment>
 
 </navigation>
