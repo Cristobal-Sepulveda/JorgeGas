@@ -48,6 +48,7 @@
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"
             tools:ignore="LockedOrientationActivity">
         </activity>
         <!-- Foreground services in Android 10+ require type. -->

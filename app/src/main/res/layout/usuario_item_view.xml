@@ -47,7 +47,7 @@
                 android:layout_marginStart="16dp"
                 android:maxLength="22"
                 android:minWidth="200dp"
-                android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidoPaterno+' '+usuarioItem.apellidoMaterno}"
+                android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidos"
                 android:textAppearance="?attr/textAppearanceHeadline5"
                 android:textSize="@dimen/text_small"
                 app:layout_constraintStart_toEndOf="@+id/circleImageView_fotoPerfil"

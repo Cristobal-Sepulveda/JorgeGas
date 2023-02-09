@@ -45,8 +45,8 @@ data class NetworkUsuariosContainer(var usuarios: ArrayList<NetworkUsuario>)
 data class NetworkUsuario(
     val id: String,
     val nombre: String,
-    val apellidoPaterno: String,
-    val apellidoMaterno: String,
+    val apellidos: String,
+    val telefono: String,
     val usuario: String,
     val password: String,
     val deshabilitada: Boolean,
@@ -61,8 +61,8 @@ fun NetworkUsuariosContainer.asDomainModel(): List<Usuario> {
         Usuario(
             id = it.id,
             nombre = it.nombre,
-            apellidoPaterno = it.apellidoPaterno,
-            apellidoMaterno = it.apellidoMaterno,
+            apellidos = it.apellidos,
+            telefono = it.telefono,
             usuario = it.usuario,
             password = it.password,
             deshabilitada = it.deshabilitada,

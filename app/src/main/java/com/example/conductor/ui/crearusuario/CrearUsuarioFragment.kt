@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
+import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
@@ -20,10 +21,10 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-class CrearUsuarioFragment : BottomSheetDialogFragment() {
+class CrearUsuarioFragment : BaseFragment() {
 
     private var _binding: FragmentCrearUsuarioBinding? = null
-    private val _viewModel: AdministrarCuentasViewModel by inject()
+    override val _viewModel: AdministrarCuentasViewModel by inject()
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
@@ -32,14 +33,16 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
+
         firebaseAuth = FirebaseAuth.getInstance()
         val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Volantero" )
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        _binding!!.editTextDataUsuarioRol.adapter = adapter
+        _binding!!.editTextDataUsuarioRol.setAdapter(adapter)
+
 
         _binding!!.buttonDataUsuarioVolver.setOnClickListener {
-            this.dismiss()
+/*            this.dismiss()*/
         }
 
         _binding!!.buttonDataUsuarioConfirmar.setOnClickListener {
@@ -49,8 +52,6 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-
-
 
         return _binding!!.root
     }
@@ -64,90 +65,84 @@ class CrearUsuarioFragment : BottomSheetDialogFragment() {
 
     private suspend fun canICreateANewAccountValidator() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
-        val aPaterno = _binding!!.editTextDataUsuarioAPaterno.text.toString()
-        val aMaterno = _binding!!.editTextDataUsuarioAMaterno.text.toString()
-        val rol = "asd"
-        /*val rol = _binding!!.editTextDataUsuarioRol.text.toString()*/
+        val apellidos = _binding!!.editTextDataUsuarioApellidos.text.toString()
+        val telefono = _binding!!.editTextDataUsuarioTelefono.text.toString()
         val email = _binding!!.editTextDataUsuarioUsuario.text.toString()
         val password = _binding!!.editTextDataUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()
+        val rol = "asd"
 
-        if (nombre.isEmpty() || aPaterno.isEmpty() ||
-            aMaterno.isEmpty() || rol.isEmpty() ||
+        if (nombre.isEmpty() || apellidos.isEmpty() ||
             email.isEmpty() || password.isEmpty() ||
-            password2.isEmpty()
+            password2.isEmpty() || rol.isEmpty()
         ) {
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "Debes completar todos los campos antes de crear una cuenta.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            };
+            Snackbar.make(
+                _binding!!.root,
+                "Debes completar todos los campos antes de crear una cuenta.",
+                Snackbar.LENGTH_SHORT
+            ).show()
             return
         }
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "El email que ingresaste no es valido",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            }
+            Snackbar.make(
+                _binding!!.root,
+                "El email que ingresaste no es valido",
+                Snackbar.LENGTH_SHORT
+            ).show()
             return
         }
         if (password != password2) {
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "Las contraseñas no coincide.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            };
+            Snackbar.make(
+                _binding!!.root,
+                "Las contraseñas no coincide.",
+                Snackbar.LENGTH_SHORT
+            ).show()
             return
         }
         if (password.length < 6) {
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "La contraseña debe tener a lo menos 6 caracteres.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            };
+            Snackbar.make(
+                _binding!!.root,
+                "La contraseña debe tener a lo menos 6 caracteres.",
+                Snackbar.LENGTH_SHORT
+            ).show()
             return
         }
+        if(apellidos.split(" ").size !=2){
+            Snackbar.make(
+                _binding!!.root,
+                "Ingrese los 2 apellidos separados por un espacio",
+                Snackbar.LENGTH_SHORT
+            ).show()
 
+            return
+        }
         try{
             val aux = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val usuario = Usuario(
                 aux.user!!.uid,
                 nombre,
-                aPaterno,
-                aMaterno,
+                apellidos,
+                telefono,
                 email,
                 password,
                 false,
                 rol
             )
-            _viewModel.ingresarUsuarioAFirestore(usuario)
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "La cuenta ha sido creada con exito.",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            };
 
+            _viewModel.ingresarUsuarioAFirestore(usuario)
+            Snackbar.make(
+                _binding!!.root,
+                "La cuenta ha sido creada con exito.",
+                Snackbar.LENGTH_SHORT
+            ).show()
         }catch(e:Exception){
             Log.i("asd","$e.message")
-            dialog?.window?.let {
-                Snackbar.make(
-                    it.decorView,
-                    "${e.message}",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-            };
+
+            Snackbar.make(
+                _binding!!.root,
+                "${e.message}",
+                Snackbar.LENGTH_SHORT
+            ).show()
         }
     }
-
 }

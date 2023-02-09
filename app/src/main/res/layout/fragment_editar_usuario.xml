@@ -17,9 +17,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="@dimen/space_big"
-        android:text="@string/editar_o_eliminar_cuenta"
+        android:text="@string/editar_cuentas"
         android:textSize="24sp"
-        android:textColor="@color/black"/>
+        android:textColor="#283484"/>
+
     <TextView
         android:id="@+id/textview_editarUsuarioMail"
         android:layout_width="wrap_content"
@@ -32,102 +33,137 @@
         android:textColor="@color/black"
         tools:text="Email del usuario"/>
 
-    <EditText
-        android:id="@+id/editText_editarUsuario_nombre"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_nombre"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
         android:layout_marginTop="@dimen/space_normal"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="nombre"
-        android:hint= "@string/nombre"
-        android:inputType="text"
+        app:endIconMode="clear_text"
+        android:hint="@string/nombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_editarUsuarioMail"
-        />
-    <EditText
-        android:id="@+id/editText_editarUsuario_aPaterno"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_apellidos"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="apellido paterno"
-        android:hint= "@string/apellido_paterno"
-        android:inputType="text"
+        android:layout_marginTop="@dimen/space_normal"
+        app:endIconMode="clear_text"
+        android:hint="@string/apellidos"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_editarUsuario_nombre"
-        />
-    <EditText
-        android:id="@+id/editText_editarUsuario_aMaterno"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_nombre"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_apellidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_telefono"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="Apellido materno"
-        android:hint="@string/apellido_materno"
-        android:inputType="text"
+        android:layout_marginTop="@dimen/space_normal"
+        app:endIconMode="clear_text"
+        android:hint="@string/telefono"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_editarUsuario_aPaterno"
-        />
-    <EditText
-        android:id="@+id/editText_editarUsuario_rol"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_apellidos"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_telefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_contraseña"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="rol"
-        android:hint="@string/rol"
-        android:inputType="text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_editarUsuario_aMaterno"
-        />
-    <EditText
-        android:id="@+id/editText_editarUsuario_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="contraseña"
+        android:layout_marginTop="@dimen/space_normal"
+        app:endIconMode="clear_text"
         android:hint="@string/password"
-        android:inputType="textPassword"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_editarUsuario_rol"
-        />
-    <EditText
-        android:id="@+id/editText_editarUsuario_confirmarPassword"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_telefono"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_confirmarContraseña"
+        style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
         android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_small"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border"
-        android:autofillHints="contraseña"
+        android:layout_marginTop="@dimen/space_normal"
+        app:endIconMode="clear_text"
         android:hint="@string/confirmar_password"
-        android:inputType="textPassword"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_editarUsuario_password"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_contraseña"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_confirmarPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_editar_rol"
+        style="?attr/textInputOutlinedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_big"
+        android:layout_marginEnd="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_normal"
+        app:endIconMode="clear_text"
+        android:hint="@string/rol"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_editar_confirmarContraseña"
+        app:expandedHintEnabled="false"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_editarUsuario_rol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/button_editarUsuario_volver"
@@ -135,18 +171,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_bigger"
+        android:layout_marginTop="@dimen/space_small"
         android:text="@string/volver"
         app:layout_constraintEnd_toStartOf="@+id/button_editarUsuario_confirmar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword" />
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout_editar_rol"
+        />
 
     <Button
         android:id="@+id/button_editarUsuario_confirmar"
         style="@style/buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_bigger"
+        android:layout_marginTop="@dimen/space_small"
         android:layout_marginEnd="@dimen/space_big"
         android:layout_marginBottom="@dimen/space_bigger"
         android:layout_marginStart="@dimen/space_small"
@@ -154,7 +191,7 @@
         app:layout_constraintStart_toEndOf="@id/button_editarUsuario_volver"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editText_editarUsuario_confirmarPassword" />
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout_editar_rol"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

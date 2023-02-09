@@ -16,6 +16,7 @@ import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
 import com.example.conductor.ui.crearusuario.CrearUsuarioFragment
 import com.example.conductor.ui.editarusuario.EditarUsuarioFragment
+import com.example.conductor.utils.NavigationCommand
 import org.koin.android.ext.android.inject
 
 
@@ -54,16 +55,18 @@ class AdministrarCuentasFragment : BaseFragment() {
                 val bundle = Bundle()
                 bundle.putParcelable("key", it)
                 modalBottomSheet.arguments = bundle
-                modalBottomSheet.show(
+/*                modalBottomSheet.show(
                     requireActivity().supportFragmentManager,
                     "EditarUsuarioFragment"
-                )
+                )*/
             }
         }
 
         _binding!!.buttonCrearCuenta.setOnClickListener {
-            val modalBottomSheet = CrearUsuarioFragment()
-            modalBottomSheet.show(requireActivity().supportFragmentManager, "CrearUsuarioFragment")
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(
+                    AdministrarCuentasFragmentDirections
+                        .actionNavigationAdministrarCuentasToNavigationDataUsuario())
         }
 
         _binding!!.imageViewMenu.setOnClickListener{view->
