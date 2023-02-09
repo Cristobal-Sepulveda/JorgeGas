@@ -22,6 +22,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -37,6 +38,7 @@ import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.ui.vistageneral.VistaGeneralFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
+import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.notificationGenerator
 import com.google.android.gms.common.api.ResolvableApiException
@@ -143,6 +145,11 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 checkingDeviceLocationSettings()
             }
         }
+        if(requestCode == REQUEST_CAMERA_PERMISSION){
+            if(resultCode == Activity.RESULT_CANCELED){
+                checkingDeviceLocationSettings()
+            }
+        }
     }
 
     private fun vistaGeneralDrawableMenuYBottomNavigationView(){
@@ -182,6 +189,10 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             this,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
+        val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
         if(!isPermissionGranted){
             val requestPermissionLauncher = registerForActivityResult(
                 ActivityResultContracts.RequestPermission()){ isGranted ->
@@ -204,6 +215,9 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 }
             }
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if(!isCameraPermissionGranted){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         }
     }
 

@@ -1,17 +1,25 @@
 package com.example.conductor.ui.crearusuario
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
+import com.example.conductor.utils.Constants.REQUEST_TAKE_PHOTO
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -20,12 +28,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.IOException
 
 class CrearUsuarioFragment : BaseFragment() {
 
     private var _binding: FragmentCrearUsuarioBinding? = null
     override val _viewModel: AdministrarCuentasViewModel by inject()
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var imageBitmap: Bitmap
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,14 +46,14 @@ class CrearUsuarioFragment : BaseFragment() {
         _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Volantero" )
+        val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Supervisor Volantero", "Volantero" )
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         _binding!!.editTextDataUsuarioRol.setAdapter(adapter)
 
 
         _binding!!.buttonDataUsuarioVolver.setOnClickListener {
-/*            this.dismiss()*/
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
         _binding!!.buttonDataUsuarioConfirmar.setOnClickListener {
@@ -51,6 +62,9 @@ class CrearUsuarioFragment : BaseFragment() {
                     canICreateANewAccountValidator()
                 }
             }
+        }
+        _binding!!.circleImageViewCrearUsuarioIconoTomarFoto.setOnClickListener{
+            dispatchTakePictureIntent()
         }
 
         return _binding!!.root
@@ -63,6 +77,16 @@ class CrearUsuarioFragment : BaseFragment() {
         Log.i("CrearUsuarioFragment", "onDestroy")
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            imageBitmap = data?.extras?.get("data") as Bitmap
+            // Do something with the imageBitmap, such as saving it to a file or displaying it in an ImageView
+        }else{
+            Toast.makeText(requireActivity(),"Debes de tomar una foto para poder guardar un usuario", Toast.LENGTH_LONG).show()
+        }
+    }
+
     private suspend fun canICreateANewAccountValidator() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
         val apellidos = _binding!!.editTextDataUsuarioApellidos.text.toString()
@@ -70,7 +94,7 @@ class CrearUsuarioFragment : BaseFragment() {
         val email = _binding!!.editTextDataUsuarioUsuario.text.toString()
         val password = _binding!!.editTextDataUsuarioPassword.text.toString()
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()
-        val rol = "asd"
+        val rol = _binding!!.editTextDataUsuarioRol.text.toString();
 
         if (nombre.isEmpty() || apellidos.isEmpty() ||
             email.isEmpty() || password.isEmpty() ||
@@ -143,6 +167,14 @@ class CrearUsuarioFragment : BaseFragment() {
                 "${e.message}",
                 Snackbar.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+            }
         }
     }
 }
