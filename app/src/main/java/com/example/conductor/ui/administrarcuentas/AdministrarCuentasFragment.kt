@@ -106,7 +106,7 @@ class AdministrarCuentasFragment : BaseFragment() {
             popupMenu.show()
         }
 
-        _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
+/*        _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
             var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -134,7 +134,7 @@ class AdministrarCuentasFragment : BaseFragment() {
             override fun afterTextChanged(s: Editable?) {
                 return
             }
-        })
+        })*/
 
         return _binding!!.root
     }

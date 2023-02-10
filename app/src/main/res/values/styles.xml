@@ -48,6 +48,10 @@
         <item name="android:textSize">@dimen/text_small</item>
     </style>
 
+    <style name="buscador" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">#c3c3c3</item>
+        <item name="android:textColorHint">#c3c3c3</item>
+    </style>
     <style name="buttonsAdministrarCuentas">
         <item name="android:background">@color/orange</item>
         <item name="android:textColor">@color/white</item>
