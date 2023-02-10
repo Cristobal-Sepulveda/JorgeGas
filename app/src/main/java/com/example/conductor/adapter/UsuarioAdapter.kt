@@ -1,12 +1,12 @@
 package com.example.conductor.adapter
 
 import android.app.AlertDialog
-import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -15,12 +15,8 @@ import com.example.conductor.R
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.UsuarioItemViewBinding
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.example.conductor.data.AppDataSource
-import kotlinx.coroutines.coroutineScope
-import org.koin.android.ext.android.inject
 
 
 class UsuarioAdapter(viewModel: AdministrarCuentasViewModel, dataSource: AppDataSource, val onClickListener: OnClickListener)
@@ -32,7 +28,14 @@ class UsuarioAdapter(viewModel: AdministrarCuentasViewModel, dataSource: AppData
     class UsuarioViewHolder(private var binding: UsuarioItemViewBinding):
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){
+            val aux = usuario.fotoPerfil
+            val aux2= aux.indexOf("=")+1
+            val aux3 = aux.substring(0, aux2)
             binding.usuarioItem = usuario
+            Log.i("UsuarioAdapter",aux3)
+            val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
             binding.executePendingBindings()

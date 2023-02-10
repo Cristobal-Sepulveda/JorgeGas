@@ -31,7 +31,6 @@
                 android:layout_width="54dp"
                 android:layout_height="54dp"
                 android:layout_marginHorizontal="@dimen/space_small"
-                android:src="@drawable/ic_baseline_person_24"
                 app:civ_border_color="#c0c0c0"
                 app:civ_border_width="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"

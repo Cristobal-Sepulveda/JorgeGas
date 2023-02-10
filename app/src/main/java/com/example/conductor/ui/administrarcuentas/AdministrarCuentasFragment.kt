@@ -111,21 +111,17 @@ class AdministrarCuentasFragment : BaseFragment() {
             popupMenu.show()
         }
 
-        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
-            it.let {
-                adapter.submitList(it as MutableList<Usuario>)
+        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
+            if (null != it) {
+                _viewModel.navigationCommand.value =
+                    NavigationCommand.To(AdministrarCuentasFragmentDirections
+                        .actionNavigationAdministrarCuentasToEditarUsuarioFragment(it))
             }
         }
 
-        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
-            if (null != it) {
-/*                val bundle = Bundle()
-                bundle.putParcelable("key", it)
-                val fragment = EditarUsuarioFragment()
-                fragment.arguments = bundle*/
-                findNavController().navigate(
-                    AdministrarCuentasFragmentDirections
-                        .actionNavigationAdministrarCuentasToEditarUsuarioFragment(it))
+        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
+            it.let {
+                adapter.submitList(it as MutableList<Usuario>)
             }
         }
 

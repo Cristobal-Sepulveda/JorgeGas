@@ -96,6 +96,20 @@ class CrearUsuarioFragment : BaseFragment() {
         }
     }
 
+
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+            }
+        }
+    }
+    private fun parseandoImagenParaSubirlaAFirestore(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        return Base64.encodeToString(data, Base64.DEFAULT)
+    }
     private suspend fun canICreateANewAccountValidator() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
         val apellidos = _binding!!.editTextDataUsuarioApellidos.text.toString()
@@ -190,18 +204,6 @@ class CrearUsuarioFragment : BaseFragment() {
         }
     }
 
-    private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
-            }
-        }
-    }
 
-    private fun parseandoImagenParaSubirlaAFirestore(bitmap: Bitmap): String {
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
-        return Base64.encodeToString(data, Base64.DEFAULT)
-    }
+
 }
