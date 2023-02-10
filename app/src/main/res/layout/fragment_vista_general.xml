@@ -8,24 +8,7 @@
     android:layout_height="match_parent"
     android:background="#F0F0F0"
     tools:context=".ui.vistageneral.VistaGeneralFragment">
-
-    <TextView
-        android:id="@+id/output_text_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/edittext_border"
-        android:padding="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonVistaGeneralRegistroJornadaVolantero"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
-        tools:background="@color/black"
-        />
+    
 
     <Button
         android:id="@+id/buttonVistaGeneralRegistroJornadaVolantero"
@@ -42,5 +25,42 @@
         android:background="@drawable/boton_redondo_verde"
         android:textColor="@color/white"
         android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/imageView_vistaGeneral_botonVolantero"
+        android:layout_width="match_parent"
+        android:layout_height="133dp"
+        android:src="@drawable/card_vistageneral_volantero"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/volanteros"
+        android:layout_marginHorizontal="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_big"/>
+
+    <ImageView
+        android:id="@+id/imageView_vistaGeneral_botonCallCenter"
+        android:layout_width="match_parent"
+        android:layout_height="133dp"
+        android:src="@drawable/card_vistageneral_callcenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_vistaGeneral_botonVolantero"
+        android:contentDescription="@string/call_center"
+        android:layout_marginHorizontal="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_medium"/>
+
+    <ImageView
+        android:id="@+id/imageView_vistaGeneral_botonChoferes"
+        android:layout_width="match_parent"
+        android:layout_height="133dp"
+        android:src="@drawable/card_vistageneral_chofer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_vistaGeneral_botonCallCenter"
+        android:contentDescription="@string/call_center"
+        android:layout_marginHorizontal="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_medium"/>
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>

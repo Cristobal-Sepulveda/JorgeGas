@@ -275,12 +275,15 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                         .update("estaActivo", false)
                 }
             }
+            cloudDB.collection("Usuarios")
+                .document(firebaseAuth.currentUser!!.uid)
+                .update("sesionActiva", false).await()
+            FirebaseAuth.getInstance().signOut()
+            this.finish()
+            startActivity(Intent(this, AuthenticationActivity::class.java))
         }catch(e:Exception){
             notificationGenerator(this, e.message.toString())
         }
-        FirebaseAuth.getInstance().signOut()
-        this.finish()
-        startActivity(Intent(this, AuthenticationActivity::class.java))
     }
 
 }

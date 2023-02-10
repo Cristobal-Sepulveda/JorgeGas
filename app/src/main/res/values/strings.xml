@@ -88,6 +88,8 @@
     <string name="telefono">Teléfono</string>
     <string name="editar_cuentas">Editar cuentas</string>
     <string name="supervisor_volanteros">Supervisor Volanteros</string>
+    <string name="call_center">call center</string>
+    <string name="sesion_activa_existente">Su cuenta ya esta activa en otro celular. Cierre sesión en el otro dispositivo e intentelo nuevamente.</string>
 
     <!--String arrays-->
     <string-array name="roles">

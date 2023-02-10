@@ -15,10 +15,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
+import com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragmentDirections
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.LocationService
+import com.example.conductor.utils.NavigationCommand
 import com.example.conductor.utils.SharedPreferenceUtil
 import com.example.conductor.utils.notificationGenerator
 import com.google.android.material.snackbar.Snackbar
@@ -162,6 +164,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         _binding!!.buttonVistaGeneralRegistroJornadaVolantero.setOnClickListener {
             iniciarODetenerLocationService()
+        }
+
+        _binding!!.imageViewVistaGeneralBotonVolantero.setOnClickListener {
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(VistaGeneralFragmentDirections
+                    .actionNavigationVistaGeneralToNavigationGestionDeVolanteros())
         }
 
         return _binding!!.root

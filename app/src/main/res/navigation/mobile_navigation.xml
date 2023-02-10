@@ -10,7 +10,11 @@
         android:id="@+id/navigation_vista_general"
         android:name="com.example.conductor.ui.vistageneral.VistaGeneralFragment"
         android:label="@string/vista_general"
-        tools:layout="@layout/fragment_vista_general" />
+        tools:layout="@layout/fragment_vista_general" >
+        <action
+            android:id="@+id/action_navigation_vista_general_to_navigation_gestion_de_volanteros"
+            app:destination="@id/navigation_gestion_de_volanteros" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_map"

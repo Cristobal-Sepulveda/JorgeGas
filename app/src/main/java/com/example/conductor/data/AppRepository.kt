@@ -33,6 +33,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             document.get("usuario") as String,
                             document.get("password") as String,
                             document.get("deshabilitada") as Boolean,
+                            document.get("sesionActiva") as Boolean,
                             document.get("rol") as String
                         )
                         listAux.add(usuario)

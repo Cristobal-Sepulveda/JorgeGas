@@ -74,8 +74,9 @@ class EditarUsuarioFragment : BaseFragment() {
         val password2 = _binding!!.editTextEditarUsuarioConfirmarPassword.text.toString()
         val rol = _binding!!.editTextEditarUsuarioRol.text.toString()
         val deshabilitada = false
+        val sesionActiva = false
 
-        val usuario = Usuario(bundle.id, fotoPerfil, nombre, apellidos, telefono, email, password,deshabilitada, rol)
+        val usuario = Usuario(bundle.id, fotoPerfil, nombre, apellidos, telefono, email, password,deshabilitada, sesionActiva, rol)
 
         if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() ||
             rol.isEmpty() || password.isEmpty() || password2.isEmpty()

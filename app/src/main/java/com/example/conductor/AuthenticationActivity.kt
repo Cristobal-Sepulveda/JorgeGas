@@ -1,7 +1,9 @@
 package com.example.conductor
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -9,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.databinding.ActivityAuthenticationBinding
 import com.example.conductor.utils.Constants.firebaseAuth
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
@@ -68,16 +71,21 @@ class AuthenticationActivity : AppCompatActivity() {
         val password = binding.edittextPassword.text.toString()
         if(email !="" && password!=""){
             try{
-                firebaseAuth.signInWithEmailAndPassword(email, password).await()
                 lifecycleScope.launch{
                     withContext(Dispatchers.IO){
                         val userInValid = cloudDB.collection("Usuarios")
                             .whereEqualTo("usuario",email).get().await()
-                        if(userInValid.isEmpty){
-                            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
-                            finish()
-                            startActivity(intent)
+
+                        if(userInValid.documents[0].get("sesionActiva") as Boolean){
+                            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+                            runOnUiThread {
+                                Snackbar.make(findViewById(R.id.container),
+                                    getString(R.string.sesion_activa_existente),Toast.LENGTH_SHORT).show()
+                            }
+                            return@withContext
                         }
+
                         if(userInValid.documents[0].get("deshabilitada") as Boolean){
                             runOnUiThread {
                                 Toast.makeText(this@AuthenticationActivity,
@@ -85,11 +93,14 @@ class AuthenticationActivity : AppCompatActivity() {
                             }
                             return@withContext
                         }else{
+                            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+                            cloudDB.collection("Usuarios")
+                                .document(firebaseAuth.currentUser!!.uid)
+                                .update("sesionActiva", true).await()
                             val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                             finish()
                             startActivity(intent)
                         }
-
                     }
                 }
             }catch(e:Exception){

@@ -15,8 +15,6 @@ import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
-import com.example.conductor.ui.crearusuario.CrearUsuarioFragment
-import com.example.conductor.ui.editarusuario.EditarUsuarioFragment
 import com.example.conductor.utils.NavigationCommand
 import org.koin.android.ext.android.inject
 
@@ -35,32 +33,39 @@ class AdministrarCuentasFragment : BaseFragment() {
         /************************ Inicializando Variables del fragmento****************************/
         _binding = FragmentAdministrarCuentasBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
-
-        val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario ->
-
-        })
-
+        val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario -> })
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
         _viewModel.displayUsuariosInRecyclerView()
 
+        _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
+            var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
 
-        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
-            it.let {
-                adapter.submitList(it as MutableList<Usuario>)
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
+                    it.nombre.lowercase().contains(s.toString().lowercase())
+                } as MutableList<Usuario>
+                if(count ==1){
+                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
+                    return
+                }
+                if(before == 1 ){
+                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(listasDeRespaldo.last())
+                    listasDeRespaldo.removeLast()
+                    return
+                }
             }
-        }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.i("asd","$start    $count   $after")
+                if(after==1){
+                    listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
+                    return
+                }
+            }
 
-        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
-            if (null != it) {
-/*                val bundle = Bundle()
-                bundle.putParcelable("key", it)
-                val fragment = EditarUsuarioFragment()
-                fragment.arguments = bundle*/
-                findNavController().navigate(
-                    AdministrarCuentasFragmentDirections
-                        .actionNavigationAdministrarCuentasToEditarUsuarioFragment(it))
+            override fun afterTextChanged(s: Editable?) {
+                return
             }
-        }
+        })
 
         _binding!!.buttonCrearCuenta.setOnClickListener {
             _viewModel.navigationCommand.value =
@@ -106,35 +111,23 @@ class AdministrarCuentasFragment : BaseFragment() {
             popupMenu.show()
         }
 
-/*        _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
-            var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
+        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
+            it.let {
+                adapter.submitList(it as MutableList<Usuario>)
+            }
+        }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
-                        it.nombre.lowercase().contains(s.toString().lowercase())
-                } as MutableList<Usuario>
-                if(count ==1){
-                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
-                    return
-                }
-                if(before == 1 ){
-                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(listasDeRespaldo.last())
-                    listasDeRespaldo.removeLast()
-                    return
-                }
+        _viewModel.navigateToSelectedUsuario.observe(viewLifecycleOwner) {
+            if (null != it) {
+/*                val bundle = Bundle()
+                bundle.putParcelable("key", it)
+                val fragment = EditarUsuarioFragment()
+                fragment.arguments = bundle*/
+                findNavController().navigate(
+                    AdministrarCuentasFragmentDirections
+                        .actionNavigationAdministrarCuentasToEditarUsuarioFragment(it))
             }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.i("asd","$start    $count   $after")
-                if(after==1){
-                    listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
-                    return
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                return
-            }
-        })*/
+        }
 
         return _binding!!.root
     }

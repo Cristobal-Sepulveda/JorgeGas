@@ -33,6 +33,7 @@
                 android:id="@+id/textInput_editText_buscarUsuario"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/azulSuave"
                 android:textColor="@color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -62,7 +63,7 @@
             android:id="@+id/button_crearCuenta"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_margin="@dimen/space_normal"
+            android:layout_margin="@dimen/space_medium"
             android:contentDescription="@string/boton_crear_cuenta"
             android:src="@drawable/ic_baseline_add_48"
             app:backgroundTint="@color/orange"

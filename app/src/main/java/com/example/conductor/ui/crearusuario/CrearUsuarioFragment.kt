@@ -169,6 +169,7 @@ class CrearUsuarioFragment : BaseFragment() {
                 email,
                 password,
                 false,
+                false,
                 rol
             )
 
