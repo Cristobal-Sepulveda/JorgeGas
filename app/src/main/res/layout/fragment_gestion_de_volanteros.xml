@@ -77,7 +77,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tabLayout_SwitchPersonalizado"
         android:layout_margin="@dimen/space_big"
-        android:background="@drawable/edittext_border"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

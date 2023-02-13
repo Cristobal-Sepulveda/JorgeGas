@@ -3,6 +3,7 @@ package com.example.conductor.data
 import android.util.Log
 import com.example.conductor.data.daos.UsuarioDao
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
+import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingResource
@@ -89,10 +90,21 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-    override suspend fun observarTrayectoVolanteros() {
+    override suspend fun obtenerRegistroTrayectoVolanteros(): Any = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-
+                try {
+                    val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get().await()
+                    val registroTrayectoVolantero = mutableListOf<RegistroTrayectoVolantero>()
+                    for (document in colRef){
+                        registroTrayectoVolantero.add(RegistroTrayectoVolantero(
+                            document.id, document.get("estaActivo") as Boolean)
+                        )
+                    }
+                    return@withContext registroTrayectoVolantero
+                } catch (e: Exception) {
+                    return@withContext "Error"
+                }
             }
         }
     }

@@ -161,12 +161,12 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                     when (documentChange.type) {
                         DocumentChange.Type.ADDED -> {
                             Log.i("DocumentChange", "ADDED")
-                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
                             Log.i("DocumentChange", "ADDED: $listOfGeopoints")
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             for (element in listOfGeopoints) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
-                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
+                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]!!["geopoints"]!!.last()
                                     Log.i("DocumentChange", "ADDED: $nuevoVolanteroGeopoint")
                                     val marker = map.addMarker(MarkerOptions()
                                         .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
@@ -179,7 +179,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                         }
                         DocumentChange.Type.MODIFIED -> {
                             Log.i("DocumentChange", "MODIFIED")
-                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, List<GeoPoint>>>
+                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
                             if(!estaActivo){
                                 for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
@@ -196,7 +196,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
                                         if(mapIdMarker.key == documentChange.document.id)
                                           mapIdMarker.value.remove()
                                     }
-                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]?.last() as GeoPoint
+                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]!!["geopoints"]!!.last()
                                     volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
                                     val marker = map.addMarker(MarkerOptions()
                                         .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))

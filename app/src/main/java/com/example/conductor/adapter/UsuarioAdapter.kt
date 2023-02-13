@@ -30,9 +30,6 @@ class UsuarioAdapter(viewModel: AdministrarCuentasViewModel, dataSource: AppData
         fun bind(usuario: Usuario){
             binding.usuarioItem = usuario
             val aux = usuario.fotoPerfil
-            /*if(usuario.nombre == "722772"){
-                Log.i("asd", aux)
-            }*/
             if(aux.last().toString() == "=" || (aux.first().toString() == "/" && aux[1].toString() == "9")){
                 val decodedString  = Base64.decode(aux, Base64.DEFAULT)
                 val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)

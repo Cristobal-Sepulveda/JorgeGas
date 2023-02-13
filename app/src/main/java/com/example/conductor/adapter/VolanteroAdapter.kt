@@ -1,5 +1,7 @@
 package com.example.conductor.adapter
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
@@ -23,8 +25,18 @@ class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppD
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){
             binding.usuarioItem = usuario
-            // This is important, because it forces the data binding to execute immediately,
-            // which allows the RecyclerView to make the correct view size measurements
+            val aux = usuario.fotoPerfil
+            if(aux.last().toString() == "=" || (aux.first().toString() == "/" && aux[1].toString() == "9")){
+                val decodedString  = Base64.decode(aux, Base64.DEFAULT)
+                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
+            }else{
+                val aux2= aux.indexOf("=")+1
+                val aux3 = aux.substring(0, aux2)
+                val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
+                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
+            }
             binding.executePendingBindings()
         }
     }

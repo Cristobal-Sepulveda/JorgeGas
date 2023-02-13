@@ -7,7 +7,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class RegistroTrayectoVolantero(
     val idVolantero: String,
-    val fecha: String,
-    var locations: LatLng):Parcelable{
+    val estaActivo: Boolean
+) : Parcelable {
+
 }
 
