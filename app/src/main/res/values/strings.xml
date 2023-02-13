@@ -90,6 +90,7 @@
     <string name="supervisor_volanteros">Supervisor Volanteros</string>
     <string name="call_center">call center</string>
     <string name="sesion_activa_existente">Su cuenta ya esta activa en otro celular. Cierre sesión en el otro dispositivo e intentelo nuevamente.</string>
+    <string name="nombreYApellido">Cristóbal Sepúlveda</string>
 
     <!--String arrays-->
     <string-array name="roles">

@@ -17,6 +17,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,6 +36,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
+import com.example.conductor.databinding.DrawerNavHeaderBinding
 import com.example.conductor.ui.vistageneral.VistaGeneralFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
@@ -82,6 +84,16 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
         vistaGeneralDrawableMenuYBottomNavigationView()
+
+
+/*        val asd = DrawerNavHeaderBinding.bind(binding.navView.getHeaderView(0))
+        asd.textViewNombreUsuario.setOnClickListener {
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    logout()
+                }
+            }
+        }*/
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             lifecycleScope.launch{

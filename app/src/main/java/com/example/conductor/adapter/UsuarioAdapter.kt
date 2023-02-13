@@ -28,16 +28,22 @@ class UsuarioAdapter(viewModel: AdministrarCuentasViewModel, dataSource: AppData
     class UsuarioViewHolder(private var binding: UsuarioItemViewBinding):
             RecyclerView.ViewHolder(binding.root) {
         fun bind(usuario: Usuario){
-            val aux = usuario.fotoPerfil
-            val aux2= aux.indexOf("=")+1
-            val aux3 = aux.substring(0, aux2)
             binding.usuarioItem = usuario
-            Log.i("UsuarioAdapter",aux3)
-            val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
-            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-            binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
-            // This is important, because it forces the data binding to execute immediately,
-            // which allows the RecyclerView to make the correct view size measurements
+            val aux = usuario.fotoPerfil
+            /*if(usuario.nombre == "722772"){
+                Log.i("asd", aux)
+            }*/
+            if(aux.last().toString() == "=" || (aux.first().toString() == "/" && aux[1].toString() == "9")){
+                val decodedString  = Base64.decode(aux, Base64.DEFAULT)
+                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
+            }else{
+                val aux2= aux.indexOf("=")+1
+                val aux3 = aux.substring(0, aux2)
+                val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
+                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                binding.circleImageViewFotoPerfil.setImageBitmap(decodedByte)
+            }
             binding.executePendingBindings()
         }
     }

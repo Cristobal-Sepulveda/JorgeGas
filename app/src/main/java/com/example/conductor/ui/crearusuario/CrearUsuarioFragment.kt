@@ -108,8 +108,9 @@ class CrearUsuarioFragment : BaseFragment() {
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
-        return Base64.encodeToString(data, Base64.DEFAULT)
+        return Base64.encodeToString(data, Base64.NO_PADDING)
     }
+
     private suspend fun canICreateANewAccountValidator() {
         val nombre = _binding!!.editTextDataUsuarioNombre.text.toString()
         val apellidos = _binding!!.editTextDataUsuarioApellidos.text.toString()

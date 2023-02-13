@@ -46,21 +46,23 @@
         app:layout_constraintTop_toBottomOf="@id/textInputLayout_gestionDeVolanteros_textInputContainer"
         android:layout_marginHorizontal="@dimen/space_big"
         android:layout_marginVertical="@dimen/space_small"
-        android:background="@color/gris"
+        android:background="@drawable/tab_layout_background"
         app:tabBackground="@drawable/tab_selected_background"
-        app:tabSelectedTextColor="@color/white"
+        app:tabSelectedTextColor="@color/black"
         app:tabIndicatorColor="@android:color/transparent"
         >
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="@dimen/padding_medium"
             android:text="@string/activos"
             />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="@dimen/padding_medium"
             android:text="@string/inactivos"
             />
 
