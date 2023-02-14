@@ -14,6 +14,7 @@ import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentGestionDeVolanterosBinding
+import com.example.conductor.utils.NavigationCommand
 import com.google.android.material.tabs.TabLayout
 import org.koin.android.ext.android.inject
 
@@ -27,43 +28,12 @@ class GestionDeVolanterosFragment : BaseFragment() {
         _binding = FragmentGestionDeVolanterosBinding.inflate(inflater, container, false)
 
         val adapter = VolanteroAdapter(_viewModel,_appDataSource, VolanteroAdapter.OnClickListener{
-
+            _viewModel.navigationCommand.value = NavigationCommand.To(
+                GestionDeVolanterosFragmentDirections
+                    .actionNavigationGestionDeVolanterosToNavigationDetalleVolantero(it))
         })
 
         _binding!!.recyclerviewListaVolanteros.adapter = adapter
-        _viewModel.displayUsuariosInRecyclerView()
-
-        _viewModel.domainUsuariosInactivosInScreen.observe(requireActivity()) {
-            it.let {
-                adapter.submitList(it as MutableList<Usuario>)
-            }
-        }
-
-        _viewModel.domainUsuariosActivosInScreen.observe(requireActivity()) {
-            it.let {
-                adapter.submitList(it as MutableList<Usuario>)
-            }
-        }
-
-
-
-        _binding!!.tabLayoutSwitchPersonalizado.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if(tab!!.text=="Activos"){
-                    filtroSeleccionado = "Activos"
-                    adapter.submitList(_viewModel.domainUsuariosActivosInScreen.value)
-                }else{
-                    filtroSeleccionado = "Inactivos"
-                    adapter.submitList(_viewModel.domainUsuariosInactivosInScreen.value)
-                }
-            }
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                // Handle tab reselect
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Handle tab unselect
-            }
-        })
 
         _binding!!.textInputEditTextGestionDeVolanterosBuscarUsuario.addTextChangedListener(object:
             TextWatcher {
@@ -121,6 +91,44 @@ class GestionDeVolanterosFragment : BaseFragment() {
                 return
             }
         })
+
+        _binding!!.tabLayoutSwitchPersonalizado.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                if(tab!!.text=="Activos"){
+                    filtroSeleccionado = "Activos"
+                    adapter.submitList(_viewModel.domainUsuariosActivosInScreen.value)
+                }else{
+                    filtroSeleccionado = "Inactivos"
+                    adapter.submitList(_viewModel.domainUsuariosInactivosInScreen.value)
+                }
+            }
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Handle tab reselect
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Handle tab unselect
+            }
+        })
+
+        _viewModel.displayUsuariosInRecyclerView()
+
+        _viewModel.domainUsuariosInactivosInScreen.observe(requireActivity()) {
+            it.let {
+                adapter.submitList(it as MutableList<Usuario>)
+            }
+        }
+
+        _viewModel.domainUsuariosActivosInScreen.observe(requireActivity()) {
+            it.let {
+                adapter.submitList(it as MutableList<Usuario>)
+            }
+        }
+
+
+
+
+
+
 
         return _binding!!.root
     }

@@ -91,6 +91,11 @@
     <string name="call_center">call center</string>
     <string name="sesion_activa_existente">Su cuenta ya esta activa en otro celular. Cierre sesión en el otro dispositivo e intentelo nuevamente.</string>
     <string name="nombreYApellido">Cristóbal Sepúlveda</string>
+    <string name="foto_perfil_volantero_seleccionado">Foto de perfil del volantero seleccionado</string>
+    <string name="recorrido">Recorrido</string>
+    <string name="horaInicio">10:00am</string>
+    <string name="horaFin">22:00pm</string>
+    <string name="calendario">Calendario</string>
 
     <!--String arrays-->
     <string-array name="roles">

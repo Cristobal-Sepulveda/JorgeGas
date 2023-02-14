@@ -53,15 +53,15 @@ class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppD
 
     override fun onBindViewHolder(holder: VolanteroViewHolder, position: Int) {
         val usuario = getItem(position)
-        /*holder.itemView.setOnClickListener(){
-            onClickListener.onClick(usuario)
-        }*/
-
-        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_llamar).setOnClickListener{ view ->
+        holder.itemView.setOnClickListener(){
             onClickListener.onClick(usuario)
         }
+
+        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_llamar).setOnClickListener{ view ->
+            /*onClickListener.onClick(usuario)*/
+        }
         holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_notificar).setOnClickListener{ view ->
-            onClickListener.onClick(usuario)
+            /*onClickListener.onClick(usuario)*/
         }
         holder.bind(usuario)
     }

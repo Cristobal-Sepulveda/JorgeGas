@@ -9,6 +9,7 @@ interface AppDataSource {
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerRegistroTrayectoVolanteros(): Any
+    suspend fun obtenerRegistroDelVolantero(id: String): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
     suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)
     suspend fun eliminarUsuarioEnSqlite()

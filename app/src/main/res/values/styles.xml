@@ -65,4 +65,14 @@
         <item name="android:textColor">#FF5722</item>
     </style>
 
+    <style name="CustomDatePickerTheme">
+        <item name="android:calendarViewStyle">@style/CustomCalendarStyle</item>
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorOnPrimary">@color/orange</item>
+    </style>
+
+    <style name="CustomCalendarStyle">
+        <item name="android:background">@color/orange</item>
+    </style>
+
 </resources>

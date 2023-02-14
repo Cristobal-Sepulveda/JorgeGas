@@ -108,7 +108,18 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
+    override suspend fun obtenerRegistroDelVolantero(id: String): Any = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                try{
+                    return@withContext cloudDB.collection("RegistroTrayectoVolanteros")
+                        .document(id).get().await()
+                }catch(e:Exception){
+                    return@withContext "Error"
+                }
+            }
+        }
+    }
     override suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource{
             withContext(ioDispatcher){

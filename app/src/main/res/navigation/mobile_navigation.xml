@@ -28,7 +28,11 @@
         android:name="com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosFragment"
         android:label="@string/gestion_de_volanteros"
         tools:layout="@layout/fragment_gestion_de_volanteros"
-        />
+        >
+        <action
+            android:id="@+id/action_navigation_gestion_de_volanteros_to_navigation_detalle_volantero"
+            app:destination="@id/navigation_detalle_volantero" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_administrar_cuentas"
         android:name="com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragment"
@@ -63,6 +67,20 @@
             android:id="@+id/action_navigation_editar_usuario_to_navigation_administrar_cuentas"
             app:destination="@id/navigation_administrar_cuentas"
             app:popUpTo="@id/navigation_administrar_cuentas"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="usuarioDetails"
+            app:argType="com.example.conductor.data.data_objects.domainObjects.Usuario" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_detalle_volantero"
+        android:name="com.example.conductor.ui.detallevolantero.DetalleVolanteroFragment"
+        android:label="DetalleVolanteroFragment"
+        tools:layout="@layout/fragment_detalle_volantero">
+        <action
+            android:id="@+id/action_navigation_detalle_volantero_to_navigation_gestion_de_volanteros"
+            app:destination="@id/navigation_gestion_de_volanteros"
+            app:popUpTo="@id/navigation_gestion_de_volanteros"
             app:popUpToInclusive="true" />
         <argument
             android:name="usuarioDetails"
