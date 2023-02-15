@@ -53,7 +53,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         val today = Calendar.getInstance()
         cargarDatosDelVolantero(bundle)
 
-
         lifecycleScope.launch{
             withContext(Dispatchers.IO){
                 registroDelVolantero = _viewModel.obtenerRegistroDelVolantero(bundle.id)
@@ -61,59 +60,15 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener{_,value,_ ->
-            val minutes = (value * 10).toInt() % 60
-            val hours = 10 + (value * 10).toInt() / 60
-            val time = String.format("%02.0f:%02d", hours.toFloat(), minutes)
-            Log.d("Slider", "Selected time: $time")
-            val registroDelVolanteroParseado = registroDelVolantero as DocumentSnapshot
-            val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String,Map<*,*>>>
-            println(selectedDate)
-            for(registro in registroJornada){
-                if(registro["fecha"].toString() == selectedDate){
-                    val registroLatLngsDelDia = registro["registroLatLngs"]
-                    val horasConRegistro = registroLatLngsDelDia!!["horasConRegistro"] as ArrayList<String>
-                    val geopointsRegistradosDelDia = registroLatLngsDelDia["geopoints"] as ArrayList<GeoPoint>
-                    for(horaRegistrada in horasConRegistro){
-                        if(hours.toFloat()>=horaRegistrada.substring(0,2).toFloat()){
-                            if(minutes.toFloat() >= horaRegistrada.substring(3,5).toFloat()){
-                                var i = horasConRegistro.indexOf(horaRegistrada)
-                                while(i<horasConRegistro.size){
-                                    if(horasConRegistro[i].substring(0,2).toFloat() == hours.toFloat()){
-                                        if(horasConRegistro[i].substring(3,5).toFloat() > minutes.toFloat()){
-                                            break
-                                        }
-                                    }
-                                    val latitud = geopointsRegistradosDelDia[i].latitude
-                                    val longitud = geopointsRegistradosDelDia[i].longitude
-                                    val latLng = LatLng(latitud,longitud)
-                                    map.addMarker(latLng.let { MarkerOptions().position(it) })
-                                    i++
-                                }
-                                break
-                            }
-                        }
-                    }
-                    return@addOnChangeListener
-                }
-            }
-            Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT).show()
-            _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
+            pintarGeopointsSiCorresponde(value)
         }
+
         _binding!!.sliderDetalleVolanteroTrayecto.setLabelFormatter { value ->
-            val minutes = (value * 10).toInt() % 60
-            val hours = 10 + (value * 10).toInt() / 60
-            String.format("%02d:%02d", hours, minutes)
+            customizarSliderLabel(value)
         }
 
         _binding!!.imageViewDetalleVolanteroCalendario.setOnClickListener{
-            configurarCalendario(today)
-        }
-
-        _binding!!.textViewDetalleVolanteroRecorrido.setOnClickListener {
-            if(registroDelVolantero != null && registroDelVolantero != "Error"){
-                val aux = registroDelVolantero as DocumentSnapshot
-                println(aux.data!!["registroJornada"])
-            }
+            abrirCalendario(today)
         }
 
         return _binding!!.root
@@ -129,21 +84,26 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         map = googleMap
         startingPermissionCheck()
     }
+    private fun startingPermissionCheck(){
+        val isPermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if(isPermissionGranted){
+            try{
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(Constants.defaultLocation.latitude, Constants.defaultLocation.longitude)
+                        , Constants.cameraDefaultZoom.toFloat())
+                )
+            }catch(e: SecurityException){
+                _binding!!.fragmentContainerViewDetalleVolanteroGoogleMaps.isGone = true
+                _binding!!.imageviewDetalleVolanteroMapaSinPermisos.isGone = false
 
-    private fun configurarCalendario(today: Calendar) {
-        datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-            if(month<9){
-                selectedDate = "$year-0${month+1}-$dayOfMonth"
-                _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
-            }else{
-                selectedDate = "$year-${month+1}-$dayOfMonth"
-                _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
             }
-
-        }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
-        datePickerDialog?.show()
+        }else {
+            _binding!!.fragmentContainerViewDetalleVolanteroGoogleMaps.isGone = true
+            _binding!!.imageviewDetalleVolanteroMapaSinPermisos.isGone = false
+        }
     }
-
     private fun cargarDatosDelVolantero(bundle: Usuario) {
         val fotoPerfil = bundle.fotoPerfil
         if(fotoPerfil.last().toString() == "=" || (fotoPerfil.first().toString() == "/" && fotoPerfil[1].toString() == "9")){
@@ -158,26 +118,77 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             _binding!!.imageViewDetalleVolanteroFotoPerfil.setImageBitmap(decodedByte)
         }
     }
-
-    private fun startingPermissionCheck(){
-        val isPermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-        if(isPermissionGranted){
-            try{
-                map.moveCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                    LatLng(Constants.defaultLocation.latitude, Constants.defaultLocation.longitude)
-                    , Constants.cameraDefaultZoom.toFloat())
-                )
-            }catch(e: SecurityException){
-                _binding!!.fragmentContainerViewDetalleVolanteroGoogleMaps.isGone = true
-                _binding!!.imageviewDetalleVolanteroMapaSinPermisos.isGone = false
-
+    private fun customizarSliderLabel(value: Float):String {
+        val minutes = (value * 10).toInt() % 60
+        val hours = 10 + (value * 10).toInt() / 60
+        return String.format("%02d:%02d", hours, minutes)
+    }
+    private fun abrirCalendario(today: Calendar) {
+        datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+            if(month<9){
+                selectedDate = "$year-0${month+1}-$dayOfMonth"
+                validarFechaYActivarSlider(selectedDate!!)
+                return@DatePickerDialog
+            }else{
+                selectedDate = "$year-${month+1}-$dayOfMonth"
+                validarFechaYActivarSlider(selectedDate!!)
+                return@DatePickerDialog
             }
-        }else {
-            _binding!!.fragmentContainerViewDetalleVolanteroGoogleMaps.isGone = true
-            _binding!!.imageviewDetalleVolanteroMapaSinPermisos.isGone = false
+        }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
+        datePickerDialog?.show()
+    }
+    private fun validarFechaYActivarSlider(selectedDate: String){
+        val registroDelVolanteroParseado = registroDelVolantero as DocumentSnapshot
+        val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String,Map<*,*>>>
+        registroJornada.forEach{
+            if(it["fecha"].toString() == selectedDate){
+                _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
+                return
+            }
         }
+        _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
+        Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT).show()
+    }
+    private fun pintarGeopointsSiCorresponde(value: Float) {
+        map.clear()
+        val minutes = (value * 10).toInt() % 60
+        val hours = 10 + (value * 10).toInt() / 60
+        val time = String.format("%02.0f:%02d", hours.toFloat(), minutes)
+        Log.d("Slider", "Selected time: $time")
+        val registroDelVolanteroParseado = registroDelVolantero as DocumentSnapshot
+        val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String,Map<*,*>>>
+        println(selectedDate)
+        for(registro in registroJornada){
+            if(registro["fecha"].toString() == selectedDate){
+                val registroLatLngsDelDia = registro["registroLatLngs"]
+                val listadoHoraDeRegistroNuevosGeopoints = registroLatLngsDelDia!!["horasConRegistro"] as ArrayList<String>
+                val geopointsRegistradosDelDia = registroLatLngsDelDia["geopoints"] as ArrayList<GeoPoint>
+                for(horaRegistrada in listadoHoraDeRegistroNuevosGeopoints){
+                    if(validarSiPintarGeopointsSegunSuHoraDeRegistro(horaRegistrada, hours, minutes)){
+                        var i = listadoHoraDeRegistroNuevosGeopoints.indexOf(horaRegistrada)
+                        while(i<listadoHoraDeRegistroNuevosGeopoints.size){
+                            if(listadoHoraDeRegistroNuevosGeopoints[i].substring(0,2).toFloat() == hours.toFloat() &&
+                                listadoHoraDeRegistroNuevosGeopoints[i].substring(3,5).toFloat() > minutes.toFloat()){
+                                break
+                            }
+                            val latitud = geopointsRegistradosDelDia[i].latitude
+                            val longitud = geopointsRegistradosDelDia[i].longitude
+                            val latLng = LatLng(latitud,longitud)
+                            map.addMarker(latLng.let { MarkerOptions().position(it) })
+                            i++
+                        }
+                        break
+                    }
+                }
+                return
+            }
+        }
+    }
+    private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(horaRegistrada: String,
+                                                              selectedHours: Int,
+                                                              selectedMinutes: Int): Boolean {
+        val horaRegistradaHours = horaRegistrada.substring(0, 2).toFloat()
+        val horaRegistradaMinutes = horaRegistrada.substring(3, 5).toFloat()
+        return selectedHours.toFloat() >= horaRegistradaHours && selectedMinutes.toFloat() >= horaRegistradaMinutes
     }
 }
