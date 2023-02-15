@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -24,7 +25,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private var datePickerDialog: DatePickerDialog? = null
     private var selectedDate: String?= null
     private var registroDelVolantero: Any? =null
-
+    private var latLngsDeInteres = mutableListOf<LatLng>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,7 +61,16 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener{_,value,_ ->
-            pintarGeopointsSiCorresponde(value)
+            if(pintarGeopointsSiCorresponde(value)){
+                val polylineOptions = PolylineOptions()
+                polylineOptions.color(Color.GREEN)
+                polylineOptions.width(5f)
+                for (latLng in latLngsDeInteres) {
+                    polylineOptions.add(latLng)
+                }
+                map.addPolyline(polylineOptions)
+                return@addOnChangeListener
+            }
         }
 
         _binding!!.sliderDetalleVolanteroTrayecto.setLabelFormatter { value ->
@@ -149,8 +159,9 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
         Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT).show()
     }
-    private fun pintarGeopointsSiCorresponde(value: Float) {
+    private fun pintarGeopointsSiCorresponde(value: Float):Boolean {
         map.clear()
+        latLngsDeInteres.clear()
         val minutes = (value * 10).toInt() % 60
         val hours = 10 + (value * 10).toInt() / 60
         val time = String.format("%02.0f:%02d", hours.toFloat(), minutes)
@@ -174,15 +185,16 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val latitud = geopointsRegistradosDelDia[i].latitude
                             val longitud = geopointsRegistradosDelDia[i].longitude
                             val latLng = LatLng(latitud,longitud)
-                            map.addMarker(latLng.let { MarkerOptions().position(it) })
+                            latLngsDeInteres.add(latLng)
                             i++
                         }
                         break
                     }
                 }
-                return
+                return true
             }
         }
+        return false
     }
     private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(horaRegistrada: String,
                                                               selectedHours: Int,
