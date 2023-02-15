@@ -9,9 +9,14 @@ plugins {
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def googleMapsApiKey = localProperties.getProperty('googleMapsApiKey')
+def directionsApiKey = localProperties.getProperty('directionsApiKey')
 if (googleMapsApiKey == null) {
     googleMapsApiKey = System.getenv("GOOGLE_MAPS_API_KEY_ENVIRONMENT_VARIABLE")
 }
+if (directionsApiKey == null) {
+    directionsApiKey = System.getenv("DIRECTIONS_API_KEY_ENVIRONMENT_VARIABLE")
+}
+
 android {
     namespace 'com.example.conductor'
     compileSdk 33
@@ -24,11 +29,14 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
-                googleMapsApiKey       : googleMapsApiKey
+                googleMapsApiKey : googleMapsApiKey,
+                directionsApiKey : directionsApiKey
         ]
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\"" // add here
+        buildConfigField "String", "DIRECTIONS_API_KEY", "\"$directionsApiKey\"" // add here
     }
 
     buildTypes {
@@ -65,7 +73,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'com.google.android.material:material:1.8.0'
@@ -114,6 +121,11 @@ dependencies {
     implementation 'androidx.compose.material:material:1.3.1'
     debugImplementation "androidx.compose.ui:ui-tooling:1.3.3"
     implementation "androidx.compose.ui:ui-tooling-preview:1.3.3"
+
+    //Google Maps Directions API
+    implementation 'com.google.maps:google-maps-services:0.17.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.2.1'
 
     //Koin Dependency Injection
     // Koin Core features

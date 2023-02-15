@@ -7,6 +7,9 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.maps.GeoApiContext
+import java.io.FileInputStream
+import java.util.*
 
 object Constants {
 
@@ -21,7 +24,6 @@ object Constants {
     internal const val ACTION_LOCATION_BROADCAST = "$PACKAGE_NAME.action.LOCATION_BROADCAST"
     internal const val EXTRA_LOCATION = "$PACKAGE_NAME.extra.LOCATION"
     const val NOTIFICATION_CHANNEL_ID = "jorge_gas_empresa"
-
 }
 
 
