@@ -140,12 +140,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun obtenerGeoApiContext() {
-        geoApiContext = GeoApiContext.Builder()
-            .apiKey("AIzaSyAi8_l1Ql2fuW75bSjvTT_2ZMBmlo38wUs")
-            .build()
-    }
-
     private fun customizarSliderLabel(value: Float): String {
         val minutes = (value * 10).toInt() % 60
         val hours = 10 + (value * 10).toInt() / 60
@@ -165,6 +159,11 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             }
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         datePickerDialog?.show()
+    }
+    private fun obtenerGeoApiContext() {
+        geoApiContext = GeoApiContext.Builder()
+            .apiKey("AIzaSyAi8_l1Ql2fuW75bSjvTT_2ZMBmlo38wUs")
+            .build()
     }
 
     private fun validarFechaYActivarSlider(selectedDate: String) {
@@ -222,7 +221,11 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             latLngsDeInteres.add(latLng)
                             i++
                         }
-                        pintarPolyline()
+                        lifecycleScope.launch{
+                            withContext(Dispatchers.IO){
+                                pintarPolyline()
+                            }
+                        }
                         break
                     }
                 }
@@ -233,53 +236,47 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun pintarPolyline() {
-        try{
-            Log.i("asd", "$latLngsDeInteres")
-            val request = DirectionsApi.newRequest(geoApiContext)
-                .mode(TravelMode.TRANSIT)
-                .origin(PolyUtil.encode(latLngsDeInteres.subList(0, 1)))
-                .destination(PolyUtil.encode(latLngsDeInteres.subList(latLngsDeInteres.size - 1, latLngsDeInteres.size)))
-                .waypoints(
-                    PolyUtil.encode(latLngsDeInteres.subList(1, latLngsDeInteres.size - 1)),
-                )
-                .optimizeWaypoints(true)
-                .awaitIgnoreError()
-            // Check if the request and routes are not null
-            if (request?.routes != null && request.routes.isNotEmpty()) {
-                // Extract the encoded polyline from the Directions API response
-                val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
-
-                // Decode the polyline to a list of LatLng points
-                val decodedPath = PolyUtil.decode(encodedPolyline)
-                // Create a PolylineOptions object and configure its appearance
-                val polylineOption = PolylineOptions()
-                    .color(Color.BLUE)
-                    .width(10f)
-
-                // Add the LatLng points to the PolylineOptions object
-                decodedPath.forEach { latLng ->
-                    polylineOption.add(latLng)
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val request = DirectionsApi.newRequest(geoApiContext)
+                        .mode(TravelMode.WALKING)
+                        .origin("-33.493105,-70.7479667")
+                        .destination("-33.54347,-70.62007")
+                        .optimizeWaypoints(true)
+                        .await()
+                    withContext(Dispatchers.Main){
+                        if (request?.routes != null && request.routes.isNotEmpty()) {
+                            val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
+                            // Decode the polyline to a list of LatLng points
+                            val decodedPath = PolyUtil.decode(encodedPolyline)
+                            // Create a PolylineOptions object and configure its appearance
+                            val polylineOption = PolylineOptions()
+                                .color(Color.BLUE)
+                                .width(10f)
+                            // Add the LatLng points to the PolylineOptions object
+                            decodedPath.forEach { latLng ->
+                                polylineOption.add(latLng)
+                            }
+                            // Add the Polyline to the map
+                            map.addPolyline(polylineOption)
+                            val polylineOptions = PolylineOptions()
+                            polylineOptions.color(Color.RED)
+                            polylineOptions.width(10f)
+                            polylineOptions.addAll(latLngsDeInteres.filterNotNull())
+                            map.addPolyline(polylineOptions)
+                        } else {
+                            Log.e("DIRECTIONS_API_ERROR", "Error: $request? es null")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("DIRECTIONS_API_ERROR", "Error catch: ${e.message}")
                 }
-
-                // Add the Polyline to the map
-                map.addPolyline(polylineOption)
-                val polylineOptions = PolylineOptions()
-                polylineOptions.color(Color.RED)
-                polylineOptions.width(10f)
-                polylineOptions.addAll(latLngsDeInteres.filterNotNull())
-                map.addPolyline(polylineOptions)
-                // ...
-            } else {
-                Log.i("asd", request.routes.toString())
             }
-        } catch (e: Exception) {
-            Log.e("DIRECTIONS_API_ERROR", "Error calling Directions API", e)
         }
     }
 
-
-
-private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(
+    private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(
         horaRegistrada: String,
         selectedHours: Int,
         selectedMinutes: Int

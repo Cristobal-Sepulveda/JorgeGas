@@ -6,6 +6,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs'// add here.
 }
+
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def googleMapsApiKey = localProperties.getProperty('googleMapsApiKey')
@@ -122,11 +123,11 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:1.3.3"
     implementation "androidx.compose.ui:ui-tooling-preview:1.3.3"
 
-    //Google Maps Directions API
+    //Google Maps
     implementation 'com.google.maps:google-maps-services:0.17.0'
+    //Google Maps Directions API
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.maps.android:android-maps-utils:2.2.1'
-
     //Koin Dependency Injection
     // Koin Core features
     implementation "io.insert-koin:koin-core:3.3.0"
