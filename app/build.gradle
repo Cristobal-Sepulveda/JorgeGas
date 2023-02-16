@@ -9,13 +9,19 @@ plugins {
 
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 def googleMapsApiKey = localProperties.getProperty('googleMapsApiKey')
 def directionsApiKey = localProperties.getProperty('directionsApiKey')
+def distanceMatrixApiKey = localProperties.getProperty('distanceMatrixApiKey')
+
 if (googleMapsApiKey == null) {
     googleMapsApiKey = System.getenv("GOOGLE_MAPS_API_KEY_ENVIRONMENT_VARIABLE")
 }
 if (directionsApiKey == null) {
     directionsApiKey = System.getenv("DIRECTIONS_API_KEY_ENVIRONMENT_VARIABLE")
+}
+if (distanceMatrixApiKey == null) {
+    distanceMatrixApiKey = System.getenv("DISTANCE_MATRIX_API_KEY_ENVIRONMENT_VARIABLE")
 }
 
 android {
@@ -31,13 +37,15 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 googleMapsApiKey : googleMapsApiKey,
-                directionsApiKey : directionsApiKey
+                directionsApiKey : directionsApiKey,
+                distanceMatrixApiKey: distanceMatrixApiKey
         ]
         vectorDrawables {
             useSupportLibrary true
         }
-        buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\"" // add here
-        buildConfigField "String", "DIRECTIONS_API_KEY", "\"$directionsApiKey\"" // add here
+        buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\""
+        buildConfigField "String", "DIRECTIONS_API_KEY", "\"$directionsApiKey\""
+        buildConfigField "String", "DISTANCE_MATRIX_API_KEY", "\"$distanceMatrixApiKey\""
     }
 
     buildTypes {
@@ -167,6 +175,11 @@ dependencies {
 
     //Material Design
     implementation 'com.google.android.material:material:1.8.0'
+
+    //Moshi
+    implementation 'com.squareup.moshi:moshi:1.13.0'
+    implementation "com.squareup.moshi:moshi-kotlin:1.9.3"
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.13.0'
 
     //Retrofit dependecies
     /** R */

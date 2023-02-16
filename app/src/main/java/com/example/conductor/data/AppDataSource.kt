@@ -2,6 +2,8 @@ package com.example.conductor.data
 
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
+import com.example.conductor.data.network.DistanceMatrixElement
+import com.example.conductor.data.network.DistanceMatrixResponse
 
 interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
@@ -14,4 +16,5 @@ interface AppDataSource {
     suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)
     suspend fun eliminarUsuarioEnSqlite()
     suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO>
+    suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse
 }

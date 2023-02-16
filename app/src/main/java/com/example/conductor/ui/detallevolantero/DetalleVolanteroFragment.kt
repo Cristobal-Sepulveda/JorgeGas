@@ -84,6 +84,22 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             abrirCalendario(today)
         }
 
+        _binding!!.textViewDetalleVolanteroRecorrido.setOnClickListener{
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    val origin= "${latLngsDeInteres[0]?.latitude},${latLngsDeInteres[0]?.longitude}"
+                    val destination= "${latLngsDeInteres[1]?.latitude},${latLngsDeInteres[1]?.longitude}"
+                    val apiKey = BuildConfig.DISTANCE_MATRIX_API_KEY
+                    val aux = _viewModel.obtenerDistanciaEntreLatLngs(
+                        origin,
+                        destination,
+                        apiKey)
+                    Log.d("DISTANCIA", "$aux")
+                }
+            }
+
+
+        }
         return _binding!!.root
     }
 
@@ -162,7 +178,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     }
     private fun obtenerGeoApiContext() {
         geoApiContext = GeoApiContext.Builder()
-            .apiKey("AIzaSyAi8_l1Ql2fuW75bSjvTT_2ZMBmlo38wUs")
+            .apiKey(BuildConfig.DIRECTIONS_API_KEY)
             .build()
     }
 
@@ -239,12 +255,19 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
+                    val origin = latLngsDeInteres.first()
+                    val destination = latLngsDeInteres.last()
+                    val waypoints = latLngsDeInteres.subList(1, latLngsDeInteres.size)
+                        .map { "${it?.latitude},${it?.longitude}" }
+                        .toTypedArray()
                     val request = DirectionsApi.newRequest(geoApiContext)
                         .mode(TravelMode.WALKING)
-                        .origin("-33.493105,-70.7479667")
-                        .destination("-33.54347,-70.62007")
+                        .origin("${origin?.latitude},${origin?.longitude}") // Convert origin to "latitude,longitude" string
+                        .destination("${destination?.latitude},${destination?.longitude}") // Convert destination to "latitude,longitude" string
+                        .waypoints(*waypoints) // Convert waypoints to a list of "latitude,longitude" strings
                         .optimizeWaypoints(true)
                         .await()
+
                     withContext(Dispatchers.Main){
                         if (request?.routes != null && request.routes.isNotEmpty()) {
                             val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
@@ -260,11 +283,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             }
                             // Add the Polyline to the map
                             map.addPolyline(polylineOption)
-                            val polylineOptions = PolylineOptions()
-                            polylineOptions.color(Color.RED)
-                            polylineOptions.width(10f)
-                            polylineOptions.addAll(latLngsDeInteres.filterNotNull())
-                            map.addPolyline(polylineOptions)
                         } else {
                             Log.e("DIRECTIONS_API_ERROR", "Error: $request? es null")
                         }
