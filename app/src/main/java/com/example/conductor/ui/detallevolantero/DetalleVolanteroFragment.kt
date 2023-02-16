@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import com.google.maps.DirectionsApi
@@ -269,21 +271,36 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         .await()
 
                     withContext(Dispatchers.Main){
+                        // Here i check if the request was successful
                         if (request?.routes != null && request.routes.isNotEmpty()) {
                             val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
                             // Decode the polyline to a list of LatLng points
                             val decodedPath = PolyUtil.decode(encodedPolyline)
                             // Create a PolylineOptions object and configure its appearance
-                            val polylineOption = PolylineOptions()
-                                .color(Color.BLUE)
-                                .width(10f)
-                            // Add the LatLng points to the PolylineOptions object
-                            decodedPath.forEach { latLng ->
-                                polylineOption.add(latLng)
+                            val polylineOptions = PolylineOptions().width(10f)
+                            println(decodedPath.size)
+                            decodedPath.forEachIndexed { i, latLng ->
+                                if (i < decodedPath.size - 1) {
+                                    val origin = "${latLng.latitude},${latLng.longitude}"
+                                    val destination = "${decodedPath[i + 1].latitude},${decodedPath[i + 1].longitude}"
+                                    val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(origin, destination, BuildConfig.DISTANCE_MATRIX_API_KEY)
+                                    val distance = distanceMatrixResponse.rows[0].elements[0].distance?.value
+                                    println(distance)
+                                    // Set the color based on the distance
+                                    val color = when (distance) {
+                                        in 0..100 -> Color.RED
+                                        in 100..150 -> Color.YELLOW
+                                        else -> Color.GREEN
+                                    }
+                                    polylineOptions.add(latLng).color(color)
+                                } else {
+                                    polylineOptions.add(latLng)
+                                }
                             }
                             // Add the Polyline to the map
-                            map.addPolyline(polylineOption)
+                            map.addPolyline(polylineOptions)
                         } else {
+                            Snackbar.make(_binding!!.root, "Error: $request? es null", Snackbar.LENGTH_LONG).show()
                             Log.e("DIRECTIONS_API_ERROR", "Error: $request? es null")
                         }
                     }

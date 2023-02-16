@@ -49,7 +49,7 @@ data class DistanceMatrixElement(
 )
 
 data class Distance(
-    val text: String
+    val value: Int
 )
 
 
