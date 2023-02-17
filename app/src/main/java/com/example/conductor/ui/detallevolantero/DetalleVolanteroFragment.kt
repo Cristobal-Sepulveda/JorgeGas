@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.location.Location
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -32,7 +31,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import com.google.maps.DirectionsApi
-import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
 import com.google.maps.android.PolyUtil
 import com.google.maps.model.TravelMode
@@ -40,7 +38,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import java.io.FileInputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -51,7 +48,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private var datePickerDialog: DatePickerDialog? = null
     private var selectedDate: String? = null
-    private var registroDelVolantero: Any? = null
+    private var registroDelVolanteroDocRef: Any? = null
     private var latLngsDeInteres = mutableListOf<LatLng?>()
     private lateinit var geoApiContext: GeoApiContext
 
@@ -68,12 +65,12 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                registroDelVolantero = _viewModel.obtenerRegistroDelVolantero(bundle.id)
+                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDelVolantero(bundle.id)
             }
         }
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { _, value, _ ->
-            if (pintarGeopointsSiCorresponde(value)) {
+            if (iniciarValidacionesAntesDePintarPolyline(value)) {
                 return@addOnChangeListener
             }
         }
@@ -185,7 +182,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun validarFechaYActivarSlider(selectedDate: String) {
-        val registroDelVolanteroParseado = registroDelVolantero as DocumentSnapshot
+        val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
         val registroJornada =
             registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
         registroJornada.forEach {
@@ -199,36 +196,60 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             .show()
     }
 
-    private fun pintarGeopointsSiCorresponde(value: Float): Boolean {
+    private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
+        /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
         map.clear()
         latLngsDeInteres.clear()
+
+        /*Here i get de value selected in the slide and transform it to a valid hour */
         val minutes = (value * 10).toInt() % 60
         val hours = 10 + (value * 10).toInt() / 60
-        val time = String.format("%02.0f:%02d", hours.toFloat(), minutes)
-        Log.d("Slider", "Selected time: $time")
-        val registroDelVolanteroParseado = registroDelVolantero as DocumentSnapshot
-        val registroJornada =
-            registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
-        println(selectedDate)
+        val selectedHourInSlide = String.format("%02.0f:%02d", hours.toFloat(), minutes)
+        Log.d("Slider", "Selected time: $selectedHourInSlide")
+
+        /*
+        Aquí obtengo el registro del volantero y lo parseo a un DocumentSnapshot para
+        poder obtener su data. El motivo de este parseo es porque registroDelVolantero llega
+        como Any y luego obtengo el registroJornada como ArrayList<Map<String, Map<*, *>>>
+        donde string es fecha
+        */
+        val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
+        val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
+
         for (registro in registroJornada) {
+            //aquí valido si el documento tiene registro de jornada en la fecha seleccionada en el calendario
             if (registro["fecha"].toString() == selectedDate) {
-                val registroLatLngsDelDia = registro["registroLatLngs"]
-                val listadoHoraDeRegistroNuevosGeopoints =
-                    registroLatLngsDelDia!!["horasConRegistro"] as ArrayList<String>
-                val geopointsRegistradosDelDia =
-                    registroLatLngsDelDia["geopoints"] as ArrayList<GeoPoint>
-                for (horaRegistrada in listadoHoraDeRegistroNuevosGeopoints) {
+                //Aquí obtengo desde el map el listado de la hora de registro de un geopoints y, el listado de geopoints.
+                val registroLatLngsDelDiaSeleccionado = registro["registroLatLngs"]
+                val listadodeHorasDeRegistrodeNuevosGeopoints = registroLatLngsDelDiaSeleccionado!!["horasConRegistro"] as ArrayList<String>
+                val geopointsRegistradosDelDia = registroLatLngsDelDiaSeleccionado["geopoints"] as ArrayList<GeoPoint>
+
+                /** Aquí recorro el array de horas de registro de geopoints y valido si
+                 la hora de registro en ciclo es menor a la hora seleccionada en el slide
+                 con el objetivo de capturar, en cuanto se de el caso en el if, el index del
+                 geopoint que se encuentra mas proximo, y mayor, a la hora seleccionada en el slide
+                 con el objetivo de recorrer el array de geopoints desde el index en cuestión hasta el
+                 ultimo elemento del array para, finalmente, pintarlos en el mapa, cuando se requiera.
+                 */
+                for (horaRegistrada in listadodeHorasDeRegistrodeNuevosGeopoints) {
+
                     if (validarSiPintarGeopointsSegunSuHoraDeRegistro(
                             horaRegistrada,
                             hours,
                             minutes
                         )
                     ) {
-                        var i = listadoHoraDeRegistroNuevosGeopoints.indexOf(horaRegistrada)
-                        while (i < listadoHoraDeRegistroNuevosGeopoints.size) {
-                            if (listadoHoraDeRegistroNuevosGeopoints[i].substring(0, 2)
+                        //index
+                        var i = listadodeHorasDeRegistrodeNuevosGeopoints.indexOf(horaRegistrada)
+
+                        while (i < listadodeHorasDeRegistrodeNuevosGeopoints.size) {
+                            /** esta es la condicion de salida, si la hora de registro en ciclo es mayor a la
+                             *  hora seleccionada en el slide, se rompe el ciclo. finalmente
+                             *  se obtienen como 8 horas nada mas, por lo que se obtienen de a 8, 16,24 etc
+                             *  *  el ultimo no sera multiplo de 8 1/10 de las veces*/
+                            if (listadodeHorasDeRegistrodeNuevosGeopoints[i].substring(0, 2)
                                     .toFloat() == hours.toFloat() &&
-                                listadoHoraDeRegistroNuevosGeopoints[i].substring(3, 5)
+                                listadodeHorasDeRegistrodeNuevosGeopoints[i].substring(3, 5)
                                     .toFloat() > minutes.toFloat()
                             ) {
                                 break
@@ -239,6 +260,9 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             latLngsDeInteres.add(latLng)
                             i++
                         }
+
+                        /** una vez que tengo la lista a pintar, uso Directions y Distance APis para
+                         pintar la ruta segun la regla de negocio */
                         lifecycleScope.launch{
                             withContext(Dispatchers.IO){
                                 pintarPolyline()
@@ -270,6 +294,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         .optimizeWaypoints(true)
                         .await()
 
+                    /* Distance Matrix Api Require mainscope to work*/
                     withContext(Dispatchers.Main){
                         // Here i check if the request was successful
                         if (request?.routes != null && request.routes.isNotEmpty()) {
@@ -279,11 +304,12 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             // Create a PolylineOptions object and configure its appearance
                             val polylineOptions = PolylineOptions().width(10f)
                             println(decodedPath.size)
+
                             decodedPath.forEachIndexed { i, latLng ->
                                 if (i < decodedPath.size - 1) {
-                                    val origin = "${latLng.latitude},${latLng.longitude}"
-                                    val destination = "${decodedPath[i + 1].latitude},${decodedPath[i + 1].longitude}"
-                                    val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(origin, destination, BuildConfig.DISTANCE_MATRIX_API_KEY)
+                                    val latLng1 = "${latLng?.latitude},${latLng?.longitude}"
+                                    val latLng2 = "${decodedPath[i + 1]?.latitude},${decodedPath[i + 1]?.longitude}"
+                                    val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(latLng1, latLng2, BuildConfig.DISTANCE_MATRIX_API_KEY)
                                     val distance = distanceMatrixResponse.rows[0].elements[0].distance?.value
                                     println(distance)
                                     // Set the color based on the distance
@@ -300,8 +326,8 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             // Add the Polyline to the map
                             map.addPolyline(polylineOptions)
                         } else {
-                            Snackbar.make(_binding!!.root, "Error: $request? es null", Snackbar.LENGTH_LONG).show()
-                            Log.e("DIRECTIONS_API_ERROR", "Error: $request? es null")
+                            Snackbar.make(_binding!!.root, "Error: request es null", Snackbar.LENGTH_LONG).show()
+                            Log.e("DIRECTIONS_API_ERROR", "Error: request es null")
                         }
                     }
                 } catch (e: Exception) {
