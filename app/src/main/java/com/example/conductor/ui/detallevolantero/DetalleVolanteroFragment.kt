@@ -31,13 +31,18 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import com.google.maps.DirectionsApi
+import com.google.maps.DistanceMatrixApi
 import com.google.maps.GeoApiContext
 import com.google.maps.android.PolyUtil
+import com.google.maps.model.DistanceMatrix
 import com.google.maps.model.TravelMode
+import com.google.maps.model.Unit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.time.Duration
+import java.time.LocalTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -50,6 +55,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private var selectedDate: String? = null
     private var registroDelVolanteroDocRef: Any? = null
     private var latLngsDeInteres = mutableListOf<LatLng?>()
+    private var tiemposEntreLatLngDeInteresInicialYFinal = mutableListOf<String>()
     private lateinit var geoApiContext: GeoApiContext
 
     override fun onCreateView(
@@ -200,6 +206,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
         map.clear()
         latLngsDeInteres.clear()
+        tiemposEntreLatLngDeInteresInicialYFinal.clear()
 
         /*Here i get de value selected in the slide and transform it to a valid hour */
         val minutes = (value * 10).toInt() % 60
@@ -258,6 +265,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val longitud = geopointsRegistradosDelDia[i].longitude
                             val latLng = LatLng(latitud, longitud)
                             latLngsDeInteres.add(latLng)
+                            tiemposEntreLatLngDeInteresInicialYFinal.add(listadodeHorasDeRegistrodeNuevosGeopoints[i])
                             i++
                         }
 
@@ -301,28 +309,25 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
                             // Decode the polyline to a list of LatLng points
                             val decodedPath = PolyUtil.decode(encodedPolyline)
-                            // Create a PolylineOptions object and configure its appearance
-                            val polylineOptions = PolylineOptions().width(10f)
-                            println(decodedPath.size)
+                            val latLngInicial = "${decodedPath.first().latitude},${decodedPath.first().longitude}"
+                            val latLngFinal = "${decodedPath.last().latitude},${decodedPath.last().longitude}"
+                            val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(latLngInicial, latLngFinal, BuildConfig.DISTANCE_MATRIX_API_KEY)
+                            val timeInicial = LocalTime.parse(tiemposEntreLatLngDeInteresInicialYFinal.first())
+                            val timeFinal = LocalTime.parse(tiemposEntreLatLngDeInteresInicialYFinal.last())
 
-                            decodedPath.forEachIndexed { i, latLng ->
-                                if (i < decodedPath.size - 1) {
-                                    val latLng1 = "${latLng?.latitude},${latLng?.longitude}"
-                                    val latLng2 = "${decodedPath[i + 1]?.latitude},${decodedPath[i + 1]?.longitude}"
-                                    val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(latLng1, latLng2, BuildConfig.DISTANCE_MATRIX_API_KEY)
-                                    val distance = distanceMatrixResponse.rows[0].elements[0].distance?.value
-                                    println(distance)
-                                    // Set the color based on the distance
-                                    val color = when (distance) {
-                                        in 0..100 -> Color.RED
-                                        in 100..150 -> Color.YELLOW
-                                        else -> Color.GREEN
-                                    }
-                                    polylineOptions.add(latLng).color(color)
-                                } else {
-                                    polylineOptions.add(latLng)
-                                }
+
+                            val distanceBetweenLatlngsInicialYFinal = distanceMatrixResponse.rows[0].elements[0].distance?.value
+                            val timeBetweenInicialYFinal = Duration.between(timeInicial, timeFinal)
+                            val durationParsed = (timeBetweenInicialYFinal.seconds+timeBetweenInicialYFinal.nano/1E9).toInt()
+                            Log.i("DetalleJornadaFragment", "distanceBetweenLatlngsInicialYFinal: $distanceBetweenLatlngsInicialYFinal")
+                            Log.i("DetalleJornadaFragment", "durationParsed: $durationParsed")
+                            // Set the color based on the distance
+                            val color = when (distanceBetweenLatlngsInicialYFinal) {
+                                in 0..(durationParsed*4)/6-> Color.RED
+                                in (durationParsed*4)/6..(durationParsed*5)/6 -> Color.YELLOW
+                                else -> Color.GREEN
                             }
+                            val polylineOptions = PolylineOptions().addAll(decodedPath).width(10f).color(color)
                             // Add the Polyline to the map
                             map.addPolyline(polylineOptions)
                         } else {
