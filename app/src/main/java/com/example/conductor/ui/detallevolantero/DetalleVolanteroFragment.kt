@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.location.Location
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -302,9 +303,30 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
                             // Decode the polyline to a list of LatLng points
                             val decodedPath = PolyUtil.decode(encodedPolyline)
+                            val closestPoints = mutableListOf<LatLng>()
 
-                            println(decodedPath.size)
+                            // Find the closest point in the decoded path for each point in latLngsDeInteres
+                            for (latLng in latLngsDeInteres) {
+                                var closestIndex = 0
+                                var closestDistance = Float.MAX_VALUE
+                                decodedPath.forEachIndexed { i, pathLatLng ->
+                                    val distance = FloatArray(1)
+                                    Location.distanceBetween(
+                                        latLng!!.latitude, latLng.longitude,
+                                        pathLatLng.latitude, pathLatLng.longitude, distance
+                                    )
+                                    if (distance[0] < closestDistance) {
+                                        closestIndex = i
+                                        closestDistance = distance[0]
+                                    }
+                                }
+                                closestPoints.add(decodedPath[closestIndex])
+                            }
                             polylineOptions = PolylineOptions().width(10f)
+                            var distanceRecorrida = 0
+                            var indexGuardadoInicio = 0
+                            var indexGuardadoFin = 0
+
                             decodedPath.forEachIndexed { i, latLng ->
                                 // Create a PolylineOptions object and configure its appearance
                                 if (i < decodedPath.size - 1) {
@@ -313,15 +335,22 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                                     val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(latLng1, latLng2, BuildConfig.DISTANCE_MATRIX_API_KEY)
                                     val distance = distanceMatrixResponse.rows[0].elements[0].distance?.value
                                     println(distance)
+                                    distanceRecorrida += distance!!
                                     // Set the color based on the distance
-                                    val color = when (distance) {
-                                        in 0..100 -> Color.RED
-                                        in 100..150 -> Color.YELLOW
-                                        else -> Color.GREEN
+                                    if(closestPoints.contains(LatLng(latLng.latitude, latLng.longitude))){
+                                        indexGuardadoInicio = indexGuardadoFin
+                                        indexGuardadoFin = i
+                                        val color = when (distanceRecorrida) {
+                                            in 0..500 -> Color.RED
+                                            in 500..900 -> Color.YELLOW
+                                            else -> Color.GREEN
+                                        }
+                                        var listAux = decodedPath.subList(indexGuardadoInicio,indexGuardadoFin)
+                                        polylineOptions.addAll(listAux).color(color)
+                                        map.addPolyline(polylineOptions)
+                                        polylineOptions = PolylineOptions().width(10f)
+                                        distanceRecorrida = 0
                                     }
-                                    polylineOptions.add(latLng,decodedPath[i+1]).color(color)
-                                    map.addPolyline(polylineOptions)
-                                    polylineOptions = PolylineOptions().width(10f)
                                 } else {
                                     polylineOptions.add(latLng)
                                     map.addPolyline(polylineOptions)
