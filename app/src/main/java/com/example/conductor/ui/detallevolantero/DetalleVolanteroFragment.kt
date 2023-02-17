@@ -51,6 +51,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private var registroDelVolanteroDocRef: Any? = null
     private var latLngsDeInteres = mutableListOf<LatLng?>()
     private lateinit var geoApiContext: GeoApiContext
+    private lateinit var polylineOptions: PolylineOptions
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -301,11 +302,11 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
                             // Decode the polyline to a list of LatLng points
                             val decodedPath = PolyUtil.decode(encodedPolyline)
-                            // Create a PolylineOptions object and configure its appearance
-                            val polylineOptions = PolylineOptions().width(10f)
-                            println(decodedPath.size)
 
+                            println(decodedPath.size)
+                            polylineOptions = PolylineOptions().width(10f)
                             decodedPath.forEachIndexed { i, latLng ->
+                                // Create a PolylineOptions object and configure its appearance
                                 if (i < decodedPath.size - 1) {
                                     val latLng1 = "${latLng?.latitude},${latLng?.longitude}"
                                     val latLng2 = "${decodedPath[i + 1]?.latitude},${decodedPath[i + 1]?.longitude}"
@@ -318,13 +319,16 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                                         in 100..150 -> Color.YELLOW
                                         else -> Color.GREEN
                                     }
-                                    polylineOptions.add(latLng).color(color)
+                                    polylineOptions.add(latLng,decodedPath[i+1]).color(color)
+                                    map.addPolyline(polylineOptions)
+                                    polylineOptions = PolylineOptions().width(10f)
                                 } else {
                                     polylineOptions.add(latLng)
+                                    map.addPolyline(polylineOptions)
+                                    polylineOptions = PolylineOptions().width(10f)
                                 }
                             }
                             // Add the Polyline to the map
-                            map.addPolyline(polylineOptions)
                         } else {
                             Snackbar.make(_binding!!.root, "Error: request es null", Snackbar.LENGTH_LONG).show()
                             Log.e("DIRECTIONS_API_ERROR", "Error: request es null")
