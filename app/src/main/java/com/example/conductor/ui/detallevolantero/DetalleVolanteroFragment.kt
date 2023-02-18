@@ -342,10 +342,10 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                                         indexGuardadoFin = i
                                         val color = when (distanceRecorrida) {
                                             in 0..500 -> Color.RED
-                                            in 500..900 -> Color.YELLOW
+                                            in 500..900 ->Color.YELLOW
                                             else -> Color.GREEN
                                         }
-                                        var listAux = decodedPath.subList(indexGuardadoInicio,indexGuardadoFin)
+                                        val listAux = decodedPath.subList(indexGuardadoInicio,indexGuardadoFin)
                                         polylineOptions.addAll(listAux).color(color)
                                         map.addPolyline(polylineOptions)
                                         polylineOptions = PolylineOptions().width(10f)

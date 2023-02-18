@@ -96,6 +96,8 @@
     <string name="horaInicio">10:00am</string>
     <string name="horaFin">22:00pm</string>
     <string name="calendario">Calendario</string>
+    <string name="sumar10minutos">Sumar diez minutos</string>
+    <string name="restar10minutos">Restar diez minutos</string>
 
     <!--String arrays-->
     <string-array name="roles">
