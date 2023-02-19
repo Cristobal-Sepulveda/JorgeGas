@@ -107,6 +107,10 @@
     <string name="seleccione_una_fecha">Seleccione una fecha</string>
     <string name="nombree">Nombre:</string>
     <string name="volanteros_activos_e_inactivos">Volanteros activos e inactivos</string>
+    <string name="seleccionar_fecha">Seleccionar fecha</string>
+    <string name="no_hay_registros_con_esa_fecha">No hay registro en esa fecha</string>
+    <string name="error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube">Error al intentar obtener la lista de usuarios desde la nube</string>
+    <string name="loading">Cargando</string>
 
     <!--String arrays-->
     <string-array name="roles">

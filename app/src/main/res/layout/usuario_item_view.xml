@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:maxLength="25"
-                android:minWidth="200dp"
+                android:minWidth="210dp"
                 android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidos}"
                 android:textAppearance="?attr/textAppearanceHeadline5"
                 android:textSize="@dimen/text_small"

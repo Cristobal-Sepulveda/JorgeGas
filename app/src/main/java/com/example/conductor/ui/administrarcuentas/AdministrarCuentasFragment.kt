@@ -33,6 +33,7 @@ class AdministrarCuentasFragment : BaseFragment() {
         /************************ Inicializando Variables del fragmento****************************/
         _binding = FragmentAdministrarCuentasBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
+        _binding!!.viewModel = _viewModel
         val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario -> })
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
         _viewModel.displayUsuariosInRecyclerView()

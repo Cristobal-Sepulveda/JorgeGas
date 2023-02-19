@@ -88,20 +88,15 @@
                     android:layout_marginTop="11dp"
                     tools:text="01/01/2021"
                     />
-                <ImageView
-                    android:id="@+id/imageView_detalleVolantero_calendario"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="@dimen/space_small"
-                    android:layout_marginTop="@dimen/space_small"
-                    android:src="@drawable/baseline_calendar_today_24"
-                    android:contentDescription="@string/calendario"
-                    tools:src="@drawable/baseline_calendar_today_24"
-                    />
-
             </LinearLayout>
+            <Button
+                android:id="@+id/button_detalleVolantero_calendario"
+                style="@style/buttons"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/space_small"
+                android:text="@string/seleccionar_fecha"
+                />
         </LinearLayout>
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.example.conductor.ui.administrarcuentas
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+enum class CloudRequestStatus{LOADING, ERROR, DONE}
 class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
+
+    private val _status =MutableLiveData<CloudRequestStatus>()
+    val status: LiveData<CloudRequestStatus>
+        get() = _status
 
     private val _navigateToSelectedUsuario = MutableLiveData<Usuario?>()
     val navigateToSelectedUsuario: MutableLiveData<Usuario?>
@@ -22,20 +28,32 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
     val domainUsuariosInScreen: LiveData<List<Usuario>>
         get() = _domainUsuariosInScreen
 
-    var todosLosUsuarios = mutableListOf<Usuario>()
+    private var todosLosUsuarios = mutableListOf<Usuario>()
+
     /** Theses are for navigate to Detail Fragment **/
     fun displayUsuarioDetails(usuario: Usuario) {
         _navigateToSelectedUsuario.value = usuario
     }
+
     fun cleanUsuarioDetails() {
         _navigateToSelectedUsuario.value = null
     }
 
     fun displayUsuariosInRecyclerView(){
-        viewModelScope.launch{
-            _domainUsuariosInScreen.value = dataSource.obtenerUsuariosDesdeFirestore()
-                .sortedWith(compareBy { it.nombre })
-            todosLosUsuarios = _domainUsuariosInScreen.value as MutableList<Usuario>
+        _status.value = CloudRequestStatus.LOADING
+        Log.d("bindingAdapter", "${status.value}")
+        viewModelScope.launch {
+            val colRef = dataSource.obtenerUsuariosDesdeFirestore()
+            if (colRef.isEmpty()) {
+                _status.value = CloudRequestStatus.ERROR
+                Log.d("bindingAdapter", "${status.value}")
+            } else {
+                _domainUsuariosInScreen.value = colRef
+                    .sortedWith(compareBy { it.nombre })
+                todosLosUsuarios = _domainUsuariosInScreen.value as MutableList<Usuario>
+                _status.value = CloudRequestStatus.DONE
+                Log.d("bindingAdapter", "${status.value}")
+            }
         }
     }
 

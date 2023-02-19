@@ -89,7 +89,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             customizarSliderLabel(value)
         }
 
-        _binding!!.imageViewDetalleVolanteroCalendario.setOnClickListener {
+        _binding!!.buttonDetalleVolanteroCalendario.setOnClickListener {
             abrirCalendario(today)
         }
         _binding!!.imageViewDetalleVolanteroRestar10minutos.setOnClickListener {
@@ -139,6 +139,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @Suppress("UNCHECKED_CAST")
     private fun validarFechaYActivarSlider(selectedDate: String) {
         if(registroDelVolanteroDocRef == null){
@@ -173,7 +174,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
         _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
-        _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.setText(R.string.seleccione_una_fecha_valida)
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.setText(R.string.no_hay_registros_con_esa_fecha)
         _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.text = selectedDate
         _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red))
         _binding!!.sliderDetalleVolanteroTrayecto.trackActiveTintList = ColorStateList.valueOf(
@@ -195,7 +196,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private fun cargarDatosDelVolantero(bundle: Usuario) {
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
         val fotoPerfil = bundle.fotoPerfil
-        _binding!!.textViewDetalleVolanteroNombre.text = "Nombre: ${bundle.nombre} + ${bundle.apellidos}"
+        _binding!!.textViewDetalleVolanteroNombre.text = "${bundle.nombre} ${bundle.apellidos}"
         val year = Calendar.getInstance().get(Calendar.YEAR)
         val month = Calendar.getInstance().get(Calendar.MONTH) + 1 // add 1 to get the correct month (0-based index)
         val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
@@ -246,6 +247,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             .apiKey(BuildConfig.DIRECTIONS_API_KEY)
             .build()
     }
+
     private fun sumarORestarValueDelSlider(num: Float) {
         if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return
         val adjustedNum = if (num == -1f) -1f else 1f // adjust the value of num to be either -1 or 1
@@ -256,8 +258,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             else -> _binding!!.sliderDetalleVolanteroTrayecto.value = valorActualDelSlider + adjustedNum
         }
     }
-
-
 
     @Suppress("UNCHECKED_CAST")
     private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
@@ -342,6 +342,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
         return false
     }
+
     private fun pintarPolyline() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
