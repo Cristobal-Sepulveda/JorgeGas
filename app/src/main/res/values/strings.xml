@@ -98,6 +98,13 @@
     <string name="calendario">Calendario</string>
     <string name="sumar10minutos">Sumar diez minutos</string>
     <string name="restar10minutos">Restar diez minutos</string>
+    <string name="registro_de_recorridos">Registro de Recorridos</string>
+    <string name="aqui_ira_data_de_interes">Aqui se puede poner data de interes</string>
+    <string name="barra_de_horarios">Barra de horarios</string>
+    <string name="elegir_fecha_mostrar">Elije fecha: </string>
+    <string name="elija_una_fecha">Elija una fecha</string>
+    <string name="seleccione_una_fecha_valida">Seleccione una fecha valida</string>
+    <string name="seleccione_una_fecha">Seleccione una fecha</string>
 
     <!--String arrays-->
     <string-array name="roles">

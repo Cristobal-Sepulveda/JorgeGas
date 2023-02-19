@@ -1,8 +1,10 @@
 package com.example.conductor.ui.detallevolantero
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Location
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
@@ -37,6 +40,7 @@ import com.google.maps.android.PolyUtil
 import com.google.maps.model.TravelMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.util.*
@@ -53,25 +57,29 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private var latLngsDeInteres = mutableListOf<LatLng?>()
     private lateinit var geoApiContext: GeoApiContext
     private lateinit var polylineOptions: PolylineOptions
-
+    private lateinit var bundle: Usuario
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetalleVolanteroBinding.inflate(inflater, container, false)
-        val bundle = DetalleVolanteroFragmentArgs.fromBundle(requireArguments()).usuarioDetails
+        bundle = DetalleVolanteroFragmentArgs.fromBundle(requireArguments()).usuarioDetails
         val today = Calendar.getInstance()
-        cargarDatosDelVolantero(bundle)
-        obtenerGeoApiContext()
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 registroDelVolanteroDocRef = _viewModel.obtenerRegistroDelVolantero(bundle.id)
             }
         }
+        cargarDatosDelVolantero(bundle)
+        obtenerGeoApiContext()
 
-        _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { _, value, _ ->
+        _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { slider, value, _ ->
+            val minutes = (value * 10).toInt() % 60
+            val hours = 10 + (value * 10).toInt() / 60
+            val selectedHourInSlide = String.format("%02.0f:%02d", hours.toFloat(), minutes)
+            slider.setLabelFormatter{ return@setLabelFormatter selectedHourInSlide}
             if (iniciarValidacionesAntesDePintarPolyline(value)) {
                 return@addOnChangeListener
             }
@@ -84,28 +92,19 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         _binding!!.imageViewDetalleVolanteroCalendario.setOnClickListener {
             abrirCalendario(today)
         }
+        _binding!!.imageViewDetalleVolanteroRestar10minutos.setOnClickListener {
+            sumarORestarValueDelSlider(-1f)
+        }
 
-        _binding!!.textViewDetalleVolanteroRecorrido.setOnClickListener{
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
-                    val origin= "${latLngsDeInteres[0]?.latitude},${latLngsDeInteres[0]?.longitude}"
-                    val destination= "${latLngsDeInteres[1]?.latitude},${latLngsDeInteres[1]?.longitude}"
-                    val apiKey = BuildConfig.DISTANCE_MATRIX_API_KEY
-                    val aux = _viewModel.obtenerDistanciaEntreLatLngs(
-                        origin,
-                        destination,
-                        apiKey)
-                    Log.d("DISTANCIA", "$aux")
-                }
-            }
-
-
+        _binding!!.imageViewDetalleVolanteroSumar10minutos.setOnClickListener {
+            sumarORestarValueDelSlider(1f)
         }
         return _binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         (childFragmentManager.findFragmentById(R.id.fragmentContainerView_detalleVolantero_googleMaps)
                 as? SupportMapFragment)?.getMapAsync(this)
     }
@@ -140,8 +139,72 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    private fun validarFechaYActivarSlider(selectedDate: String) {
+        if(registroDelVolanteroDocRef == null){
+            _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
+            _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
+            return
+        }
+        val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
+        val registroJornada =
+            registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
+        registroJornada.forEach {
+            if (it["fecha"].toString() == selectedDate) {
+                _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
+                _binding!!.sliderDetalleVolanteroTrayecto.labelBehavior = LabelFormatter.LABEL_VISIBLE
+                _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.INVISIBLE
+                _binding!!.sliderDetalleVolanteroTrayecto.trackActiveTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.orange
+                    )
+                )
+                _binding!!.sliderDetalleVolanteroTrayecto.thumbStrokeColor = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.orange
+                    )
+                )
+                _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.text = selectedDate
+                _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.setTextColor(ContextCompat.getColor(requireActivity(), R.color.green))
+                return
+            }
+        }
+        _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.setText(R.string.seleccione_una_fecha_valida)
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.text = selectedDate
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red))
+        _binding!!.sliderDetalleVolanteroTrayecto.trackActiveTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                requireActivity(),
+                R.color.lightGrey
+            )
+        )
+        _binding!!.sliderDetalleVolanteroTrayecto.thumbStrokeColor = ColorStateList.valueOf(
+            ContextCompat.getColor(
+                requireActivity(),
+                R.color.lightGrey
+            )
+        )
+            Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT)
+            .show()
+    }
+    @SuppressLint("SetTextI18n")
     private fun cargarDatosDelVolantero(bundle: Usuario) {
+        _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
         val fotoPerfil = bundle.fotoPerfil
+        _binding!!.textViewDetalleVolanteroNombre.text = "Nombre: ${bundle.nombre} + ${bundle.apellidos}"
+        val year = Calendar.getInstance().get(Calendar.YEAR)
+        val month = Calendar.getInstance().get(Calendar.MONTH) + 1 // add 1 to get the correct month (0-based index)
+        val day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        val fechaDeHoy = when (month) {
+            in 1..9 -> "$year-0$month-$day" // use string interpolation to create the selectedDate string
+            else -> "$year-$month-$day"
+        }
+
+        _binding!!.textViewDetalleVolanteroFechaSeleccionadaValor.text = fechaDeHoy
         if (fotoPerfil.last().toString() == "=" || (fotoPerfil.first()
                 .toString() == "/" && fotoPerfil[1].toString() == "9")
         ) {
@@ -177,27 +240,26 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         datePickerDialog?.show()
     }
+
     private fun obtenerGeoApiContext() {
         geoApiContext = GeoApiContext.Builder()
             .apiKey(BuildConfig.DIRECTIONS_API_KEY)
             .build()
     }
-
-    private fun validarFechaYActivarSlider(selectedDate: String) {
-        val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
-        val registroJornada =
-            registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
-        registroJornada.forEach {
-            if (it["fecha"].toString() == selectedDate) {
-                _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
-                return
-            }
+    private fun sumarORestarValueDelSlider(num: Float) {
+        if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return
+        val adjustedNum = if (num == -1f) -1f else 1f // adjust the value of num to be either -1 or 1
+        val valorActualDelSlider = _binding!!.sliderDetalleVolanteroTrayecto.value
+        when {
+            adjustedNum == -1f && valorActualDelSlider == 0f -> return // prevent slider value from going below 0
+            adjustedNum == 1f && valorActualDelSlider == 72f -> return // prevent slider value from going above 72
+            else -> _binding!!.sliderDetalleVolanteroTrayecto.value = valorActualDelSlider + adjustedNum
         }
-        _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
-        Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT)
-            .show()
     }
 
+
+
+    @Suppress("UNCHECKED_CAST")
     private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
         /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
         map.clear()
@@ -278,7 +340,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
         return false
     }
-
     private fun pintarPolyline() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
