@@ -1,89 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/imageView_detalleVolantero_fotoPerfil"
+    <LinearLayout
+        android:id="@+id/linearLayout_detalleVolantero_linearLayoutSuperior"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/foto_perfil_volantero_seleccionado"
-        tools:src="@drawable/foto_perfil_cristobal"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/imageViewDetalleVolanteroFotoPerfil"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:contentDescription="@string/foto_perfil_volantero_seleccionado"
+            tools:src="@drawable/foto_perfil_cristobal"
+            android:paddingStart="@dimen/space_medium"
+            tools:ignore="RtlSymmetry" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/space_medium"
+            android:paddingStart="@dimen/space_small"
+            android:layout_marginStart="@dimen/space_small"
+            >
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/registro_de_recorridos"
+                android:textColor="@color/black"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="@string/registro_de_recorridos"
+                />
 
-    <TextView
-        android:id="@+id/textView_detalleVolantero_recorrido"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView_detalleVolantero_fotoPerfil"
-        android:layout_marginTop="@dimen/space_medium"
-        android:text="@string/recorrido"
-        tools:text="@string/recorrido"
-        android:textColor="@color/black"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/nombree"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="@dimen/space_small"
+                    tools:text="Nombre"
+                    />
+                <TextView
+                    android:id="@+id/textView_detalleVolantero_nombre"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/registro_de_recorridos"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:layout_marginTop="@dimen/space_small"
+                    tools:text="Nombre Apellido Apellido"
+                    />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView_detalleVolantero_horaInicio"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_detalleVolantero_recorrido"
-        android:layout_marginTop="@dimen/space_small"
-        android:layout_marginStart="@dimen/space_big"
-        android:text="@string/horaInicio"
-        tools:text="@string/horaInicio"
-        />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView_detalleVolantero_fechaSeleccionadaLabel"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/elegir_fecha_mostrar"
+                    android:textColor="@color/black"
+                    android:layout_marginTop="11dp"
+                    />
+
+                <TextView
+                    android:id="@+id/textView_detalleVolantero_fechaSeleccionadaValor"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:layout_marginTop="11dp"
+                    tools:text="01/01/2021"
+                    />
+                <ImageView
+                    android:id="@+id/imageView_detalleVolantero_calendario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:src="@drawable/baseline_calendar_today_24"
+                    android:contentDescription="@string/calendario"
+                    tools:src="@drawable/baseline_calendar_today_24"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
 
     <ImageView
-        android:id="@+id/imageView_detalleVolantero_calendario"
+        android:id="@+id/imageView_detalleVolantero_restar10minutos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView_detalleVolantero_fotoPerfil"
-        android:layout_marginTop="@dimen/space_medium"
-        android:layout_marginEnd="@dimen/space_bigger"
-        android:src="@drawable/baseline_calendar_today_24"
-        android:contentDescription="@string/calendario"
-        tools:src="@drawable/baseline_calendar_today_24"
-        />
-    <TextView
-        android:id="@+id/textView_detalleVolantero_horaFin"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView_detalleVolantero_calendario"
-        android:layout_marginEnd="@dimen/space_36"
-        android:layout_marginTop="@dimen/space_small"
-        android:text="@string/horaFin"
-        tools:text="@string/horaFin"
-        />
+        android:src="@drawable/baseline_arrow_left_24"
+        android:contentDescription="@string/restar10minutos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/slider_detalleVolantero_trayecto"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
+        android:layout_marginStart="@dimen/space_medium"
+        android:layout_marginTop="@dimen/space_bigger"/>
+
     <com.google.android.material.slider.Slider
         android:id="@+id/slider_detalleVolantero_trayecto"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/space_medium"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="56dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView_detalleVolantero_fotoPerfil"
-        app:trackColorActive="@color/orange"
-        app:trackColorInactive="#c3c3c3"
-        app:thumbStrokeColor="@color/orange"
+        android:layout_marginTop="@dimen/space_small"
+        app:layout_constraintStart_toEndOf="@id/imageView_detalleVolantero_restar10minutos"
+        app:layout_constraintEnd_toStartOf="@id/imageView_detalleVolantero_sumar10minutos"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
+        app:trackColorActive="@color/lightGrey"
+        app:trackColorInactive="@color/lightGrey"
+        app:thumbStrokeColor="@color/lightGrey"
         app:thumbColor="@color/white"
         app:thumbStrokeWidth="2dp"
         android:valueFrom="0"
         android:valueTo="72"
         android:stepSize="1"
-        android:enabled="false"/>
+        android:contentDescription="@string/barra_de_horarios"
+        app:labelBehavior="visible"
+        />
 
+    <TextView
+        android:id="@+id/textView_detalleVolantero_fechaSeleccionadaAlerta"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/seleccione_una_fecha"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/space_medium"
+        android:textAppearance="?attr/textAppearanceHeadline6"/>
+
+        <ImageView
+            android:id="@+id/imageView_detalleVolantero_sumar10minutos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/slider_detalleVolantero_trayecto"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout_detalleVolantero_linearLayoutSuperior"
+            android:layout_marginTop="@dimen/space_bigger"
+            android:layout_marginEnd="@dimen/space_medium"
+            android:src="@drawable/baseline_arrow_right_24"
+            android:contentDescription="@string/sumar10minutos"
+        />
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView_detalleVolantero_googleMaps"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -93,7 +171,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/slider_detalleVolantero_trayecto"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        tools:layout="@layout/fragment_vista_general"/>
+
     <ImageView
         android:id="@+id/imageview_detalleVolantero_mapaSinPermisos"
         android:layout_width="match_parent"
