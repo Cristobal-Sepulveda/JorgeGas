@@ -34,6 +34,9 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
     val domainUsuariosActivosInScreen: LiveData<List<Usuario>>
         get() = _domainUsuariosActivosInScreen
 
+    fun removerTextDeInteres(aux: Boolean){
+        _volanterosActivos.value = aux
+    }
     fun displayUsuariosInRecyclerView(){
         viewModelScope.launch{
             try{
@@ -60,17 +63,16 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                 }
                 listaDeUsuariosVolanterosActivos.sortedWith(compareBy { it.nombre })
                 listaDeUsuariosVolanterosInactivos.sortedWith(compareBy { it.nombre })
-                if(listaDeUsuariosVolanterosActivos.isEmpty(){
-                        volanterosActivos.value = false
 
-                }else{
-                        volanterosActivos.value = true
-                }
                 domainUsuariosInactivosInScreenRespaldo = listaDeUsuariosVolanterosInactivos
                 domainUsuariosActivosInScreenRespaldo = listaDeUsuariosVolanterosActivos
-                _status.value = CloudRequestStatus.DONE
                 _domainUsuariosInactivosInScreen.value = listaDeUsuariosVolanterosInactivos
                 _domainUsuariosActivosInScreen.value = listaDeUsuariosVolanterosActivos
+                withContext(Dispatchers.IO) {
+                    Thread.sleep(1000)
+                }
+                _volanterosActivos.value = listaDeUsuariosVolanterosActivos.isEmpty()
+                _status.value = CloudRequestStatus.DONE
             }catch(e: Exception) {
                 e.printStackTrace()
             }

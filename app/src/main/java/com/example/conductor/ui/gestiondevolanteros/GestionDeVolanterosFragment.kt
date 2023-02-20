@@ -98,9 +98,20 @@ class GestionDeVolanterosFragment : BaseFragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if(tab!!.text=="Activos"){
                     filtroSeleccionado = "Activos"
+                    if(_viewModel.volanterosActivos.value == false){
+                        _binding!!.recyclerviewListaVolanteros.visibility = View.GONE
+                        if(_viewModel.domainUsuariosActivosInScreen.value!!.isEmpty()){
+                            _binding!!.textViewGestionDeVolanterosNoHayVolanterosActivos.visibility = View.VISIBLE
+                        }
+                        _viewModel.removerTextDeInteres(true)
+                    }
                     adapter.submitList(_viewModel.domainUsuariosActivosInScreen.value)
                 }else{
                     filtroSeleccionado = "Inactivos"
+                    if(_viewModel.volanterosActivos.value == true){
+                        _viewModel.removerTextDeInteres(false)
+                    }
+                    _binding!!.recyclerviewListaVolanteros.visibility = View.VISIBLE
                     adapter.submitList(_viewModel.domainUsuariosInactivosInScreen.value)
                 }
             }

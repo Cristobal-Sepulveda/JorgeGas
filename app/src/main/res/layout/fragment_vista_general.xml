@@ -36,7 +36,9 @@
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/volanteros"
         android:layout_marginHorizontal="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_big"/>
+        android:layout_marginTop="@dimen/space_big"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/imageView_vistaGeneral_botonCallCenter"
@@ -48,7 +50,9 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView_vistaGeneral_botonVolantero"
         android:contentDescription="@string/call_center"
         android:layout_marginHorizontal="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_medium"/>
+        android:layout_marginTop="@dimen/space_medium"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/imageView_vistaGeneral_botonChoferes"
@@ -60,7 +64,9 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView_vistaGeneral_botonCallCenter"
         android:contentDescription="@string/call_center"
         android:layout_marginHorizontal="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_medium"/>
+        android:layout_marginTop="@dimen/space_medium"
+        android:visibility="gone"
+        tools:visibility="visible"/>
     
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,7 +35,7 @@ fun bindStatusErrorImage(imageView: ImageView, status: LiveData<CloudRequestStat
             imageView.visibility = View.GONE
         }
         else -> {
-            imageView.visibility = View.VISIBLE
+            imageView.visibility = View.GONE
         }
     }
 }
@@ -55,6 +55,24 @@ fun bindStatusErrorCircularProgress(progressBar: ProgressBar, status: LiveData<C
         }
         else -> {
             progressBar.visibility = View.VISIBLE
+        }
+    }
+}
+@BindingAdapter("recyclerViewIsVisible")
+fun bindRecyclerViewIsVisible(recyclerView: RecyclerView, status: LiveData<CloudRequestStatus>?) {
+    Log.d("BindingAdapter", "bindStatusErrorCircularProgress: ${status?.value}")
+    when (status?.value) {
+        CloudRequestStatus.LOADING -> {
+            recyclerView.visibility = View.GONE
+        }
+        CloudRequestStatus.ERROR -> {
+            recyclerView.visibility = View.GONE
+        }
+        CloudRequestStatus.DONE -> {
+            recyclerView.visibility = View.VISIBLE
+        }
+        else -> {
+            recyclerView.visibility = View.GONE
         }
     }
 }

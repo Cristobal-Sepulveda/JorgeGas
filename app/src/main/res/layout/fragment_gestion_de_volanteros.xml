@@ -82,7 +82,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tabLayout_SwitchPersonalizado"
             android:layout_margin="@dimen/space_big"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:recyclerViewIsVisible="@{viewModel.status}"/>
 
         <ProgressBar
             android:id="@+id/progressBar_gestionDeVolanteros_circularProgress"
@@ -108,7 +109,9 @@
             app:layout_constraintTop_toTopOf="@id/recyclerview_listaVolanteros"
             app:layout_constraintBottom_toBottomOf="@id/recyclerview_listaVolanteros"
             android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
+
        <TextView
+           android:id="@+id/textView_gestionDeVolanteros_noHayVolanterosActivos"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:text="@string/no_hay_volanteros_activos_en_estos_momentos"

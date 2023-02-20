@@ -227,6 +227,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         }
                     }
                 }
+                "Administrador" -> {
+                    _binding!!.buttonVistaGeneralRegistroJornadaVolantero.visibility = View.GONE
+                    _binding!!.imageViewVistaGeneralBotonVolantero.visibility= View.VISIBLE
+                    _binding!!.imageViewVistaGeneralBotonChoferes.visibility= View.VISIBLE
+                    _binding!!.imageViewVistaGeneralBotonCallCenter.visibility= View.VISIBLE
+                }
                 "Error" -> Toast.makeText(requireActivity(), "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"", Toast.LENGTH_SHORT).show()
             }
         }
