@@ -173,6 +173,13 @@ class CrearUsuarioFragment : BaseFragment() {
             return
         }
         try{
+            val actualUserEmail = firebaseAuth.currentUser!!.email
+            var actualUserPassword = ""
+            _viewModel.todosLosUsuarios.forEach {
+                if(it.usuario == firebaseAuth.currentUser!!.email){
+                    actualUserPassword = it.password
+                }
+            }
             val aux = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
             val usuario = Usuario(
@@ -187,13 +194,15 @@ class CrearUsuarioFragment : BaseFragment() {
                 false,
                 rol
             )
-
             _viewModel.ingresarUsuarioAFirestore(usuario)
+            firebaseAuth.signOut()
+            firebaseAuth.signInWithEmailAndPassword(actualUserEmail!!, actualUserPassword).await()
             Snackbar.make(
                 _binding!!.root,
                 "La cuenta ha sido creada con exito.",
                 Snackbar.LENGTH_SHORT
             ).show()
+
         }catch(e:Exception){
             Log.i("asd","$e.message")
 

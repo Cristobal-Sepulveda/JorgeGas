@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "838847601508",
-    "project_id": "app-login-y-maps",
-    "storage_bucket": "app-login-y-maps.appspot.com"
+    "project_number": "563767894373",
+    "project_id": "jorge-gas-management",
+    "storage_bucket": "jorge-gas-management.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:838847601508:android:11b44222884864e4b3f871",
+        "mobilesdk_app_id": "1:563767894373:android:11e713e0a3ac8d4d77818c",
         "android_client_info": {
           "package_name": "com.example.conductor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "838847601508-epi5n3ndat621g27a17ovimr9pp92544.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.conductor",
-            "certificate_hash": "86e8a928600d100e6f7d986a5d063a99b440a72a"
-          }
-        },
-        {
-          "client_id": "838847601508-904kolmv6sbk3qmgmic63jtg0b4re81m.apps.googleusercontent.com",
+          "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDoj0W39p99v0l8S1RdnZZrPAbXFdQ8b4Y"
+          "current_key": "AIzaSyCxAGSq_hcAZ8W9dEf-Oq6t28Itrig5glg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "838847601508-904kolmv6sbk3qmgmic63jtg0b4re81m.apps.googleusercontent.com",
+              "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

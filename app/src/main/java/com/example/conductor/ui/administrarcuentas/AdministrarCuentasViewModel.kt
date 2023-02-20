@@ -28,7 +28,7 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
     val domainUsuariosInScreen: LiveData<List<Usuario>>
         get() = _domainUsuariosInScreen
 
-    private var todosLosUsuarios = mutableListOf<Usuario>()
+    var todosLosUsuarios = mutableListOf<Usuario>()
 
     /** Theses are for navigate to Detail Fragment **/
     fun displayUsuarioDetails(usuario: Usuario) {
