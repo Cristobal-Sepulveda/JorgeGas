@@ -3,10 +3,12 @@ package com.example.conductor
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.databinding.ActivityAuthenticationBinding
@@ -71,6 +73,7 @@ class AuthenticationActivity : AppCompatActivity() {
         val password = binding.edittextPassword.text.toString()
         if(email !="" && password!=""){
             try{
+                binding.progressBar.visibility = View.VISIBLE
                 lifecycleScope.launch{
                     withContext(Dispatchers.IO){
                         val userInValid = cloudDB.collection("Usuarios")
@@ -80,6 +83,7 @@ class AuthenticationActivity : AppCompatActivity() {
                             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                             runOnUiThread {
+                                binding.progressBar.visibility = View.GONE
                                 Snackbar.make(findViewById(R.id.container),
                                     getString(R.string.sesion_activa_existente),Toast.LENGTH_SHORT).show()
                             }
@@ -87,12 +91,14 @@ class AuthenticationActivity : AppCompatActivity() {
                         }
 
                         if(userInValid.documents[0].get("deshabilitada") as Boolean){
+                            binding.progressBar.visibility = View.GONE
                             runOnUiThread {
                                 Toast.makeText(this@AuthenticationActivity,
                                     getString(R.string.login_error_cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
                             }
                             return@withContext
                         }else{
+                            binding.progressBar.visibility = View.GONE
                             firebaseAuth.signInWithEmailAndPassword(email, password).await()
                             cloudDB.collection("Usuarios")
                                 .document(firebaseAuth.currentUser!!.uid)
@@ -104,6 +110,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     }
                 }
             }catch(e:Exception){
+                binding.progressBar.visibility = View.GONE
                 if(e.message.toString().contains("network")){
                     runOnUiThread{
                         Toast.makeText(this@AuthenticationActivity, getString(R.string.login_error_no_internet),Toast.LENGTH_SHORT).show()
