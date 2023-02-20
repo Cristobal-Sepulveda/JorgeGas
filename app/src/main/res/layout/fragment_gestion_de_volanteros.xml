@@ -1,82 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.vistageneral.VistaGeneralFragment"
-    android:background="#F0F0F0"
-    >
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout_gestionDeVolanteros_textInputContainer"
-        style="@style/buscador"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_big"
-        app:startIconDrawable="@drawable/ic_baseline_search_24"
-        android:hint="@string/buscar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
- >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textInputEditText_gestionDeVolanteros_buscarUsuario"
-            android:background="@color/azulSuave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout_SwitchPersonalizado"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textInputLayout_gestionDeVolanteros_textInputContainer"
-        android:layout_marginHorizontal="@dimen/space_big"
-        android:layout_marginVertical="@dimen/space_small"
-        android:background="@drawable/tab_layout_background"
-        app:tabBackground="@drawable/tab_selected_background"
-        app:tabSelectedTextColor="@color/black"
-        app:tabIndicatorColor="@android:color/transparent"
-        android:contentDescription="@string/volanteros_activos_e_inactivos"
+        android:layout_height="match_parent"
+        android:background="#F0F0F0"
         >
 
-        <com.google.android.material.tabs.TabItem
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout_gestionDeVolanteros_textInputContainer"
+            style="@style/buscador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_big"
+            android:layout_marginEnd="@dimen/space_big"
+            app:startIconDrawable="@drawable/ic_baseline_search_24"
+            android:hint="@string/buscar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+     >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputEditText_gestionDeVolanteros_buscarUsuario"
+                android:background="@color/azulSuave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout_SwitchPersonalizado"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayout_gestionDeVolanteros_textInputContainer"
+            android:layout_marginHorizontal="@dimen/space_big"
+            android:layout_marginVertical="@dimen/space_small"
+            android:background="@drawable/tab_layout_background"
+            app:tabBackground="@drawable/tab_selected_background"
+            app:tabSelectedTextColor="@color/black"
+            app:tabIndicatorColor="@android:color/transparent"
+            android:contentDescription="@string/volanteros_activos_e_inactivos"
+            >
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_medium"
+                android:text="@string/activos"
+                />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_medium"
+                android:text="@string/inactivos"
+                />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_listaVolanteros"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tabLayout_SwitchPersonalizado"
+            android:layout_margin="@dimen/space_big"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <ProgressBar
+            android:id="@+id/progressBar_gestionDeVolanteros_circularProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_medium"
-            android:text="@string/activos"
+            android:indeterminate="true"
+            android:contentDescription="@string/loading"
+            app:cloudRequestStatusCircularProgress="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_listaVolanteros"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_listaVolanteros"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_listaVolanteros"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_listaVolanteros"
             />
 
-        <com.google.android.material.tabs.TabItem
+        <ImageView
+            android:id="@+id/imageView_gestionDeVolanteros_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/padding_medium"
-            android:text="@string/inactivos"
-            />
+            android:src="@drawable/ic_connection_error_100"
+            app:cloudRequestStatusImage="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_listaVolanteros"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_listaVolanteros"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_listaVolanteros"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_listaVolanteros"
+            android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/no_hay_volanteros_activos_en_estos_momentos"
+           app:layout_constraintStart_toStartOf="@+id/recyclerview_listaVolanteros"
+           app:layout_constraintEnd_toEndOf="@id/recyclerview_listaVolanteros"
+           app:layout_constraintTop_toTopOf="@id/recyclerview_listaVolanteros"
+           app:layout_constraintBottom_toBottomOf="@id/recyclerview_listaVolanteros"
+           android:visibility="gone"
+           app:noHayVolanterosActivos="@{viewModel.volanterosActivos}"
+           />
 
-    </com.google.android.material.tabs.TabLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_listaVolanteros"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout_SwitchPersonalizado"
-        android:layout_margin="@dimen/space_big"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

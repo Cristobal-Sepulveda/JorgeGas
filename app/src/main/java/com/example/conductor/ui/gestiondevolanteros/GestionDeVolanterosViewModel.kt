@@ -8,9 +8,21 @@ import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
+import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
+
+    private val _volanterosActivos = MutableLiveData<Boolean>()
+    val volanterosActivos: LiveData<Boolean>
+        get() = _volanterosActivos
+
+    private val _status =MutableLiveData<CloudRequestStatus>()
+    val status: LiveData<CloudRequestStatus>
+        get() = _status
+
     var domainUsuariosActivosInScreenRespaldo = mutableListOf<Usuario>()
     var domainUsuariosInactivosInScreenRespaldo = mutableListOf<Usuario>()
 
@@ -25,10 +37,15 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
     fun displayUsuariosInRecyclerView(){
         viewModelScope.launch{
             try{
-                val listaDeUsuarios = dataSource.obtenerUsuariosDesdeFirestore()
-                val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros() as MutableList<RegistroTrayectoVolantero>
                 val listaDeUsuariosVolanterosActivos = mutableListOf<Usuario>()
                 val listaDeUsuariosVolanterosInactivos = mutableListOf<Usuario>()
+                val listaDeUsuarios = dataSource.obtenerUsuariosDesdeFirestore()
+                val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros() as MutableList<RegistroTrayectoVolantero>
+                if(listaDeUsuarios.isEmpty() || registroTrayectoVolanteros.toString() == "Error"){
+                    _status.value = CloudRequestStatus.ERROR
+                    return@launch
+                }
+
                 for(usuario in listaDeUsuarios){
                     if(usuario.rol == "Volantero"){
                         for(registro in registroTrayectoVolanteros){
@@ -43,9 +60,16 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                 }
                 listaDeUsuariosVolanterosActivos.sortedWith(compareBy { it.nombre })
                 listaDeUsuariosVolanterosInactivos.sortedWith(compareBy { it.nombre })
+                if(listaDeUsuariosVolanterosActivos.isEmpty(){
+                        volanterosActivos.value = false
+
+                }else{
+                        volanterosActivos.value = true
+                }
                 domainUsuariosInactivosInScreenRespaldo = listaDeUsuariosVolanterosInactivos
-                _domainUsuariosInactivosInScreen.value = listaDeUsuariosVolanterosInactivos
                 domainUsuariosActivosInScreenRespaldo = listaDeUsuariosVolanterosActivos
+                _status.value = CloudRequestStatus.DONE
+                _domainUsuariosInactivosInScreen.value = listaDeUsuariosVolanterosInactivos
                 _domainUsuariosActivosInScreen.value = listaDeUsuariosVolanterosActivos
             }catch(e: Exception) {
                 e.printStackTrace()

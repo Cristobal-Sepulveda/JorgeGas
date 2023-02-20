@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -54,6 +55,22 @@ fun bindStatusErrorCircularProgress(progressBar: ProgressBar, status: LiveData<C
         }
         else -> {
             progressBar.visibility = View.VISIBLE
+        }
+    }
+}
+
+@BindingAdapter("noHayVolanterosActivos")
+fun bindNoHayVolanterosActivos(textView: TextView, textVisible: LiveData<Boolean>?) {
+    Log.d("BindingAdapter", "bindNoHayVolanterosActivos: ${textVisible?.value}")
+    when (textVisible?.value) {
+        true -> {
+            textView.visibility = View.VISIBLE
+        }
+        false -> {
+            textView.visibility = View.GONE
+        }
+        else -> {
+            textView.visibility = View.GONE
         }
     }
 }

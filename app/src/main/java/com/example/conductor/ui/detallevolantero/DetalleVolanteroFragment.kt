@@ -22,8 +22,8 @@ import com.example.conductor.BuildConfig
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
-import com.example.conductor.databinding.FragmentDetalleVolanteroBinding
 import com.example.conductor.utils.Constants
+import com.example.conductor.databinding.FragmentDetalleVolanteroBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback

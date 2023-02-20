@@ -111,6 +111,7 @@
     <string name="no_hay_registros_con_esa_fecha">No hay registro en esa fecha</string>
     <string name="error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube">Error al intentar obtener la lista de usuarios desde la nube</string>
     <string name="loading">Cargando</string>
+    <string name="no_hay_volanteros_activos_en_estos_momentos">No hay volanteros activos en estos momentos</string>
 
     <!--String arrays-->
     <string-array name="roles">

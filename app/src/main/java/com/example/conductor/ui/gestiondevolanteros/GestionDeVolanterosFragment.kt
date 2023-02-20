@@ -26,6 +26,8 @@ class GestionDeVolanterosFragment : BaseFragment() {
     private var filtroSeleccionado = "Activos"
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentGestionDeVolanterosBinding.inflate(inflater, container, false)
+        _binding!!.lifecycleOwner = this
+        _binding!!.viewModel = _viewModel
 
         val adapter = VolanteroAdapter(_viewModel,_appDataSource, VolanteroAdapter.OnClickListener{
             _viewModel.navigationCommand.value = NavigationCommand.To(

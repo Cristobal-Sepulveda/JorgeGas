@@ -11,15 +11,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
-import com.example.conductor.databinding.FragmentEditarUsuarioBinding
-import com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragmentDirections
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.NavigationCommand
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.example.conductor.databinding.FragmentEditarUsuarioBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import org.koin.android.ext.android.inject
 
 class EditarUsuarioFragment : BaseFragment() {
