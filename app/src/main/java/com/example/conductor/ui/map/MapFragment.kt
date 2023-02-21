@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -24,6 +25,8 @@ import com.example.conductor.utils.Constants.cameraDefaultZoom
 import com.example.conductor.utils.Constants.defaultLocation
 import com.example.conductor.utils.polygonsColor
 import com.example.conductor.utils.polygonsList
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
@@ -46,6 +49,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
     private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var lastKnownLocation: Location? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -54,6 +59,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         _binding!!.fabVistaOriginal.setOnClickListener{
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(defaultLocation.latitude, defaultLocation.longitude)
@@ -85,13 +91,46 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     private fun startingPermissionCheck(){
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
         if(isPermissionGranted){
             try{
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    LatLng(defaultLocation.latitude, defaultLocation.longitude)
-                    , cameraDefaultZoom.toFloat())
-                )
+                val locationResult = fusedLocationProviderClient.lastLocation
+                locationResult.addOnCompleteListener(requireActivity()){ task ->
+                    lastKnownLocation = task.result
+                    Log.i("getDeviceLocation", task.result?.longitude.toString())
+                    if (lastKnownLocation != null) {
+                        //zoom to the user location after taking his permission
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    defaultLocation.latitude, defaultLocation.longitude
+                                ),
+                                cameraDefaultZoom.toFloat()
+                            )
+                        )
+                        map.addMarker(
+                            MarkerOptions()
+                                .position(
+                                    LatLng(
+                                        lastKnownLocation!!.latitude,
+                                        lastKnownLocation!!.longitude
+                                    )
+                                )
+                                .title("Marker in your actual location")
+                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
+                        )
+                    }else{
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    defaultLocation.latitude, defaultLocation.longitude
+                                ),
+                                cameraDefaultZoom.toFloat()
+                            )
+                        )
+                        Toast.makeText(requireActivity(), "No se pudo obtener la ubicación actual", Toast.LENGTH_LONG).show()
+                    }
+                }
+
             }catch(e: SecurityException){
                 _binding!!.map.isGone = true
                 _binding!!.imageviewMapaSinPermisos.isGone = false
@@ -111,26 +150,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
             .fillColor(polygonsColor[index])
             .strokeColor(Color.argb(50,255,255,255))
             map.addPolygon(newPolygon)
-
-            //
-/*            val polygonCenterLabel = TextView(context)
-            polygonCenterLabels.add(polygonCenterLabel)
-            polygonCenterLabel.text = "Polygon $index Center"
-            polygonCenterLabel.visibility = View.GONE
-            (view as ViewGroup).addView(polygonCenterLabel)
-            var centerLatitude = 0.0
-            var centerLongitude = 0.0
-            for (point in polygon) {
-                centerLatitude += point.latitude
-                centerLongitude += point.longitude
-            }
-            centerLatitude /= polygon.size
-            centerLongitude /= polygon.size
-            val center = LatLng(centerLatitude, centerLongitude)
-            val centerLabel = polygonCenterLabels[index]
-            centerLabel.x = (map.projection.toScreenLocation(center).x - centerLabel.width / 2).toFloat()
-            centerLabel.y = (map.projection.toScreenLocation(center).y - centerLabel.height / 2).toFloat()
-            centerLabel.visibility = View.VISIBLE*/
         }
     }
 

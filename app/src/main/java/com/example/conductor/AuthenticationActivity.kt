@@ -3,6 +3,7 @@ package com.example.conductor
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -73,7 +74,9 @@ class AuthenticationActivity : AppCompatActivity() {
         val password = binding.edittextPassword.text.toString()
         if(email !="" && password!=""){
             try{
-                binding.progressBar.visibility = View.VISIBLE
+                runOnUiThread{
+                    binding.progressBar.visibility = View.VISIBLE
+                }
                 lifecycleScope.launch{
                     withContext(Dispatchers.IO){
                         val userInValid = cloudDB.collection("Usuarios")
@@ -91,19 +94,22 @@ class AuthenticationActivity : AppCompatActivity() {
                         }
 
                         if(userInValid.documents[0].get("deshabilitada") as Boolean){
-                            binding.progressBar.visibility = View.GONE
                             runOnUiThread {
+                               binding.progressBar.visibility = View.GONE
                                 Toast.makeText(this@AuthenticationActivity,
                                     getString(R.string.login_error_cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
                             }
                             return@withContext
                         }else{
-                            binding.progressBar.visibility = View.GONE
                             firebaseAuth.signInWithEmailAndPassword(email, password).await()
                             cloudDB.collection("Usuarios")
                                 .document(firebaseAuth.currentUser!!.uid)
                                 .update("sesionActiva", true).await()
+                            Thread.sleep(1000)
                             val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                            runOnUiThread{
+                                binding.progressBar.visibility = View.GONE
+                            }
                             finish()
                             startActivity(intent)
                         }
@@ -111,16 +117,10 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
             }catch(e:Exception){
                 binding.progressBar.visibility = View.GONE
-                if(e.message.toString().contains("network")){
-                    runOnUiThread{
-                        Toast.makeText(this@AuthenticationActivity, getString(R.string.login_error_no_internet),Toast.LENGTH_SHORT).show()
-                    }
-                }else{
-                    runOnUiThread{
-                        Toast.makeText(this@AuthenticationActivity, getString(R.string.login_error_credenciales_erroneas),Toast.LENGTH_SHORT).show()
-                    }
+                Log.i("AuthenticationActivity", "Error: $e")
+                runOnUiThread{
+                    Toast.makeText(this@AuthenticationActivity, "Error: $e",Toast.LENGTH_LONG).show()
                 }
-
             }
         }else{
             runOnUiThread{
