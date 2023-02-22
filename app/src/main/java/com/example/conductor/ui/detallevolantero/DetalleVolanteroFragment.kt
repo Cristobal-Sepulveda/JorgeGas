@@ -39,6 +39,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.time.Duration
+import java.time.LocalTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -262,17 +264,11 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         tiemposEntreLatLngDeInteresInicialYFinal.clear()
 
         /*Here i get de value selected in the slide and transform it to a valid hour */
-        val minutes = (value * 10).toInt() % 60
-        val hours = 10 + (value * 10).toInt() / 60
-        val selectedHourInSlide = String.format("%02.0f:%02d", hours.toFloat(), minutes)
+        val minutesInSlide = (value * 10).toInt() % 60
+        val hourInSlide = 10 + (value * 10).toInt() / 60
+        val selectedHourInSlide = String.format("%02.0f:%02d", hourInSlide.toFloat(), minutesInSlide)
         Log.d("Slider", "Selected time: $selectedHourInSlide")
 
-        /*
-        Aquí obtengo el registro del volantero y lo parseo a un DocumentSnapshot para
-        poder obtener su data. El motivo de este parseo es porque registroDelVolantero llega
-        como Any y luego obtengo el registroJornada como ArrayList<Map<String, Map<*, *>>>
-        donde string es fecha
-        */
         val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
         val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
 
@@ -284,55 +280,20 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                 listadoDeHorasDeRegistrodeNuevosGeopoints = registroLatLngsDelDiaSeleccionado!!["horasConRegistro"] as ArrayList<String>
                 val geopointsRegistradosDelDia = registroLatLngsDelDiaSeleccionado["geopoints"] as ArrayList<GeoPoint>
 
-                /** Aquí recorro el array de horas de registro de geopoints y valido si
-                 la hora de registro en ciclo es menor a la hora seleccionada en el slide
-                 con el objetivo de capturar, en cuanto se de el caso en el if, el index del
-                 geopoint que se encuentra mas proximo, y mayor, a la hora seleccionada en el slide
-                 con el objetivo de recorrer el array de geopoints desde el index en cuestión hasta el
-                 ultimo elemento del array para, finalmente, pintarlos en el mapa, cuando se requiera.
-                 */
-                for (horaRegistrada in listadoDeHorasDeRegistrodeNuevosGeopoints) {
-                    if (validarSiPintarGeopointsSegunSuHoraDeRegistro(
-                            horaRegistrada,
-                            hours,
-                            minutes
-                        )
-                    ) {
-                        //index
-                        Log.i("DetalleVolanteroFragment", "horaregistrada: $horaRegistrada")
-                        var i = listadoDeHorasDeRegistrodeNuevosGeopoints.indexOf(horaRegistrada)
+                listadoDeHorasDeRegistrodeNuevosGeopoints.forEachIndexed { i, horaRegistrada ->
+                    val horaRegistradaHoursEnCiclo = horaRegistrada.substring(0, 2).toFloat()
+                    val horaRegistradaMinutesEnCiclo = horaRegistrada.substring(3, 5).toFloat()
 
-                        while (i < listadoDeHorasDeRegistrodeNuevosGeopoints.size) {
-                            /** esta es la condicion de salida, si la hora de registro en ciclo es mayor a la
-                             *  hora seleccionada en el slide, se rompe el ciclo. finalmente
-                             *  se obtienen como 8 horas nada mas, por lo que se obtienen de a 8, 16,24 etc
-                             *  *  el ultimo no sera multiplo de 8 1/10 de las veces*/
-                            if (listadoDeHorasDeRegistrodeNuevosGeopoints[i].substring(0, 2)
-                                    .toFloat() == hours.toFloat() &&
-                                listadoDeHorasDeRegistrodeNuevosGeopoints[i].substring(3, 5)
-                                    .toFloat() > minutes.toFloat()
-                            ) {
-                                break
-                            }
-                            val latitud = geopointsRegistradosDelDia[i].latitude
-                            val longitud = geopointsRegistradosDelDia[i].longitude
-                            val latLng = LatLng(latitud, longitud)
+                    if(horaRegistradaHoursEnCiclo >= hourInSlide.toFloat() && horaRegistradaMinutesEnCiclo >= minutesInSlide.toFloat()){
+                        for(aux in 0..i){
+                            val geopoint = geopointsRegistradosDelDia[aux]
+                            val latLng = LatLng(geopoint.latitude, geopoint.longitude)
                             latLngsDeInteres.add(latLng)
-                            tiemposEntreLatLngDeInteresInicialYFinal.add(listadoDeHorasDeRegistrodeNuevosGeopoints[i])
-                            i++
                         }
-
-                        /** una vez que tengo la lista a pintar, uso Directions y Distance APis para
-                         pintar la ruta segun la regla de negocio */
-                        lifecycleScope.launch{
-                            withContext(Dispatchers.IO){
-                                pintarPolyline()
-                            }
-                        }
-                        break
+                        pintarPolyline()
+                        return true
                     }
                 }
-                return true
             }
         }
         return false
@@ -344,12 +305,14 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                 try {
                     Log.i("DetalleVolanteroFragment", "pintarPolyline: ${latLngsDeInteres.size}")
                     Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.first()}")
+                    Log.i("DetalleVolanteroFragment", listadoDeHorasDeRegistrodeNuevosGeopoints.first())
                     Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.last()}")
+                    Log.i("DetalleVolanteroFragment", listadoDeHorasDeRegistrodeNuevosGeopoints[latLngsDeInteres.size-1])
 
-                    /* Distance Matrix Api Require mainscope to work*/
                     polylineOptions = PolylineOptions().width(10f)
                     var distanceRecorrida = 0
                     var topeParaDibujar = 0
+                    var tiempoEnRecorrerTramo = 0f
                     val listAux = mutableListOf<LatLng?>()
 
                     latLngsDeInteres.forEachIndexed { i, latLng ->
@@ -362,24 +325,33 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         val latLng2 = Location("")
                         latLng2.latitude = latLngsDeInteres[i + 1]?.latitude ?: 0.0
                         latLng2.longitude = latLngsDeInteres[i + 1]?.longitude ?: 0.0
+                        val tiempoLatLng1 = LocalTime.parse(listadoDeHorasDeRegistrodeNuevosGeopoints[i])
+                        val tiempoLatLng2 = LocalTime.parse(listadoDeHorasDeRegistrodeNuevosGeopoints[i+1])
+
                         val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
-                        println(distanceBetweenLatLngs)
+                        val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
+                        Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
+
                         distanceRecorrida += distanceBetweenLatLngs
+                        tiempoEnRecorrerTramo += timeBetweenLatLngs
                         topeParaDibujar++
                         listAux.add(latLng)
-
                         if (topeParaDibujar == 23) {
+                            val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.83).toInt()
+                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.66).toInt()
+                            Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
+                            Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
                             // Set the color based on the distance
                             val color = when (distanceRecorrida) {
-                                in 0..16 -> Color.RED
-                                in 16..20 -> Color.YELLOW
+                                in 0..rangoMenor -> Color.RED
+                                in rangoMenor..rangoMayor -> Color.YELLOW
                                 else -> Color.GREEN
                             }
                             polylineOptions.addAll(listAux).color(color)
                             map.addPolyline(polylineOptions)
                             polylineOptions = PolylineOptions().width(10f)
-                            Log.i("DetalleVolanteroFragment", "pintarPolyline: $distanceRecorrida")
                             distanceRecorrida = 0
+                            tiempoEnRecorrerTramo = 0f
                             topeParaDibujar = 0
                             listAux.clear()
                         }
@@ -391,15 +363,4 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
     }
-
-    private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(
-        horaRegistrada: String,
-        selectedHours: Int,
-        selectedMinutes: Int
-    ): Boolean {
-        val horaRegistradaHours = horaRegistrada.substring(0, 2).toFloat()
-        val horaRegistradaMinutes = horaRegistrada.substring(3, 5).toFloat()
-        return selectedHours.toFloat() >= horaRegistradaHours && selectedMinutes.toFloat() >= horaRegistradaMinutes
-    }
-
 }
