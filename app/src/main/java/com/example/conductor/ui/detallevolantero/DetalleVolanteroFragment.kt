@@ -34,10 +34,7 @@ import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
-import com.google.maps.DirectionsApi
 import com.google.maps.GeoApiContext
-import com.google.maps.android.PolyUtil
-import com.google.maps.model.TravelMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,6 +55,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private lateinit var geoApiContext: GeoApiContext
     private lateinit var polylineOptions: PolylineOptions
     private lateinit var bundle: Usuario
+    private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +63,9 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     ): View {
         _binding = FragmentDetalleVolanteroBinding.inflate(inflater, container, false)
         bundle = DetalleVolanteroFragmentArgs.fromBundle(requireArguments()).usuarioDetails
+        (childFragmentManager.findFragmentById(R.id.fragmentContainerView_detalleVolantero_googleMaps)
+                as? SupportMapFragment)?.getMapAsync(this)
+
         val today = Calendar.getInstance()
 
         lifecycleScope.launch {
@@ -100,13 +101,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             sumarORestarValueDelSlider(1f)
         }
         return _binding!!.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        (childFragmentManager.findFragmentById(R.id.fragmentContainerView_detalleVolantero_googleMaps)
-                as? SupportMapFragment)?.getMapAsync(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -192,6 +186,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT)
             .show()
     }
+
     @SuppressLint("SetTextI18n")
     private fun cargarDatosDelVolantero(bundle: Usuario) {
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
@@ -286,7 +281,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             if (registro["fecha"].toString() == selectedDate) {
                 //Aquí obtengo desde el map el listado de la hora de registro de un geopoints y, el listado de geopoints.
                 val registroLatLngsDelDiaSeleccionado = registro["registroLatLngs"]
-                val listadodeHorasDeRegistrodeNuevosGeopoints = registroLatLngsDelDiaSeleccionado!!["horasConRegistro"] as ArrayList<String>
+                listadoDeHorasDeRegistrodeNuevosGeopoints = registroLatLngsDelDiaSeleccionado!!["horasConRegistro"] as ArrayList<String>
                 val geopointsRegistradosDelDia = registroLatLngsDelDiaSeleccionado["geopoints"] as ArrayList<GeoPoint>
 
                 /** Aquí recorro el array de horas de registro de geopoints y valido si
@@ -296,8 +291,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                  con el objetivo de recorrer el array de geopoints desde el index en cuestión hasta el
                  ultimo elemento del array para, finalmente, pintarlos en el mapa, cuando se requiera.
                  */
-                for (horaRegistrada in listadodeHorasDeRegistrodeNuevosGeopoints) {
-
+                for (horaRegistrada in listadoDeHorasDeRegistrodeNuevosGeopoints) {
                     if (validarSiPintarGeopointsSegunSuHoraDeRegistro(
                             horaRegistrada,
                             hours,
@@ -305,16 +299,17 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         )
                     ) {
                         //index
-                        var i = listadodeHorasDeRegistrodeNuevosGeopoints.indexOf(horaRegistrada)
+                        Log.i("DetalleVolanteroFragment", "horaregistrada: $horaRegistrada")
+                        var i = listadoDeHorasDeRegistrodeNuevosGeopoints.indexOf(horaRegistrada)
 
-                        while (i < listadodeHorasDeRegistrodeNuevosGeopoints.size) {
+                        while (i < listadoDeHorasDeRegistrodeNuevosGeopoints.size) {
                             /** esta es la condicion de salida, si la hora de registro en ciclo es mayor a la
                              *  hora seleccionada en el slide, se rompe el ciclo. finalmente
                              *  se obtienen como 8 horas nada mas, por lo que se obtienen de a 8, 16,24 etc
                              *  *  el ultimo no sera multiplo de 8 1/10 de las veces*/
-                            if (listadodeHorasDeRegistrodeNuevosGeopoints[i].substring(0, 2)
+                            if (listadoDeHorasDeRegistrodeNuevosGeopoints[i].substring(0, 2)
                                     .toFloat() == hours.toFloat() &&
-                                listadodeHorasDeRegistrodeNuevosGeopoints[i].substring(3, 5)
+                                listadoDeHorasDeRegistrodeNuevosGeopoints[i].substring(3, 5)
                                     .toFloat() > minutes.toFloat()
                             ) {
                                 break
@@ -323,7 +318,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             val longitud = geopointsRegistradosDelDia[i].longitude
                             val latLng = LatLng(latitud, longitud)
                             latLngsDeInteres.add(latLng)
-                            tiemposEntreLatLngDeInteresInicialYFinal.add(listadodeHorasDeRegistrodeNuevosGeopoints[i])
+                            tiemposEntreLatLngDeInteresInicialYFinal.add(listadoDeHorasDeRegistrodeNuevosGeopoints[i])
                             i++
                         }
 
@@ -344,94 +339,57 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun pintarPolyline() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+        lifecycleScope.launch{
+            withContext(Dispatchers.Main) {
                 try {
-                    val origin = latLngsDeInteres.first()
-                    val destination = latLngsDeInteres.last()
-                    val waypoints = latLngsDeInteres.subList(1, latLngsDeInteres.size)
-                        .map { "${it?.latitude},${it?.longitude}" }
-                        .toTypedArray()
-                    val request = DirectionsApi.newRequest(geoApiContext)
-                        .mode(TravelMode.WALKING)
-                        .origin("${origin?.latitude},${origin?.longitude}") // Convert origin to "latitude,longitude" string
-                        .destination("${destination?.latitude},${destination?.longitude}") // Convert destination to "latitude,longitude" string
-                        .waypoints(*waypoints) // Convert waypoints to a list of "latitude,longitude" strings
-                        .optimizeWaypoints(true)
-                        .await()
+                    Log.i("DetalleVolanteroFragment", "pintarPolyline: ${latLngsDeInteres.size}")
+                    Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.first()}")
+                    Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.last()}")
 
                     /* Distance Matrix Api Require mainscope to work*/
-                    withContext(Dispatchers.Main){
-                        // Here i check if the request was successful
-                        if (request?.routes != null && request.routes.isNotEmpty()) {
-                            val encodedPolyline = request.routes[0].overviewPolyline.encodedPath
-                            // Decode the polyline to a list of LatLng points
-                            val decodedPath = PolyUtil.decode(encodedPolyline)
+                    polylineOptions = PolylineOptions().width(10f)
+                    var distanceRecorrida = 0
+                    var topeParaDibujar = 0
+                    val listAux = mutableListOf<LatLng?>()
 
-                            val closestPoints = mutableListOf<LatLng>()
+                    latLngsDeInteres.forEachIndexed { i, latLng ->
+                        if (i == latLngsDeInteres.size - 1) {
+                            return@forEachIndexed
+                        }
+                        val latLng1 = Location("")
+                        latLng1.latitude = latLng?.latitude ?: 0.0
+                        latLng1.longitude = latLng?.longitude ?: 0.0
+                        val latLng2 = Location("")
+                        latLng2.latitude = latLngsDeInteres[i + 1]?.latitude ?: 0.0
+                        latLng2.longitude = latLngsDeInteres[i + 1]?.longitude ?: 0.0
+                        val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
+                        println(distanceBetweenLatLngs)
+                        distanceRecorrida += distanceBetweenLatLngs
+                        topeParaDibujar++
+                        listAux.add(latLng)
 
-                            // Find the closest point in the decoded path for each point in latLngsDeInteres
-                            for (latLng in latLngsDeInteres) {
-                                var closestIndex = 0
-                                var closestDistance = Float.MAX_VALUE
-                                decodedPath.forEachIndexed { i, pathLatLng ->
-                                    val distance = FloatArray(1)
-                                    Location.distanceBetween(
-                                        latLng!!.latitude, latLng.longitude,
-                                        pathLatLng.latitude, pathLatLng.longitude, distance
-                                    )
-                                    if (distance[0] < closestDistance) {
-                                        closestIndex = i
-                                        closestDistance = distance[0]
-                                    }
-                                }
-                                closestPoints.add(decodedPath[closestIndex])
+                        if (topeParaDibujar == 23) {
+                            // Set the color based on the distance
+                            val color = when (distanceRecorrida) {
+                                in 0..16 -> Color.RED
+                                in 16..20 -> Color.YELLOW
+                                else -> Color.GREEN
                             }
+                            polylineOptions.addAll(listAux).color(color)
+                            map.addPolyline(polylineOptions)
                             polylineOptions = PolylineOptions().width(10f)
-                            var distanceRecorrida = 0
-                            var indexGuardadoInicio = 0
-                            var indexGuardadoFin = 0
-
-                            decodedPath.forEachIndexed { i, latLng ->
-                                // Create a PolylineOptions object and configure its appearance
-                                if (i < decodedPath.size - 1) {
-                                    val latLng1 = "${latLng?.latitude},${latLng?.longitude}"
-                                    val latLng2 = "${decodedPath[i + 1]?.latitude},${decodedPath[i + 1]?.longitude}"
-                                    val distanceMatrixResponse = _viewModel.obtenerDistanciaEntreLatLngs(latLng1, latLng2, BuildConfig.DISTANCE_MATRIX_API_KEY)
-                                    val distance = distanceMatrixResponse.rows[0].elements[0].distance?.value
-                                    println(distance)
-                                    distanceRecorrida += distance!!
-                                    // Set the color based on the distance
-                                    if(closestPoints.contains(LatLng(latLng.latitude, latLng.longitude))){
-                                        indexGuardadoInicio = indexGuardadoFin
-                                        indexGuardadoFin = i
-                                        val color = when (distanceRecorrida) {
-                                            in 0..500 -> Color.RED
-                                            in 500..900 ->Color.YELLOW
-                                            else -> Color.GREEN
-                                        }
-                                        val listAux = decodedPath.subList(indexGuardadoInicio,indexGuardadoFin)
-                                        polylineOptions.addAll(listAux).color(color)
-                                        map.addPolyline(polylineOptions)
-                                        polylineOptions = PolylineOptions().width(10f)
-                                        distanceRecorrida = 0
-                                    }
-                                } else {
-                                    polylineOptions.add(latLng)
-                                    map.addPolyline(polylineOptions)
-                                    polylineOptions = PolylineOptions().width(10f)
-                                }
-                            }
-                        } else {
-                            Snackbar.make(_binding!!.root, "Error: request es null", Snackbar.LENGTH_LONG).show()
-                            Log.e("DIRECTIONS_API_ERROR", "Error: request es null")
+                            Log.i("DetalleVolanteroFragment", "pintarPolyline: $distanceRecorrida")
+                            distanceRecorrida = 0
+                            topeParaDibujar = 0
+                            listAux.clear()
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("DIRECTIONS_API_ERROR", "Error catch: ${e.message}")
+                    Snackbar.make(_binding!!.root, "$e", Snackbar.LENGTH_LONG).show()
                 }
             }
         }
+
     }
 
     private fun validarSiPintarGeopointsSegunSuHoraDeRegistro(
