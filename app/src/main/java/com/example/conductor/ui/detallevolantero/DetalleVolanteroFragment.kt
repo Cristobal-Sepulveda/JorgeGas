@@ -79,10 +79,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         obtenerGeoApiContext()
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { slider, value, _ ->
-            val minutes = (value * 10).toInt() % 60
-            val hours = 10 + (value * 10).toInt() / 60
-            val selectedHourInSlide = String.format("%02.0f:%02d", hours.toFloat(), minutes)
-            slider.setLabelFormatter{ return@setLabelFormatter selectedHourInSlide}
             if (iniciarValidacionesAntesDePintarPolyline(value)) {
                 return@addOnChangeListener
             }
@@ -225,9 +221,14 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun customizarSliderLabel(value: Float): String {
-        val minutes = (value * 10).toInt() % 60
-        val hours = 10 + (value * 10).toInt() / 60
-        return String.format("%02d:%02d", hours, minutes)
+        Log.i("customizarSliderLabel", value.toString())
+        val startHour = 8
+        val endHour = 20
+        val totalHours = endHour - startHour
+        val totalMinutes = totalHours * 60
+        val hourValue = startHour + (value * totalHours / 72).toInt()
+        val minuteValue = (value * totalMinutes / 72).toInt() % 60
+        return String.format("%02d:%02d", hourValue, minuteValue)
     }
 
     private fun abrirCalendario(today: Calendar) {
@@ -270,8 +271,13 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         tiemposEntreLatLngDeInteresInicialYFinal.clear()
 
         /*Here i get de value selected in the slide and transform it to a valid hour */
-        val minutesInSlide = (value * 10).toInt() % 60
-        val hourInSlide = 10 + (value * 10).toInt() / 60
+        val startHour = 8
+        val endHour = 20
+        val totalHours = endHour - startHour
+        val totalMinutes = totalHours * 60
+        val hourInSlide = startHour + (value * totalHours / 72).toInt()
+        val minutesInSlide = (value * totalMinutes / 72).toInt() % 60
+
         val selectedHourInSlide = String.format("%02.0f:%02d", hourInSlide.toFloat(), minutesInSlide)
         Log.d("Slider", "Selected time: $selectedHourInSlide")
 
