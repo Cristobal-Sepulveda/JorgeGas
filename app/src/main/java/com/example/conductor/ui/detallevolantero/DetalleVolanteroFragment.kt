@@ -102,8 +102,14 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         _binding!!.imageViewDetalleVolanteroSumar10minutos.setOnClickListener {
             sumarORestarValueDelSlider(1f)
         }
+
+        _binding!!.floatingActionButtonDetalleVolanteroCambiarTipoDeMapa.setOnClickListener{
+            cambiarTipoDeMapa()
+        }
         return _binding!!.root
     }
+
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
@@ -339,13 +345,15 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         if (topeParaDibujar == 23) {
                             val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.83).toInt()
                             val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.66).toInt()
+                            val rangoMaximoHumano = rangoMayor*4
                             Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
                             Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
                             // Set the color based on the distance
                             val color = when (distanceRecorrida) {
                                 in 0..rangoMenor -> Color.RED
                                 in rangoMenor..rangoMayor -> Color.YELLOW
-                                else -> Color.GREEN
+                                in rangoMayor..rangoMaximoHumano -> Color.GREEN
+                                else -> Color.BLUE
                             }
                             polylineOptions.addAll(listAux).color(color)
                             map.addPolyline(polylineOptions)
@@ -362,5 +370,12 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             }
         }
 
+    }
+    private fun cambiarTipoDeMapa() {
+        if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        } else {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
     }
 }
