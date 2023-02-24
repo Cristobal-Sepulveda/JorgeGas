@@ -113,6 +113,12 @@
     <string name="loading">Cargando</string>
     <string name="no_hay_volanteros_activos_en_estos_momentos">No hay volanteros activos en estos momentos</string>
     <string name="cambiar_tipo_de_mapa">Cambiar tipo de mapa</string>
+    <string name="verde">Verde</string>
+    <string name="amarillo">amarillo</string>
+    <string name="rojo">rojo</string>
+    <string name="rosado">rosado</string>
+    <string name="azul">azul</string>
+    <string name="hora">00:00:00</string>
 
     <!--String arrays-->
     <string-array name="roles">

@@ -78,7 +78,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         cargarDatosDelVolantero(bundle)
         obtenerGeoApiContext()
 
-        _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { slider, value, _ ->
+        _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { _, value, _ ->
             if (iniciarValidacionesAntesDePintarPolyline(value)) {
                 return@addOnChangeListener
             }
@@ -326,6 +326,10 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                     var topeParaDibujar = 0
                     var tiempoEnRecorrerTramo = 0f
                     val listAux = mutableListOf<LatLng?>()
+                    var tiempoEnRojo = 0f
+                    var tiempoEnAmarillo = 0f
+                    var tiempoEnVerde = 0f
+                    var tiempoEnAzul = 0f
 
                     latLngsDeInteres.forEachIndexed { i, latLng ->
                         if (i == latLngsDeInteres.size - 1) {
@@ -363,6 +367,22 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             }
                             polylineOptions.addAll(listAux).color(color)
                             map.addPolyline(polylineOptions)
+
+                            when(color){
+                                Color.RED -> {
+                                    tiempoEnRojo += tiempoEnRecorrerTramo/1000
+                                }
+                                Color.YELLOW -> {
+                                    tiempoEnAmarillo += tiempoEnRecorrerTramo/1000
+                                }
+                                Color.GREEN -> {
+                                    tiempoEnVerde += tiempoEnRecorrerTramo/1000
+                                }
+                                Color.BLUE -> {
+                                    tiempoEnAzul += tiempoEnRecorrerTramo/1000
+                                }
+                            }
+
                             polylineOptions = PolylineOptions().width(10f)
                             distanceRecorrida = 0
                             tiempoEnRecorrerTramo = 0f
@@ -370,6 +390,11 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                             listAux.clear()
                         }
                     }
+                    _binding!!.textViewDetalleVolanteroRojo.text = convertSecondsToHMS(tiempoEnRojo)
+                    _binding!!.textViewDetalleVolanteroAmarillo.text = convertSecondsToHMS(tiempoEnAmarillo)
+                    _binding!!.textViewDetalleVolanteroVerde.text = convertSecondsToHMS(tiempoEnVerde)
+                    _binding!!.textViewDetalleVolanteroAzul.text = convertSecondsToHMS(tiempoEnAzul)
+
                 } catch (e: Exception) {
                     Snackbar.make(_binding!!.root, "$e", Snackbar.LENGTH_LONG).show()
                 }
@@ -383,5 +408,12 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         } else {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
         }
+    }
+
+    fun convertSecondsToHMS(seconds: Float): String {
+        val hours = (seconds / 3600).toInt()
+        val minutes = ((seconds % 3600) / 60).toInt()
+        val remainingSeconds = (seconds % 60).toInt()
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
     }
 }

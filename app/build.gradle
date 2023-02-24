@@ -5,6 +5,8 @@ plugins {
     id 'com.google.gms.google-services'
     id 'kotlin-parcelize'
     id 'androidx.navigation.safeargs'// add here.
+    // Add the Crashlytics Gradle plugin
+    id 'com.google.firebase.crashlytics'
 }
 
 def localProperties = new Properties()
@@ -167,6 +169,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:24.4.2'
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation "com.google.firebase:firebase-auth-ktx"
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Add the dependency for the Performance Monitoring library
     // When using the BoM, you don't specify versions in Firebase library dependencies

@@ -10,8 +10,11 @@
     <color name="azulMarino">#283484</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#8BC34A</color>
+    <color name="yellow">#FBE419</color>
     <color name="red">#F44336</color>
+    <color name="rosado">#FFADA7</color>
     <color name="azulSuave">#E7EDF4</color>
+    <color name="azul">#5290D6</color>
     <color name="gris">#D9D9D9</color>
     <color name="lightGrey">#c3c3c3</color>
     <color name="drawer_nav_header_background">#F5F5F5</color>

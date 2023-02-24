@@ -143,7 +143,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
     }
 
     private fun markingPolygons(){
-        val view = _binding!!.mapLayout
         for((index,polygon) in polygonsList.withIndex()){
             val newPolygon = PolygonOptions()
             .addAll(polygon)

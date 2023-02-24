@@ -57,10 +57,10 @@ class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppD
             onClickListener.onClick(usuario)
         }
 
-        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_llamar).setOnClickListener{ view ->
+        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_llamar).setOnClickListener{
             /*onClickListener.onClick(usuario)*/
         }
-        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_notificar).setOnClickListener{ view ->
+        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_notificar).setOnClickListener{
             /*onClickListener.onClick(usuario)*/
         }
         holder.bind(usuario)

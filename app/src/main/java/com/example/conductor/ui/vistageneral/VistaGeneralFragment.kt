@@ -258,22 +258,30 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         locationService?.unsubscribeToLocationUpdates()
                         notificationGenerator(requireActivity(),"El servicio de localización ha sido detenido.")
                     } else {
-                        Toast.makeText(
-                            requireActivity(),
+                        val snackbar = Snackbar.make(
+                            _binding!!.root,
                             "El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                        snackbar.setAction("Aceptar") {
+                            snackbar.dismiss()
+                        }
+                        snackbar.show()
                     }
                 } else {
                     if (_viewModel.editarEstadoVolantero(true)) {
                         _viewModel.obtenerUsuariosDesdeSqlite()
                         locationService?.subscribeToLocationUpdates()
                     } else {
-                        Toast.makeText(
-                            requireActivity(),
-                            "El servicio no será activado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val snackbar = Snackbar.make(
+                            _binding!!.root,
+                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
+                            Snackbar.LENGTH_INDEFINITE
+                        )
+                        snackbar.setAction("Aceptar") {
+                            snackbar.dismiss()
+                        }
+                        snackbar.show()
                     }
                 }
             }

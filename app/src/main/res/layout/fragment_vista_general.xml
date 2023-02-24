@@ -24,7 +24,8 @@
         android:text="@string/iniciar_turno"
         android:background="@drawable/boton_redondo_verde"
         android:textColor="@color/white"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/imageView_vistaGeneral_botonVolantero"
