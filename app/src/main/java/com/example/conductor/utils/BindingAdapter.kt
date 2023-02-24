@@ -1,6 +1,7 @@
 package com.example.conductor.utils
 
 
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -11,9 +12,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 @BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, data: List<Usuario>?) {
@@ -89,6 +92,40 @@ fun bindNoHayVolanterosActivos(textView: TextView, textVisible: LiveData<Boolean
         }
         else -> {
             textView.visibility = View.GONE
+        }
+    }
+}
+
+@BindingAdapter("botonIniciarODetenerRegistroVolantero")
+fun bindBotonIniciarODetenerRegistroVolantero(fab: FloatingActionButton, status: LiveData<Boolean>?) {
+    Log.d("BindingAdapter", "bindBotonIniciarODetenerRegistroVolantero: ${status?.value}")
+    when (status?.value) {
+        true -> {
+            fab.setImageResource(R.drawable.baseline_stop_24)
+            fab.setBackgroundColor(Color.argb(
+                100,
+                255,
+                0,
+                0
+            ))
+        }
+        false -> {
+            fab.setImageResource(R.drawable.baseline_directions_walk_24)
+            fab.setBackgroundColor(Color.argb(
+                100,
+                0,
+                255,
+                0
+            ))
+        }
+        else -> {
+            fab.setImageResource(R.drawable.baseline_directions_walk_24)
+            fab.setBackgroundColor(Color.argb(
+                100,
+                0,
+                255,
+                0
+            ))
         }
     }
 }

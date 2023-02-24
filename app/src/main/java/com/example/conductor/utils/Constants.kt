@@ -13,8 +13,9 @@ import java.util.*
 
 object Constants {
 
-    const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
+    const val REQUEST_POST_NOTIFICATIONS_PERMISSION = 27
     const val REQUEST_CAMERA_PERMISSION = 28
+    const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
     //esta ubicación esta en san francisco con placer
     val defaultLocation = LatLng(-33.47536870666403, -70.64367761577908)
     const val cameraDefaultZoom = 10.7

@@ -45,10 +45,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback{
 
     override val _viewModel: MapViewModel by inject()
     private var _binding: FragmentMapBinding? = null
-    private lateinit var map: GoogleMap
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
     private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
+    private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
 

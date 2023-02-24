@@ -16,6 +16,10 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     var usuarioEstaActivo = false
     var usuarioDesdeSqlite = ""
 
+    private var _botonVolantero = MutableLiveData<Boolean>()
+    val botonVolantero: LiveData<Boolean>
+        get() = _botonVolantero
+
     suspend fun obtenerRolDelUsuarioActual():String{
         return withContext(Dispatchers.IO) {
             return@withContext dataSource.obtenerRolDelUsuarioActual()
@@ -40,5 +44,9 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
             Log.i("VistaGeneralViewModel", "$usuario")
             Log.i("VistaGeneralViewModel", "isEmpty")
         }
+    }
+
+    fun editarBotonVolantero(trackingLocation: Boolean){
+        _botonVolantero.value = trackingLocation
     }
 }

@@ -9,6 +9,7 @@ import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -41,6 +42,7 @@ import com.example.conductor.ui.vistageneral.VistaGeneralFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
+import com.example.conductor.utils.Constants.REQUEST_POST_NOTIFICATIONS_PERMISSION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.notificationGenerator
 import com.google.android.gms.common.api.ResolvableApiException
@@ -66,6 +68,17 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private lateinit var userInValid: QuerySnapshot
     private val cloudDB = FirebaseFirestore.getInstance()
     private val dataSource: AppDataSource by inject()
+    // Declare the launcher at the top of your Activity/Fragment:
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+        } else {
+            // TODO: Inform user that that your app will not show notifications.
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,7 +172,12 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
         if(requestCode == REQUEST_CAMERA_PERMISSION){
             if(resultCode == Activity.RESULT_CANCELED){
-                checkingDeviceLocationSettings()
+                checkingPermissionsSettings()
+            }
+        }
+        if(requestCode == REQUEST_POST_NOTIFICATIONS_PERMISSION){
+            if(resultCode == Activity.RESULT_CANCELED){
+                checkingPermissionsSettings()
             }
         }
     }
@@ -204,6 +222,16 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             this,
             Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
+        val isPostNotificationsPermissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        }
+
         if(!isPermissionGranted){
             val requestPermissionLauncher = registerForActivityResult(
                 ActivityResultContracts.RequestPermission()){ isGranted ->
@@ -227,8 +255,14 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             }
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+
         if(!isCameraPermissionGranted){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        }
+        if(!isPostNotificationsPermissionGranted){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
     }
 
