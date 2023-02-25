@@ -72,59 +72,79 @@ class AuthenticationActivity : AppCompatActivity() {
     private suspend fun launchSignInFlow() {
         val email = binding.edittextEmail.text.toString()
         val password = binding.edittextPassword.text.toString()
-        if(email !="" && password!=""){
-            try{
-                runOnUiThread{
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                lifecycleScope.launch{
-                    withContext(Dispatchers.IO){
-                        val userInValid = cloudDB.collection("Usuarios")
-                            .whereEqualTo("usuario",email).get().await()
+        if(email =="" && password ==""){
+            runOnUiThread{
+                Toast.makeText(this@AuthenticationActivity,
+                    getString(R.string.login_error_campos_vacios),
+                    Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }else{
 
-                        if(userInValid.documents[0].get("sesionActiva") as Boolean){
-                            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    runOnUiThread {
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
+                    try {
+                        //validar que el usuario exista
+                        val userInValid = cloudDB.collection("Usuarios")
+                            .whereEqualTo("usuario", email).get().await()
+
+                        //primer error controlado
+                        if (userInValid.documents[0].get("sesionActiva") as Boolean) {
+                            val inputMethodManager =
+                                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                             runOnUiThread {
                                 binding.progressBar.visibility = View.GONE
-                                Snackbar.make(findViewById(R.id.container),
-                                    getString(R.string.sesion_activa_existente),Toast.LENGTH_SHORT).show()
+                                Snackbar.make(
+                                    findViewById(R.id.container),
+                                    getString(R.string.sesion_activa_existente), Toast.LENGTH_SHORT
+                                ).show()
                             }
                             return@withContext
                         }
 
-                        if(userInValid.documents[0].get("deshabilitada") as Boolean){
+                        //segundo error controlado
+                        if (userInValid.documents[0].get("deshabilitada") as Boolean) {
                             runOnUiThread {
-                               binding.progressBar.visibility = View.GONE
-                                Toast.makeText(this@AuthenticationActivity,
-                                    getString(R.string.login_error_cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
+                                binding.progressBar.visibility = View.GONE
+                                Toast.makeText(
+                                    this@AuthenticationActivity,
+                                    getString(R.string.login_error_cuenta_deshabilitada),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             return@withContext
-                        }else{
-                            firebaseAuth.signInWithEmailAndPassword(email, password).await()
-                            cloudDB.collection("Usuarios")
-                                .document(firebaseAuth.currentUser!!.uid)
-                                .update("sesionActiva", true).await()
-                            Thread.sleep(1000)
-                            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
-                            runOnUiThread{
-                                binding.progressBar.visibility = View.GONE
-                            }
-                            finish()
-                            startActivity(intent)
+                        }
+
+                        firebaseAuth.signInWithEmailAndPassword(email, password).await()
+
+                        cloudDB.collection("Usuarios")
+                            .document(firebaseAuth.currentUser!!.uid)
+                            .update("sesionActiva", true).await()
+                        Thread.sleep(1000)
+                        val intent =
+                            Intent(this@AuthenticationActivity, MainActivity::class.java)
+                        runOnUiThread {
+                            binding.progressBar.visibility = View.GONE
+                        }
+                        finish()
+                        startActivity(intent)
+                    }
+                    catch (e: Exception) {
+                        binding.progressBar.visibility = View.GONE
+                        Log.i("AuthenticationActivity", "Error: $e")
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@AuthenticationActivity,
+                                "Error: $e",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
-            }catch(e:Exception){
-                binding.progressBar.visibility = View.GONE
-                Log.i("AuthenticationActivity", "Error: $e")
-                runOnUiThread{
-                    Toast.makeText(this@AuthenticationActivity, "Error: $e",Toast.LENGTH_LONG).show()
-                }
-            }
-        }else{
-            runOnUiThread{
-                Toast.makeText(this@AuthenticationActivity, "Por favor, complete todos los campos.", Toast.LENGTH_SHORT).show()
             }
         }
     }

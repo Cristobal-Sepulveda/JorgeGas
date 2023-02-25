@@ -354,7 +354,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         listAux.add(latLng)
                         if (topeParaDibujar == 23) {
                             val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.83).toInt()
-                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.66).toInt()
+                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
                             val rangoMaximoHumano = rangoMayor*4
                             Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
                             Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
