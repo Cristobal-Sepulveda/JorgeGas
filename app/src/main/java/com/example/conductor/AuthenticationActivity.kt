@@ -147,7 +147,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 Snackbar.make(
                     findViewById(R.id.container),
                     "Error: ${e.message}",
-                    Toast.LENGTH_LONG)
+                    Snackbar.LENGTH_LONG)
                     .show()
             }
         }

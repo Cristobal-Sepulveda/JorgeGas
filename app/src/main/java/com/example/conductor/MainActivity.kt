@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     private lateinit var userInValid: QuerySnapshot
     private val cloudDB = FirebaseFirestore.getInstance()
     private val dataSource: AppDataSource by inject()
+
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -91,16 +92,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
         vistaGeneralDrawableMenuYBottomNavigationView()
-
-
-/*        val asd = DrawerNavHeaderBinding.bind(binding.navView.getHeaderView(0))
-        asd.textViewNombreUsuario.setOnClickListener {
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
-                    logout()
-                }
-            }
-        }*/
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             lifecycleScope.launch{
@@ -138,13 +129,22 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId){
             R.id.modoClaro -> {
-                showToast()
+                Toast.makeText(
+                    this,
+                    "Esta funcionalidad se implementará en un futuro.",
+                    Toast.LENGTH_LONG).show()
             }
             R.id.modoOscuro ->{
-                showToast()
+                Toast.makeText(
+                    this,
+                    "Esta funcionalidad se implementará en un futuro.",
+                    Toast.LENGTH_LONG).show()
             }
             R.id.acercaDe -> {
-                showToast()
+                Toast.makeText(
+                    this,
+                    "Esta funcionalidad se implementará en un futuro.",
+                    Toast.LENGTH_LONG).show()
             }
             R.id.navigation_administrar_cuentas -> {
                 return NavigationUI.onNavDestinationSelected(
@@ -192,11 +192,10 @@ class MainActivity : AppCompatActivity(), MenuProvider{
 
                     Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
                     if(userInValid.documents[0].get("rol") != "Administrador" || userInValid.documents[0].get("rol") != "Supervisor Volantero") {
-                        /*binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false*/
+                        binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible = false
                     }
                     if(userInValid.documents[0].get("rol") == "Volantero"){
                         binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
-
                     }
                 }
             }
@@ -295,13 +294,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
     }
 
-    private fun showToast(){
-        Toast.makeText(
-                this,
-                "Esta funcionalidad se implementará en un futuro.",
-                Toast.LENGTH_LONG).show()
-    }
-
     private suspend fun launchLogoutFlow() {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetworkInfo
@@ -316,6 +308,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             ).show()
         }
     }
+
     private suspend fun logout() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
