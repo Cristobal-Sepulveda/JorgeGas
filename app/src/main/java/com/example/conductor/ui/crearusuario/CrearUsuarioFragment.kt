@@ -3,7 +3,6 @@ package com.example.conductor.ui.crearusuario
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
@@ -14,16 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
-import com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragmentDirections
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.utils.Constants.REQUEST_TAKE_PHOTO
 import com.example.conductor.utils.NavigationCommand
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +28,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
 
 class CrearUsuarioFragment : BaseFragment() {
 

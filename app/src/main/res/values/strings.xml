@@ -89,7 +89,7 @@
     <string name="editar_cuentas">Editar cuentas</string>
     <string name="supervisor_volanteros">Supervisor Volanteros</string>
     <string name="call_center">call center</string>
-    <string name="sesion_activa_existente">Su cuenta ya esta activa en otro celular. Cierre sesión en el otro dispositivo e intentelo nuevamente.</string>
+    <string name="sesion_activa_existente">Su cuenta ya esta activa en otro celular.</string>
     <string name="nombreYApellido">Cristóbal Sepúlveda</string>
     <string name="foto_perfil_volantero_seleccionado">Foto de perfil del volantero seleccionado</string>
     <string name="recorrido">Recorrido</string>
@@ -122,6 +122,7 @@
     <string name="falta_material">Falta Material</string>
     <string name="default_notification_channel_id">1</string>
     <string name="login_error_campos_vacios">Por favor, complete ambos campos.</string>
+    <string name="no_hay_internet">Hay problemas con tu internet. Intentalo nuevamente</string>
 
     <!--String arrays-->
     <string-array name="roles">

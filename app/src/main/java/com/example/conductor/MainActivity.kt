@@ -1,13 +1,13 @@
 package com.example.conductor
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,8 +17,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -37,9 +35,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
-import com.example.conductor.databinding.DrawerNavHeaderBinding
-import com.example.conductor.ui.vistageneral.VistaGeneralFragment
-import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
 import com.example.conductor.utils.Constants.REQUEST_POST_NOTIFICATIONS_PERMISSION
@@ -57,7 +52,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import org.koin.androidx.compose.inject
 
 class MainActivity : AppCompatActivity(), MenuProvider{
 
@@ -111,7 +105,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
-                    logout()
+                    launchLogoutFlow()
                 }
             }
             true
@@ -259,6 +253,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         if(!isCameraPermissionGranted){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         }
+
         if(!isPostNotificationsPermissionGranted){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -307,28 +302,73 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 Toast.LENGTH_LONG).show()
     }
 
-    private suspend fun logout(){
-        try{
-            if(userInValid.documents[0].get("rol") == "Volantero"){
-                val registroTrayectoVolanterosUsuario = cloudDB
-                    .collection("RegistroTrayectoVolanteros")
-                    .document(firebaseAuth.currentUser!!.uid)
-                    .get().await()
-                if(registroTrayectoVolanterosUsuario.exists() &&registroTrayectoVolanterosUsuario.data!!["estaActivo"] as Boolean) {
-                    cloudDB
+    private suspend fun launchLogoutFlow() {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetworkInfo
+        //aquí chequeo si hay internet
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
+            logout()
+        } else {
+            Snackbar.make(
+                binding.root,
+                R.string.no_hay_internet,
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+    private suspend fun logout() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                var continueLogout = true
+
+                if (userInValid.documents[0].get("rol") == "Volantero") {
+                    val registroTrayectoVolanterosUsuario = cloudDB
                         .collection("RegistroTrayectoVolanteros")
                         .document(firebaseAuth.currentUser!!.uid)
-                        .update("estaActivo", false)
+                        .get()
+
+                    registroTrayectoVolanterosUsuario.addOnSuccessListener { document ->
+                        if (document.exists() && document.data!!["estaActivo"] as Boolean) {
+                            val docRef = cloudDB.collection("RegistroTrayectoVolanteros")
+                                .document(firebaseAuth.currentUser!!.uid)
+                                .update("estaActivo", false)
+
+                            docRef.addOnFailureListener {
+                                continueLogout = false
+                                Snackbar.make(
+                                    binding.root,
+                                    it.message.toString(),
+                                    Snackbar.LENGTH_LONG
+                                ).show()
+                            }
+
+                        }
+                    }
+
+                    registroTrayectoVolanterosUsuario.addOnFailureListener {
+                        continueLogout = false
+                        Snackbar.make(binding.root, it.message.toString(), Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }
+
+                if (continueLogout) {
+                    val docRef = cloudDB.collection("Usuarios")
+                        .document(firebaseAuth.currentUser!!.uid)
+                        .update("sesionActiva", false)
+
+                    docRef.addOnFailureListener() {
+                        continueLogout = false
+                        Snackbar.make(binding.root, it.message.toString(), Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                    if (continueLogout) {
+                        FirebaseAuth.getInstance().signOut()
+                        this@MainActivity.finish()
+                        startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+                    }
                 }
             }
-            cloudDB.collection("Usuarios")
-                .document(firebaseAuth.currentUser!!.uid)
-                .update("sesionActiva", false).await()
-            FirebaseAuth.getInstance().signOut()
-            this.finish()
-            startActivity(Intent(this, AuthenticationActivity::class.java))
-        }catch(e:Exception){
-            notificationGenerator(this, e.message.toString())
         }
     }
 

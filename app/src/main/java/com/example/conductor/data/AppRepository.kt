@@ -12,7 +12,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
-import com.example.conductor.data.network.DistanceMatrixElement
 import com.example.conductor.data.network.DistanceMatrixResponse
 
 @Suppress("LABEL_NAME_CLASH")

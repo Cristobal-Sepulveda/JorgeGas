@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.provider.MediaStore.Images.Media.getBitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +22,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
-import com.example.conductor.ui.administrarcuentas.AdministrarCuentasFragmentDirections
 import com.example.conductor.utils.*
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
