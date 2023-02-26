@@ -110,6 +110,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
     override suspend fun obtenerRegistroDelVolantero(id: String): Any = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -122,6 +123,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
     override suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource{
             withContext(ioDispatcher){
@@ -144,8 +146,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
-    override suspend fun eliminarUsuarioEnSqlite() {
+    override suspend fun eliminarUsuariosEnSqlite() {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 usuarioDao.eliminarUsuarios()

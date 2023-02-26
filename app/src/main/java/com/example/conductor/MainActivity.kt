@@ -33,13 +33,11 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
-import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
 import com.example.conductor.utils.Constants.REQUEST_POST_NOTIFICATIONS_PERMISSION
 import com.example.conductor.utils.Constants.firebaseAuth
-import com.example.conductor.utils.notificationGenerator
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
@@ -53,7 +51,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-class MainActivity : AppCompatActivity(), MenuProvider{
+class MainActivity : AppCompatActivity(), MenuProvider {
 
     private lateinit var binding: ActivityMainBinding
     private var menuHost: MenuHost = this
@@ -74,7 +72,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,11 +88,11 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
-        vistaGeneralDrawableMenuYBottomNavigationView()
+        pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario()
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
                     launchLogoutFlow()
                 }
             }
@@ -111,45 +108,49 @@ class MainActivity : AppCompatActivity(), MenuProvider{
 
     override fun onDestroy() {
         runBlocking {
-            dataSource.eliminarUsuarioEnSqlite()
+            dataSource.eliminarUsuariosEnSqlite()
         }
         super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val drawerLayout = binding.drawerLayout
-        NavigationUI.navigateUp(navController,drawerLayout)
+        NavigationUI.navigateUp(navController, drawerLayout)
         return true
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.overflow_menu,menu )
+        menuInflater.inflate(R.menu.overflow_menu, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId){
+        when (menuItem.itemId) {
             R.id.modoClaro -> {
                 Toast.makeText(
                     this,
                     "Esta funcionalidad se implementará en un futuro.",
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
-            R.id.modoOscuro ->{
+            R.id.modoOscuro -> {
                 Toast.makeText(
                     this,
                     "Esta funcionalidad se implementará en un futuro.",
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
             R.id.acercaDe -> {
                 Toast.makeText(
                     this,
                     "Esta funcionalidad se implementará en un futuro.",
-                    Toast.LENGTH_LONG).show()
+                    Toast.LENGTH_LONG
+                ).show()
             }
             R.id.navigation_administrar_cuentas -> {
                 return NavigationUI.onNavDestinationSelected(
                     menuItem,
-                    navController)
+                    navController
+                )
             }
         }
         return false
@@ -159,76 +160,74 @@ class MainActivity : AppCompatActivity(), MenuProvider{
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == Constants.REQUEST_TURN_DEVICE_LOCATION_ON){
-            if(resultCode == Activity.RESULT_CANCELED){
+        if (requestCode == Constants.REQUEST_TURN_DEVICE_LOCATION_ON) {
+            if (resultCode == Activity.RESULT_CANCELED) {
                 checkingDeviceLocationSettings()
             }
         }
-        if(requestCode == REQUEST_CAMERA_PERMISSION){
-            if(resultCode == Activity.RESULT_CANCELED){
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (resultCode == Activity.RESULT_CANCELED) {
                 checkingPermissionsSettings()
             }
         }
-        if(requestCode == REQUEST_POST_NOTIFICATIONS_PERMISSION){
-            if(resultCode == Activity.RESULT_CANCELED){
+        if (requestCode == REQUEST_POST_NOTIFICATIONS_PERMISSION) {
+            if (resultCode == Activity.RESULT_CANCELED) {
                 checkingPermissionsSettings()
             }
         }
     }
 
-    private fun vistaGeneralDrawableMenuYBottomNavigationView(){
-        try{
-            lifecycleScope.launch{
-                withContext(Dispatchers.Main) {
-                    userInValid = cloudDB.collection("Usuarios")
-                        .whereEqualTo("usuario", firebaseAuth.currentUser!!.email.toString()).get()
-                        .await()
-                    val usuarioASqlite = UsuarioDBO(
-                        nombre = "${userInValid.documents[0].get("nombre")}",
-                        apellidos = "${userInValid.documents[0].get("apellidos")}",
-                        rol = "${userInValid.documents[0].get("rol")}")
+    private fun pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val user = dataSource.obtenerUsuariosDesdeSqlite()[0]
 
-                    dataSource.guardarUsuarioEnSqlite(usuarioASqlite)
+                if (user.rol != "Administrador") {
+                    binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible =
+                        false
+                }
 
-                    Log.i("MainActivity", "${userInValid.documents[0].get("rol")}")
-                    if(userInValid.documents[0].get("rol") != "Administrador" || userInValid.documents[0].get("rol") != "Supervisor Volantero") {
-                        binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible = false
-                    }
-                    if(userInValid.documents[0].get("rol") == "Volantero"){
-                        binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
-                    }
+                if (user.rol == "Volantero") {
+                    binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
                 }
             }
-        }catch(e:Exception){
-            binding.navView.menu.findItem(R.id.navigation_administrar_cuentas).isVisible = false
-            binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
-            e.message?.let { Snackbar.make(binding.root, it, Snackbar.LENGTH_INDEFINITE).show() }
         }
     }
 
-    private fun checkingPermissionsSettings(resolve:Boolean = true) {
+    private fun checkingPermissionsSettings(resolve: Boolean = true) {
+
+
         val isPermissionGranted = ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
         val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
 
-        val isPostNotificationsPermissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        }
+        val isPostNotificationsPermissionGranted =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            }
 
-        if(!isPermissionGranted){
+
+
+
+        if (!isPermissionGranted) {
             val requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()){ isGranted ->
-                when{
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                when {
                     !isGranted -> {
                         Snackbar.make(
                             binding.root,
@@ -237,11 +236,13 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                         ).setAction(R.string.settings) {
                             startActivityForResult(Intent().apply {
                                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                data = Uri.fromParts("package",
+                                data = Uri.fromParts(
+                                    "package",
                                     "com.example.conductor",
-                                    null)
+                                    null
+                                )
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            },1001)
+                            }, 1001)
                         }.show()
                     }
                 }
@@ -249,23 +250,40 @@ class MainActivity : AppCompatActivity(), MenuProvider{
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
 
-        if(!isCameraPermissionGranted){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+
+
+
+
+        if (!isCameraPermissionGranted) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CAMERA_PERMISSION
+            )
         }
 
-        if(!isPostNotificationsPermissionGranted){
+
+
+
+
+        if (!isPostNotificationsPermissionGranted) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
+
+
     }
 
-    private fun checkingDeviceLocationSettings(resolve:Boolean = true){
+
+    private fun checkingDeviceLocationSettings(resolve: Boolean = true) {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,
-                30000).apply{
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            val locationRequest = LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                30000
+            ).apply {
                 setMinUpdateDistanceMeters(100f)
                 setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
                 setWaitForAccurateLocation(true)
@@ -280,22 +298,26 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                 .getSettingsClient(this)
                 .checkLocationSettings(locationSettingsRequest)
 
-            clientLocationSettings.addOnSuccessListener{  }
-            clientLocationSettings.addOnFailureListener{
-                if(it is ResolvableApiException && resolve){
+            clientLocationSettings.addOnSuccessListener { }
+            clientLocationSettings.addOnFailureListener {
+                if (it is ResolvableApiException && resolve) {
                     try {
                         it.startResolutionForResult(this, Constants.REQUEST_TURN_DEVICE_LOCATION_ON)
-                    }catch (sendEx: IntentSender.SendIntentException){
-                        Log.d("MainActivity", "Error getting location settings resolution: " +
-                                "${sendEx.message}")
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        Log.d(
+                            "MainActivity", "Error getting location settings resolution: " +
+                                    "${sendEx.message}"
+                        )
                     }
                 }
             }
         }
     }
 
+
     private suspend fun launchLogoutFlow() {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetworkInfo
         //aquí chequeo si hay internet
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
@@ -309,16 +331,22 @@ class MainActivity : AppCompatActivity(), MenuProvider{
         }
     }
 
+
     private suspend fun logout() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 var continueLogout = true
 
-                if (userInValid.documents[0].get("rol") == "Volantero") {
+                val user = dataSource.obtenerUsuariosDesdeSqlite()[0]
+
+                if (user.rol == "Volantero") {
+
                     val registroTrayectoVolanterosUsuario = cloudDB
                         .collection("RegistroTrayectoVolanteros")
                         .document(firebaseAuth.currentUser!!.uid)
                         .get()
+
+
 
                     registroTrayectoVolanterosUsuario.addOnSuccessListener { document ->
                         if (document.exists() && document.data!!["estaActivo"] as Boolean) {
@@ -334,7 +362,6 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                                     Snackbar.LENGTH_LONG
                                 ).show()
                             }
-
                         }
                     }
 
@@ -344,6 +371,7 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                             .show()
                     }
                 }
+
 
                 if (continueLogout) {
                     val docRef = cloudDB.collection("Usuarios")
@@ -355,14 +383,24 @@ class MainActivity : AppCompatActivity(), MenuProvider{
                         Snackbar.make(binding.root, it.message.toString(), Snackbar.LENGTH_LONG)
                             .show()
                     }
-                    if (continueLogout) {
-                        FirebaseAuth.getInstance().signOut()
-                        this@MainActivity.finish()
-                        startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+
+                    docRef.addOnSuccessListener {
+                        lifecycleScope.launch {
+                            withContext(Dispatchers.IO) {
+                                dataSource.eliminarUsuariosEnSqlite()
+                                FirebaseAuth.getInstance().signOut()
+                                this@MainActivity.finish()
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        AuthenticationActivity::class.java
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
 }

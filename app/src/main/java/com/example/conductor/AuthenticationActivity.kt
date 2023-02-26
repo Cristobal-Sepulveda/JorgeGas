@@ -4,14 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
+import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityAuthenticationBinding
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.android.material.snackbar.Snackbar
@@ -22,63 +22,76 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
 class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
     private val cloudDB = FirebaseFirestore.getInstance()
+    private val dataSource: AppDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         installSplashScreen()
+
         runBlocking {
             hayUsuarioLogeado()
         }
+
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
+
 
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
+
+
     }
 
-    private suspend fun hayUsuarioLogeado(){
+
+
+
+    private suspend fun hayUsuarioLogeado() {
         val user = firebaseAuth.currentUser
-        if (user!= null) {
-            try{
+
+
+        if (user != null) {
+            try {
                 val userInValid = cloudDB.collection("Usuarios")
                     .document(user.uid).get().await().get("deshabilitada")
 
-
-                if(!(userInValid as Boolean)) {
+                if (!(userInValid as Boolean)) {
                     val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
                     finish()
                     startActivity(intent)
-                }else{
-                    runOnUiThread {
-                        Toast.makeText(this@AuthenticationActivity,
-                            getString(R.string.login_error_cuenta_deshabilitada),Toast.LENGTH_SHORT).show()
-                    }
+                } else {
+                    controlDeError(message = R.string.login_error_cuenta_deshabilitada)
                 }
-            }catch(e:Exception){
-                runOnUiThread {
-                    Toast.makeText(this@AuthenticationActivity,
-                        e.message,Toast.LENGTH_SHORT).show()
-                }
+            } catch (e: Exception) {
+                controlDeError(exception = e)
             }
         }
     }
 
+
+
+
+
     private fun launchSignInFlow() {
+
         runOnUiThread {
             binding.progressBar.visibility = View.VISIBLE
         }
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetworkInfo
         //aquí chequeo si hay internet
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
             val email = binding.edittextEmail.text.toString()
             val password = binding.edittextPassword.text.toString()
-            intentarLogin(email, password)
+            preIntentarLogin(email, password)
         } else {
             runOnUiThread {
                 binding.progressBar.visibility = View.GONE
@@ -91,117 +104,153 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
-    private fun intentarLogin(email: String, password: String) {
+
+
+
+
+
+
+    private fun preIntentarLogin(email: String, password: String) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val operation = cloudDB.collection("Usuarios")
-                    .whereEqualTo("usuario", email).get()
-                operation.addOnSuccessListener { result ->
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            iniciandoControlDeErroresYLogin(result, email, password)
+
+                val chequeoDeCredenciales = firebaseAuth.signInWithEmailAndPassword(email, password)
+
+                chequeoDeCredenciales.addOnSuccessListener {
+
+                    val operation = cloudDB
+                        .collection("Usuarios")
+                        .whereEqualTo("usuario", email)
+                        .get()
+
+                    operation.addOnSuccessListener { result ->
+                        lifecycleScope.launch {
+                            withContext(Dispatchers.IO) {
+                                val inputMethodManager =
+                                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                                inputMethodManager.hideSoftInputFromWindow(
+                                    currentFocus?.windowToken,
+                                    0
+                                )
+                                iniciandoLogin(result, email, password)
+                            }
                         }
                     }
-                }
-                operation.addOnFailureListener { exception ->
-                    runOnUiThread {
-                        binding.progressBar.visibility = View.GONE
-                        cerrarTeclado()
-                        Snackbar.make(
-                            findViewById(R.id.container),
-                            "Error: $exception",
-                            Snackbar.LENGTH_LONG
-                        ).show()
+
+                    operation.addOnFailureListener {
+                        controlDeError(it)
                     }
+
+                }
+
+                chequeoDeCredenciales.addOnFailureListener{
+                    controlDeError(it)
                 }
             }
         }
     }
 
-    private suspend fun iniciandoControlDeErroresYLogin(result: QuerySnapshot, email: String, password: String) {
 
-        if (chequeoDeInputsMonoSesionYDeshabilitado(result,email,password)){
+
+    private suspend fun iniciandoLogin(result: QuerySnapshot, email: String, password: String) {
+
+        if (controlDeErrorDeInputsMonoSesionYUsuarioDeshabilitado(result,email,password)){
             return
         }
 
-        //Aquí se inicia el login propiamente tal
-        try {
-            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+        lifecycleScope.launch{
+            withContext(Dispatchers.IO){
+                val ultimoControlDeError = cloudDB.collection("Usuarios")
+                    .document(firebaseAuth.currentUser!!.uid)
+                    .update("sesionActiva", true)
 
-            cloudDB.collection("Usuarios")
-                .document(firebaseAuth.currentUser!!.uid)
-                .update("sesionActiva", true)
-                .await()
+                ultimoControlDeError.addOnSuccessListener {
+                    runOnUiThread {
+                        binding.progressBar.visibility = View.GONE
+                    }
+                    val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
 
-            val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                    finish()
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            guardandoDocumentoDelUsuario(result)
+                        }
+                    }
+                    startActivity(intent)
+                }
 
-            finish()
-
-            startActivity(intent)
-        }
-
-        catch (e: Exception) {
-            runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                cerrarTeclado()
-                Snackbar.make(
-                    findViewById(R.id.container),
-                    "Error: ${e.message}",
-                    Snackbar.LENGTH_LONG)
-                    .show()
+                ultimoControlDeError.addOnFailureListener{
+                    controlDeError(exception = it)
+                }
             }
         }
+
     }
 
-    private fun chequeoDeInputsMonoSesionYDeshabilitado(result: QuerySnapshot, email: String, password: String): Boolean {
+
+
+
+
+
+
+
+
+
+
+
+
+    private fun controlDeErrorDeInputsMonoSesionYUsuarioDeshabilitado(result: QuerySnapshot, email: String, password: String): Boolean {
         //primer error controlado: Chequear si el ambos input tienen valores, se dejo aqui por limpieza del codigo
         if(email =="" || password ==""){
-            runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                cerrarTeclado()
-                Snackbar.make(
-                    findViewById(R.id.container),
-                    getString(R.string.login_error_campos_vacios),
-                    Toast.LENGTH_LONG)
-                    .show()
-            }
+            controlDeError(message = R.string.login_error_campos_vacios )
             return true
-
         }
         //segundo error controlado: Chequear si el usuario tiene sesión iniciada en otro celular
         if (result.documents[0].get("sesionActiva") as Boolean) {
-            runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                cerrarTeclado()
-                Snackbar.make(
-                    findViewById(R.id.container),
-                    getString(R.string.sesion_activa_existente),
-                    Snackbar.LENGTH_LONG
-                ).show()
-            }
+            controlDeError(message = R.string.sesion_activa_existente )
             return true
         }
         //tercer error controlado: Chequear si el usuario está deshabilitado
         if (result.documents[0].get("deshabilitada") as Boolean) {
-            runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                cerrarTeclado()
-                Snackbar.make(
-                    findViewById(R.id.container),
-                    getString(R.string.login_error_cuenta_deshabilitada),
-                    Snackbar.LENGTH_INDEFINITE
-                ).show()
-            }
+            controlDeError(message = R.string.login_error_cuenta_deshabilitada )
             return true
         }
         return false
     }
 
-    private fun cerrarTeclado() {
-        val inputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+    private suspend fun guardandoDocumentoDelUsuario(result: QuerySnapshot) {
+        val usuarioASqlite = UsuarioDBO(
+            nombre = "${result.documents[0].get("nombre")}",
+            apellidos = "${result.documents[0].get("apellidos")}",
+            rol = "${result.documents[0].get("rol")}")
+
+        dataSource.guardarUsuarioEnSqlite(usuarioASqlite)
     }
+
+    private fun controlDeError(exception: Exception? = null,  message: Int? = null) {
+        if(exception == null){
+            runOnUiThread {
+                binding.progressBar.visibility = View.GONE
+                Snackbar.make(
+                    findViewById(R.id.container),
+                    message!!,
+                    Snackbar.LENGTH_LONG
+                )
+                    .show()
+            }
+        }else{
+            runOnUiThread {
+                binding.progressBar.visibility = View.GONE
+                Snackbar.make(
+                    findViewById(R.id.container),
+                    "Error: ${exception.message}",
+                    Snackbar.LENGTH_LONG
+                )
+                    .show()
+            }
+        }
+    }
+
 
 
 }

@@ -19,7 +19,4 @@ class MapViewModel(val app: Application, val dataSource: AppDataSource) : BaseVi
     val status: LiveData<CloudDownloadComplete>
         get()= _status
 
-    suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO> {
-        return dataSource.obtenerUsuariosDesdeSqlite()
-    }
 }
