@@ -99,6 +99,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                             "estaActivo" to true,
                                             "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
                                             "registroJornada" to registroJornada,
+                                            "rol" to "Volantero"
                                         )
 
                                         cloudDB.collection("RegistroTrayectoVolanteros")
@@ -126,7 +127,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                 val nuevoRegistro = mapOf(
                                     "registroJornada" to registroJornada,
                                     "estaActivo" to true,
-                                    "nombreCompleto" to _viewModel.usuarioDesdeSqlite
+                                    "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                    "rol" to "Volantero"
                                 )
                                 cloudDB.collection("RegistroTrayectoVolanteros")
                                     .document(firebaseAuth.currentUser!!.uid)
@@ -153,7 +155,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                                 )
                                             ),
                                             "estaActivo" to true,
-                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite
+                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                            "rol" to "Volantero"
                                         )
                                     )
                             }
@@ -273,7 +276,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap

@@ -123,6 +123,7 @@
     <string name="default_notification_channel_id">1</string>
     <string name="login_error_campos_vacios">Por favor, complete ambos campos.</string>
     <string name="no_hay_internet">Hay problemas con tu internet. Intentalo nuevamente</string>
+    <string name="iniciar_trasmisi_n">Iniciar trasmisión</string>
 
     <!--String arrays-->
     <string-array name="roles">

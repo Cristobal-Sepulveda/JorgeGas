@@ -2,6 +2,7 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     >
 
     <data>
@@ -15,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--TODO: Add the map fragment for the user to select the location-->
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -25,7 +25,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout="@layout/fragment_vista_general"
             />
+
         <ImageView
             android:id="@+id/imageview_mapaSinPermisos"
             android:layout_width="match_parent"
@@ -51,6 +53,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_map_activarLocalizacion"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="@dimen/space_medium"
+            android:contentDescription="@string/zoom_out"
+            android:src="@drawable/baseline_satellite_alt_24"
+            app:backgroundTint="@color/orange"
+            app:fabCustomSize="48dp"
+            app:layout_constraintBottom_toTopOf="@+id/fab_vistaOriginal"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
