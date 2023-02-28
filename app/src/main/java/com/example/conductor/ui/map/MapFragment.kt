@@ -12,11 +12,15 @@ import android.os.IBinder
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.conductor.MainActivity
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
@@ -31,6 +35,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.*
 import kotlinx.coroutines.Dispatchers
@@ -54,12 +59,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
     private lateinit var sharedPreferences: SharedPreferences
     private var locationServiceBound = false
     private var lastKnownLocation: Location? = null
+    private var backPressedCallback: OnBackPressedCallback? = null
     // Listens for location broadcasts from LocationService.
     private inner class LocationServiceBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            /*aqui obtengo la localizacion*/
             val location = intent.getParcelableExtra<Location>(Constants.EXTRA_LOCATION)
-            /*si la ubicacion no es nula*/
             if (location != null) {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {
@@ -70,6 +74,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                 .collection("RegistroTrayectoVolanteros")
                                 .document(Constants.firebaseAuth.currentUser!!.uid)
                                 .get().await()
+
                             val dataDocumento = registroTrayectoVolanterosUsuario.data
                             val fechaDeHoy = LocalDate.now().toString()
                             /*Si el documento existe...*/
@@ -189,6 +194,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         }
     }
 
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -233,8 +239,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
             iniciarODetenerLocationService()
         }
 
-
-
         return _binding!!.root
     }
 
@@ -253,19 +257,49 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
 
     override fun onDestroyView() {
         super.onDestroyView()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
         iniciandoSnapshotListener.remove()
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
-/*        // Updates button states if new while in use location is added to SharedPreferences.
+        // Updates button states if new while in use location is added to SharedPreferences.
         if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
             updateButtonState(
                 sharedPreferences!!.getBoolean(
                     SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false
                 )
             )
-        }*/
+        }
+    }
+    private fun updateButtonState(trackingLocation: Boolean) {
+        if (trackingLocation) {
+            _binding!!.fabMapActivarLocalizacion.setImageResource(R.drawable.baseline_stop_24)
+            val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+            for (i in 0 until bottomNavigationView.menu.size()) {
+                bottomNavigationView.menu.getItem(i).isEnabled = false
+            }
+            // Disable the ActionBar
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(false)
+            backPressedCallback = object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // Do nothing to disable the back button
+                }
+            }
+
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback!!)
+        } else {
+            _binding!!.fabMapActivarLocalizacion.setImageResource(R.drawable.baseline_satellite_alt_24)
+            val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+            for (i in 0 until bottomNavigationView.menu.size()) {
+                bottomNavigationView.menu.getItem(i).isEnabled = true
+            }
+
+            val actionBar = (requireActivity() as AppCompatActivity).supportActionBar
+            actionBar?.setDisplayHomeAsUpEnabled(true)
+            backPressedCallback?.remove()
+        }
     }
 
     private fun startingPermissionCheck(){
@@ -286,17 +320,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                 ),
                                 cameraDefaultZoom.toFloat()
                             )
-                        )
-                        map.addMarker(
-                            MarkerOptions()
-                                .position(
-                                    LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    )
-                                )
-                                .title("Marker in your actual location")
-                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
                         )
                     }else{
                         map.moveCamera(
@@ -448,13 +471,11 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                 val enabled =
                     sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
                 Log.i("MapFragment", "Enabled: $enabled")
-                if (!enabled) {
+                if (enabled) {
                     if (_viewModel.editarEstadoVolantero(false)) {
                         locationService?.unsubscribeToLocationUpdates()
-                        notificationGenerator(
-                            requireActivity(),
-                            "El servicio de localización ha sido detenido."
-                        )
+                        SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
+                        Snackbar.make(_binding!!.root, "El servicio de localización ha sido detenido.", Snackbar.LENGTH_SHORT).show()
                     } else {
                         val snackbar = Snackbar.make(
                             _binding!!.root,
@@ -469,6 +490,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                 } else {
                     if (_viewModel.editarEstadoVolantero(true)) {
                         locationService?.subscribeToLocationUpdates()
+                        SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), true)
                         Log.i("MapFragment", "se inicio el servicio de localizacion")
                     } else {
                         val snackbar = Snackbar.make(

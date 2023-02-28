@@ -1,10 +1,7 @@
 package com.example.conductor.utils
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -112,7 +109,6 @@ class LocationService : Service() {
     }
 
     private fun generateNotification(mainText: Int): Notification {
-        Log.d("LocationService", "generateNotification()")
         val mainNotificationText = getString(mainText)
         val titleText = getString(R.string.app_name)
         val notificationCompatBuilder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)

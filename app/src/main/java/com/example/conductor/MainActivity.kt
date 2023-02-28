@@ -35,6 +35,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
+import com.example.conductor.ui.map.MapFragment
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
 import com.example.conductor.utils.Constants.REQUEST_POST_NOTIFICATIONS_PERMISSION
@@ -60,6 +61,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private lateinit var navController: NavController
     private val cloudDB = FirebaseFirestore.getInstance()
     private val dataSource: AppDataSource by inject()
+    private var disableBackButton = false
 
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
@@ -170,17 +172,27 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.map)
+        if (fragment is  MapFragment && disableBackButton) {
+            // Do nothing to disable the back button
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val user = dataSource.obtenerUsuariosDesdeSqlite().first()
+                val user = dataSource.obtenerUsuariosDesdeSqlite()
 
-                if (user.rol != "Administrador") {
+                if (user.first().rol.isNotEmpty() && user.first().rol != "Administrador") {
                     binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible =
                         false
                 }
 
-                if (user.rol == "Volantero") {
+                if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {
                     binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
                 }
             }
@@ -393,5 +405,9 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 }
             }
         }
+    }
+
+    fun setDisableBackButton(disable: Boolean) {
+        disableBackButton = disable
     }
 }
