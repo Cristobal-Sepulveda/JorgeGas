@@ -1,6 +1,7 @@
 package com.example.conductor.data
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.example.conductor.data.daos.UsuarioDao
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero

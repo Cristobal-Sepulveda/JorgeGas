@@ -170,12 +170,13 @@ class AuthenticationActivity : AppCompatActivity() {
                     }
                     val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
 
-                    finish()
                     lifecycleScope.launch {
                         withContext(Dispatchers.IO) {
                             guardandoDocumentoDelUsuario(result)
                         }
                     }
+                    Thread.sleep(1000)
+                    finish()
                     startActivity(intent)
                 }
 

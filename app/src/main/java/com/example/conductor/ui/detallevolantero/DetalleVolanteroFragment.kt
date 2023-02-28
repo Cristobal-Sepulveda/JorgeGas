@@ -54,7 +54,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private var registroDelVolanteroDocRef: Any? = null
     private var latLngsDeInteres = mutableListOf<LatLng?>()
     private var tiemposEntreLatLngDeInteresInicialYFinal = mutableListOf<String>()
-    private lateinit var geoApiContext: GeoApiContext
     private lateinit var polylineOptions: PolylineOptions
     private lateinit var bundle: Usuario
     private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
@@ -76,7 +75,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             }
         }
         cargarDatosDelVolantero(bundle)
-        obtenerGeoApiContext()
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { _, value, _ ->
             if (iniciarValidacionesAntesDePintarPolyline(value)) {
@@ -246,11 +244,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         datePickerDialog?.show()
     }
 
-    private fun obtenerGeoApiContext() {
-        geoApiContext = GeoApiContext.Builder()
-            .apiKey(BuildConfig.DIRECTIONS_API_KEY)
-            .build()
-    }
+
 
     private fun sumarORestarValueDelSlider(num: Float) {
         if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return

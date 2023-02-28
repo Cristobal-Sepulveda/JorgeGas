@@ -33,6 +33,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
@@ -57,7 +58,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private var menuHost: MenuHost = this
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navController: NavController
-    private lateinit var userInValid: QuerySnapshot
     private val cloudDB = FirebaseFirestore.getInstance()
     private val dataSource: AppDataSource by inject()
 
@@ -104,13 +104,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         super.onStart()
         checkingPermissionsSettings()
         checkingDeviceLocationSettings()
-    }
-
-    override fun onDestroy() {
-        runBlocking {
-            dataSource.eliminarUsuariosEnSqlite()
-        }
-        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -180,7 +173,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private fun pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val user = dataSource.obtenerUsuariosDesdeSqlite()[0]
+                val user = dataSource.obtenerUsuariosDesdeSqlite().first()
 
                 if (user.rol != "Administrador") {
                     binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible =
@@ -337,7 +330,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             withContext(Dispatchers.IO) {
                 var continueLogout = true
 
-                val user = dataSource.obtenerUsuariosDesdeSqlite()[0]
+                val user = dataSource.obtenerUsuariosDesdeSqlite().first()
 
                 if (user.rol == "Volantero") {
 
@@ -345,8 +338,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                         .collection("RegistroTrayectoVolanteros")
                         .document(firebaseAuth.currentUser!!.uid)
                         .get()
-
-
 
                     registroTrayectoVolanterosUsuario.addOnSuccessListener { document ->
                         if (document.exists() && document.data!!["estaActivo"] as Boolean) {
