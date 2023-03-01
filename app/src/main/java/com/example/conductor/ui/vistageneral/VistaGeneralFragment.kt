@@ -8,7 +8,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,113 +61,114 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     private var locationServiceBound = false
 
     // Listens for location broadcasts from LocationService.
-    private inner class LocationServiceBroadcastReceiver : BroadcastReceiver() {
+    private inner class LocationServiceBroadcastReceiverVistaGeneral : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            /*aqui obtengo la localizacion*/
-            val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
-            /*si la ubicacion no es nula*/
-            if (location != null) {
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        try {
-                            /*obtengo el registro del usuario en google cloud, con el objetivo
-                            * de registrar la nueva localizacion*/
-                            val registroTrayectoVolanterosUsuario = cloudDB
-                                .collection("RegistroTrayectoVolanteros")
-                                .document(firebaseAuth.currentUser!!.uid)
-                                .get().await()
-                            val dataDocumento = registroTrayectoVolanterosUsuario.data
-                            val fechaDeHoy = LocalDate.now().toString()
-                            /*Si el documento existe...*/
-                            if (dataDocumento != null) {
-                                val registroJornada =
-                                    dataDocumento["registroJornada"] as ArrayList<Map<String, *>>
-                                for (registroDeUnDia in registroJornada) {
-                                    if (registroDeUnDia["fecha"] == fechaDeHoy) {
-                                        val registroLatLngs =
-                                            registroDeUnDia["registroLatLngs"] as Map<*, *>
-                                        val horasRegistradas =
-                                            registroLatLngs["horasConRegistro"] as ArrayList<String>
-                                        horasRegistradas.add(LocalTime.now().toString())
-                                        val geoPointRegistrados =
-                                            registroLatLngs["geopoints"] as ArrayList<GeoPoint>
-                                        geoPointRegistrados.add(
-                                            GeoPoint(
-                                                location.latitude,
-                                                location.longitude
-                                            )
-                                        )
-                                        val documentActualizado = mapOf(
-                                            "estaActivo" to true,
-                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                            "registroJornada" to registroJornada,
-                                            "rol" to "Volantero"
-                                        )
-
-                                        cloudDB.collection("RegistroTrayectoVolanteros")
-                                            .document(firebaseAuth.currentUser!!.uid)
-                                            .update(documentActualizado)
-                                        return@withContext
-                                    }
-                                }
-                                registroJornada.add(
-                                    mapOf(
-                                        "fecha" to fechaDeHoy,
-                                        "registroLatLngs" to mapOf(
-                                            "horasConRegistro" to arrayListOf(
-                                                LocalTime.now().toString()
-                                            ),
-                                            "geopoints" to arrayListOf(
+            if (intent.action == Constants.ACTION_LOCATION_BROADCAST) {
+                /*aqui obtengo la localizacion*/
+                val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION)
+                /*si la ubicacion no es nula*/
+                if (location != null) {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                /*obtengo el registro del usuario en google cloud, con el objetivo
+                                * de registrar la nueva localizacion*/
+                                val registroTrayectoVolanterosUsuario = cloudDB
+                                    .collection("RegistroTrayectoVolanteros")
+                                    .document(firebaseAuth.currentUser!!.uid)
+                                    .get().await()
+                                val dataDocumento = registroTrayectoVolanterosUsuario.data
+                                val fechaDeHoy = LocalDate.now().toString()
+                                /*Si el documento existe...*/
+                                if (dataDocumento != null) {
+                                    val registroJornada =
+                                        dataDocumento["registroJornada"] as ArrayList<Map<String, *>>
+                                    for (registroDeUnDia in registroJornada) {
+                                        if (registroDeUnDia["fecha"] == fechaDeHoy) {
+                                            val registroLatLngs =
+                                                registroDeUnDia["registroLatLngs"] as Map<*, *>
+                                            val horasRegistradas =
+                                                registroLatLngs["horasConRegistro"] as ArrayList<String>
+                                            horasRegistradas.add(LocalTime.now().toString())
+                                            val geoPointRegistrados =
+                                                registroLatLngs["geopoints"] as ArrayList<GeoPoint>
+                                            geoPointRegistrados.add(
                                                 GeoPoint(
                                                     location.latitude,
                                                     location.longitude
                                                 )
                                             )
+                                            val documentActualizado = mapOf(
+                                                "estaActivo" to true,
+                                                "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                                "registroJornada" to registroJornada,
+                                                "rol" to "Volantero"
+                                            )
+
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(firebaseAuth.currentUser!!.uid)
+                                                .update(documentActualizado)
+                                            return@withContext
+                                        }
+                                    }
+                                    registroJornada.add(
+                                        mapOf(
+                                            "fecha" to fechaDeHoy,
+                                            "registroLatLngs" to mapOf(
+                                                "horasConRegistro" to arrayListOf(
+                                                    LocalTime.now().toString()
+                                                ),
+                                                "geopoints" to arrayListOf(
+                                                    GeoPoint(
+                                                        location.latitude,
+                                                        location.longitude
+                                                    )
+                                                )
+                                            )
                                         )
                                     )
-                                )
-                                val nuevoRegistro = mapOf(
-                                    "registroJornada" to registroJornada,
-                                    "estaActivo" to true,
-                                    "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                    "rol" to "Volantero"
-                                )
-                                cloudDB.collection("RegistroTrayectoVolanteros")
-                                    .document(firebaseAuth.currentUser!!.uid)
-                                    .update(nuevoRegistro)
-                            } else {
-                                cloudDB.collection("RegistroTrayectoVolanteros")
-                                    .document(firebaseAuth.currentUser!!.uid)
-                                    .set(
-                                        mapOf(
-                                            "registroJornada" to arrayListOf(
-                                                mapOf(
-                                                    "fecha" to fechaDeHoy,
-                                                    "registroLatLngs" to mapOf(
-                                                        "horasConRegistro" to arrayListOf(
-                                                            LocalTime.now().toString()
-                                                        ),
-                                                        "geopoints" to arrayListOf(
-                                                            GeoPoint(
-                                                                location.latitude,
-                                                                location.longitude
+                                    val nuevoRegistro = mapOf(
+                                        "registroJornada" to registroJornada,
+                                        "estaActivo" to true,
+                                        "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                        "rol" to "Volantero"
+                                    )
+                                    cloudDB.collection("RegistroTrayectoVolanteros")
+                                        .document(firebaseAuth.currentUser!!.uid)
+                                        .update(nuevoRegistro)
+                                } else {
+                                    cloudDB.collection("RegistroTrayectoVolanteros")
+                                        .document(firebaseAuth.currentUser!!.uid)
+                                        .set(
+                                            mapOf(
+                                                "registroJornada" to arrayListOf(
+                                                    mapOf(
+                                                        "fecha" to fechaDeHoy,
+                                                        "registroLatLngs" to mapOf(
+                                                            "horasConRegistro" to arrayListOf(
+                                                                LocalTime.now().toString()
+                                                            ),
+                                                            "geopoints" to arrayListOf(
+                                                                GeoPoint(
+                                                                    location.latitude,
+                                                                    location.longitude
+                                                                )
                                                             )
                                                         )
                                                     )
-                                                )
-                                            ),
-                                            "estaActivo" to true,
-                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                            "rol" to "Volantero"
+                                                ),
+                                                "estaActivo" to true,
+                                                "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                                "rol" to "Volantero"
+                                            )
                                         )
-                                    )
+                                }
+                            } catch (e: Exception) {
+                                val handler = Handler(Looper.getMainLooper())
+                                handler.post {
+                                    Snackbar.make(_binding!!.root, "Error:", Snackbar.LENGTH_INDEFINITE).show()
+                                }
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                requireActivity(),
-                                "No se pudo guardar la ubicación: $e",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
                 }
@@ -173,7 +176,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private var locationServiceBroadcastReceiver = LocationServiceBroadcastReceiver()
+    private var locationServiceBroadcastReceiverVistaGeneral = LocationServiceBroadcastReceiverVistaGeneral()
 
     /////////////////////////////////////////////////////////////////////////
     // Provides location updates for while-in-use feature.
@@ -224,7 +227,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         )
         LocalBroadcastManager.getInstance(requireActivity())
             .registerReceiver(
-                locationServiceBroadcastReceiver,
+                locationServiceBroadcastReceiverVistaGeneral,
                 IntentFilter(ACTION_LOCATION_BROADCAST)
             )
         //configurando UI según el rol del usuario
@@ -251,12 +254,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
     override fun onDestroy() {
         LocalBroadcastManager.getInstance(requireActivity())
-            .unregisterReceiver(locationServiceBroadcastReceiver)
+            .unregisterReceiver(locationServiceBroadcastReceiverVistaGeneral)
         if (locationServiceBound) {
             requireActivity().unbindService(locationServiceConnection)
             locationServiceBound = false
         }
-        locationService?.unsubscribeToLocationUpdates()
+        locationService?.unsubscribeToLocationUpdatesVistaGeneralFragment()
         if (!sharedPreferences.getBoolean(
                 SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
                 false
@@ -456,7 +459,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
                 if (enabled) {
                     if (_viewModel.editarEstadoVolantero(false)) {
-                        locationService?.unsubscribeToLocationUpdates()
+                        locationService?.unsubscribeToLocationUpdatesVistaGeneralFragment()
                         notificationGenerator(
                             requireActivity(),
                             "El servicio de localización ha sido detenido."
@@ -475,7 +478,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 } else {
                     if (_viewModel.editarEstadoVolantero(true)) {
                         _viewModel.obtenerUsuariosDesdeSqlite()
-                        locationService?.subscribeToLocationUpdates()
+                        locationService?.subscribeToLocationUpdatesVistaGeneralFragment()
                     } else {
                         val snackbar = Snackbar.make(
                             _binding!!.root,

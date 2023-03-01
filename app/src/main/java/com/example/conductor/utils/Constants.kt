@@ -13,6 +13,7 @@ object Constants {
     private const val PACKAGE_NAME = "com.example.conductor"
     const val REQUEST_TAKE_PHOTO = 10
     internal const val ACTION_LOCATION_BROADCAST = "$PACKAGE_NAME.action.LOCATION_BROADCAST"
+    const val ACTION_MAP_LOCATION_BROADCAST = "$PACKAGE_NAME.action.MAP_LOCATION_BROADCAST"
     internal const val EXTRA_LOCATION = "$PACKAGE_NAME.extra.LOCATION"
     const val NOTIFICATION_CHANNEL_ID = "jorge_gas_empresa"
 

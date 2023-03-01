@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
+import com.example.conductor.utils.Constants.ACTION_MAP_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.NOTIFICATION_CHANNEL_ID
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -39,7 +40,8 @@ class LocationService : Service() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
+    private lateinit var vistaGeneralFragmentLocationCallback: LocationCallback
+    private lateinit var mapFragmentLocationCallback: LocationCallback
     // Used only for local storage of the last known location. Usually, this would be saved to your
     // database, but because this is a simplified sample without a full database, we only need the
     // last location to create a Notification if the user navigates away from the app.
@@ -77,7 +79,7 @@ class LocationService : Service() {
         }
 
         // LocationCallback - Called when FusedLocationProviderClient has a new Location.
-        locationCallback = object : LocationCallback() {
+        vistaGeneralFragmentLocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 /* Normally, you want to save a new location to a database. We are simplifying
@@ -94,19 +96,76 @@ class LocationService : Service() {
             }
         }
 
+        mapFragmentLocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                    /* Normally, you want to save a new location to a database. We are simplifying
+                        things a bit and just saving it as a local variable, as we only need it again
+                        if a Notification is created (when the user navigates away from app).
+                        */
+                currentLocation = locationResult.lastLocation
+                /* Notify our Activity that a new location was added. Again, if this was a
+                   production app, the Activity would be listening for changes to a database
+                   with new locations, but we are simplifying things a bit to focus on just
+                   learning the location side of things. */
+                val intent = Intent(ACTION_MAP_LOCATION_BROADCAST)
+                intent.putExtra(EXTRA_LOCATION, currentLocation)
+                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
+            }
+        }
+
     }
 
+
+    //APIS de comunicacion con la App
     @SuppressLint("MissingPermission")
-    fun subscribeToLocationUpdates() {
+    fun subscribeToLocationUpdatesVistaGeneralFragment() {
         Log.d("LocationService", "subscribeToLocationUpdates()")
         try{
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, vistaGeneralFragmentLocationCallback, Looper.getMainLooper())
             startForegroundService(Intent(applicationContext, LocationService::class.java))
             SharedPreferenceUtil.saveLocationTrackingPref(this, true)
         }catch(e:Exception){
             Log.d("LocationService", "subscribeToLocationUpdates() error: ${e.message}")
         }
     }
+
+
+
+    fun unsubscribeToLocationUpdatesVistaGeneralFragment(){
+        Log.d("LocationService", "unsubscribeToLocationUpdates()")
+        try {
+            fusedLocationProviderClient.removeLocationUpdates(vistaGeneralFragmentLocationCallback)
+            stopSelf()
+            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
+        } catch (unlikely: SecurityException) {
+            Log.d("LocationService", "unsubscribeToLocationUpdates() error: ${unlikely.message}")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun subscribeToLocationUpdatesMapFragment() {
+        Log.d("LocationService", "subscribeToLocationUpdatesMapFragment()")
+        try{
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, mapFragmentLocationCallback, Looper.getMainLooper())
+            startForegroundService(Intent(applicationContext, LocationService::class.java))
+            SharedPreferenceUtil.saveLocationTrackingPref(this, true)
+        }catch(e:Exception){
+            Log.d("LocationService", "subscribeToLocationUpdatesMapFragment() error: ${e.message}")
+        }
+    }
+
+    fun unsubscribeToLocationUpdatesMapFragment(){
+        Log.d("LocationService", "unsubscribeToLocationUpdatesMapFragment()")
+        try {
+            fusedLocationProviderClient.removeLocationUpdates(mapFragmentLocationCallback)
+            stopSelf()
+            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
+        } catch (unlikely: SecurityException) {
+            Log.d("LocationService", "unsubscribeToLocationUpdatesMapFragment() error: ${unlikely.message}")
+        }
+    }
+
 
     private fun generateNotification(mainText: Int): Notification {
         val mainNotificationText = getString(mainText)
@@ -131,17 +190,6 @@ class LocationService : Service() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             //.setContentIntent(activityPendingIntent)
             .build()
-    }
-
-    fun unsubscribeToLocationUpdates(){
-        Log.d("LocationService", "unsubscribeToLocationUpdates()")
-        try {
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-            stopSelf()
-            SharedPreferenceUtil.saveLocationTrackingPref(this, false)
-        } catch (unlikely: SecurityException) {
-            Log.d("LocationService", "unsubscribeToLocationUpdates() error: ${unlikely.message}")
-        }
     }
 
     //Called by the system every time a client explicitly starts the service by calling startForegroundService(Intent),
@@ -191,4 +239,5 @@ class LocationService : Service() {
         // Ensures onRebind() is called if MainActivity (client) rebinds.
         return true
     }
+
 }

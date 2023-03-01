@@ -13,18 +13,17 @@ import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.conductor.MainActivity
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
 import com.example.conductor.utils.*
+import com.example.conductor.utils.Constants.ACTION_MAP_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.cameraDefaultZoom
 import com.example.conductor.utils.Constants.defaultLocation
 import com.example.conductor.utils.SharedPreferenceUtil
@@ -61,112 +60,108 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
     private var lastKnownLocation: Location? = null
     private var backPressedCallback: OnBackPressedCallback? = null
     // Listens for location broadcasts from LocationService.
-    private inner class LocationServiceBroadcastReceiver : BroadcastReceiver() {
+    private inner class LocationServiceBroadcastReceiverMap : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val location = intent.getParcelableExtra<Location>(Constants.EXTRA_LOCATION)
-            if (location != null) {
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        try {
-                            /*obtengo el registro del usuario en google cloud, con el objetivo
-                            * de registrar la nueva localizacion*/
-                            val registroTrayectoVolanterosUsuario = cloudDB
-                                .collection("RegistroTrayectoVolanteros")
-                                .document(Constants.firebaseAuth.currentUser!!.uid)
-                                .get().await()
+            if (intent.action == ACTION_MAP_LOCATION_BROADCAST) {
+                val location = intent.getParcelableExtra<Location>(Constants.EXTRA_LOCATION)
+                if (location != null) {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                /*obtengo el registro del usuario en google cloud, con el objetivo
+                                * de registrar la nueva localizacion*/
+                                val registroTrayectoVolanterosUsuario = cloudDB
+                                    .collection("RegistroTrayectoVolanteros")
+                                    .document(Constants.firebaseAuth.currentUser!!.uid)
+                                    .get().await()
 
-                            val dataDocumento = registroTrayectoVolanterosUsuario.data
-                            val fechaDeHoy = LocalDate.now().toString()
-                            /*Si el documento existe...*/
-                            if (dataDocumento != null) {
-                                val registroJornada =
-                                    dataDocumento["registroJornada"] as ArrayList<Map<String, *>>
-                                for (registroDeUnDia in registroJornada) {
-                                    if (registroDeUnDia["fecha"] == fechaDeHoy) {
-                                        val registroLatLngs =
-                                            registroDeUnDia["registroLatLngs"] as Map<*, *>
-                                        val horasRegistradas =
-                                            registroLatLngs["horasConRegistro"] as ArrayList<String>
-                                        horasRegistradas.add(LocalTime.now().toString())
-                                        val geoPointRegistrados =
-                                            registroLatLngs["geopoints"] as ArrayList<GeoPoint>
-                                        geoPointRegistrados.add(
-                                            GeoPoint(
-                                                location.latitude,
-                                                location.longitude
-                                            )
-                                        )
-                                        val documentActualizado = mapOf(
-                                            "estaActivo" to true,
-                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                            "registroJornada" to registroJornada,
-                                            "rol" to "Administrador"
-                                        )
-
-                                        cloudDB.collection("RegistroTrayectoVolanteros")
-                                            .document(Constants.firebaseAuth.currentUser!!.uid)
-                                            .update(documentActualizado)
-                                        return@withContext
-                                    }
-                                }
-                                registroJornada.add(
-                                    mapOf(
-                                        "fecha" to fechaDeHoy,
-                                        "registroLatLngs" to mapOf(
-                                            "horasConRegistro" to arrayListOf(
-                                                LocalTime.now().toString()
-                                            ),
-                                            "geopoints" to arrayListOf(
+                                val dataDocumento = registroTrayectoVolanterosUsuario.data
+                                val fechaDeHoy = LocalDate.now().toString()
+                                /*Si el documento existe...*/
+                                if (dataDocumento != null) {
+                                    val registroJornada =
+                                        dataDocumento["registroJornada"] as ArrayList<Map<String, *>>
+                                    for (registroDeUnDia in registroJornada) {
+                                        if (registroDeUnDia["fecha"] == fechaDeHoy) {
+                                            val registroLatLngs =
+                                                registroDeUnDia["registroLatLngs"] as Map<*, *>
+                                            val horasRegistradas =
+                                                registroLatLngs["horasConRegistro"] as ArrayList<String>
+                                            horasRegistradas.add(LocalTime.now().toString())
+                                            val geoPointRegistrados =
+                                                registroLatLngs["geopoints"] as ArrayList<GeoPoint>
+                                            geoPointRegistrados.add(
                                                 GeoPoint(
                                                     location.latitude,
                                                     location.longitude
                                                 )
                                             )
+                                            val documentActualizado = mapOf(
+                                                "registroJornada" to registroJornada,
+                                            )
+
+                                            cloudDB.collection("RegistroTrayectoVolanteros")
+                                                .document(Constants.firebaseAuth.currentUser!!.uid)
+                                                .update(documentActualizado)
+                                            return@withContext
+                                        }
+                                    }
+                                    registroJornada.add(
+                                        mapOf(
+                                            "fecha" to fechaDeHoy,
+                                            "registroLatLngs" to mapOf(
+                                                "horasConRegistro" to arrayListOf(
+                                                    LocalTime.now().toString()
+                                                ),
+                                                "geopoints" to arrayListOf(
+                                                    GeoPoint(
+                                                        location.latitude,
+                                                        location.longitude
+                                                    )
+                                                )
+                                            )
                                         )
                                     )
-                                )
-                                val nuevoRegistro = mapOf(
-                                    "registroJornada" to registroJornada,
-                                    "estaActivo" to true,
-                                    "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                    "rol" to "Administrador"
-                                )
-                                cloudDB.collection("RegistroTrayectoVolanteros")
-                                    .document(Constants.firebaseAuth.currentUser!!.uid)
-                                    .update(nuevoRegistro)
-                            } else {
-                                cloudDB.collection("RegistroTrayectoVolanteros")
-                                    .document(Constants.firebaseAuth.currentUser!!.uid)
-                                    .set(
-                                        mapOf(
-                                            "registroJornada" to arrayListOf(
-                                                mapOf(
-                                                    "fecha" to fechaDeHoy,
-                                                    "registroLatLngs" to mapOf(
-                                                        "horasConRegistro" to arrayListOf(
-                                                            LocalTime.now().toString()
-                                                        ),
-                                                        "geopoints" to arrayListOf(
-                                                            GeoPoint(
-                                                                location.latitude,
-                                                                location.longitude
+                                    val nuevoRegistro = mapOf(
+                                        "registroJornada" to registroJornada,
+                                    )
+                                    cloudDB.collection("RegistroTrayectoVolanteros")
+                                        .document(Constants.firebaseAuth.currentUser!!.uid)
+                                        .update(nuevoRegistro)
+                                } else {
+                                    cloudDB.collection("RegistroTrayectoVolanteros")
+                                        .document(Constants.firebaseAuth.currentUser!!.uid)
+                                        .set(
+                                            mapOf(
+                                                "registroJornada" to arrayListOf(
+                                                    mapOf(
+                                                        "fecha" to fechaDeHoy,
+                                                        "registroLatLngs" to mapOf(
+                                                            "horasConRegistro" to arrayListOf(
+                                                                LocalTime.now().toString()
+                                                            ),
+                                                            "geopoints" to arrayListOf(
+                                                                GeoPoint(
+                                                                    location.latitude,
+                                                                    location.longitude
+                                                                )
                                                             )
                                                         )
                                                     )
-                                                )
-                                            ),
-                                            "estaActivo" to true,
-                                            "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                            "rol" to "Administrador"
+                                                ),
+                                                "estaActivo" to true,
+                                                "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
+                                                "rol" to "Administrador"
+                                            )
                                         )
-                                    )
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    requireActivity(),
+                                    "No se pudo guardar la ubicación: $e",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                requireActivity(),
-                                "No se pudo guardar la ubicación: $e",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
                 }
@@ -174,7 +169,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         }
     }
 
-    private var locationServiceBroadcastReceiver = LocationServiceBroadcastReceiver()
+    private var locationServiceBroadcastReceiverMap = LocationServiceBroadcastReceiverMap()
 
     /////////////////////////////////////////////////////////////////////////
     // Provides location updates for while-in-use feature.
@@ -211,6 +206,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
         val serviceIntent = Intent(requireActivity(), LocationService::class.java)
+
         requireActivity().bindService(
             serviceIntent,
             locationServiceConnection,
@@ -218,8 +214,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         )
         LocalBroadcastManager.getInstance(requireActivity())
             .registerReceiver(
-                locationServiceBroadcastReceiver,
-                IntentFilter(Constants.ACTION_LOCATION_BROADCAST)
+                locationServiceBroadcastReceiverMap,
+                IntentFilter(Constants.ACTION_MAP_LOCATION_BROADCAST)
             )
 
 
@@ -242,6 +238,21 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         return _binding!!.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
+        iniciandoSnapshotListener.remove()
+        LocalBroadcastManager.getInstance(requireActivity())
+            .unregisterReceiver(locationServiceBroadcastReceiverMap)
+        if (locationServiceBound) {
+            requireActivity().unbindService(locationServiceConnection)
+            locationServiceBound = false
+        }
+        SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
+        locationService?.unsubscribeToLocationUpdatesMapFragment()
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         startingPermissionCheck()
@@ -255,12 +266,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
-        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
-        iniciandoSnapshotListener.remove()
-    }
+
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // Updates button states if new while in use location is added to SharedPreferences.
@@ -473,7 +479,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                 Log.i("MapFragment", "Enabled: $enabled")
                 if (enabled) {
                     if (_viewModel.editarEstadoVolantero(false)) {
-                        locationService?.unsubscribeToLocationUpdates()
+                        locationService?.unsubscribeToLocationUpdatesMapFragment()
                         SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
                         Snackbar.make(_binding!!.root, "El servicio de localización ha sido detenido.", Snackbar.LENGTH_SHORT).show()
                     } else {
@@ -489,7 +495,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                     }
                 } else {
                     if (_viewModel.editarEstadoVolantero(true)) {
-                        locationService?.subscribeToLocationUpdates()
+                        locationService?.subscribeToLocationUpdatesMapFragment()
                         SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), true)
                         Log.i("MapFragment", "se inicio el servicio de localizacion")
                     } else {
