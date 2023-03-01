@@ -265,7 +265,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     }
 
     override fun onDestroy() {
-        iniciandoSnapshotListener.remove()
+        if (::iniciandoSnapshotListener.isInitialized) {
+            iniciandoSnapshotListener.remove()
+        }
         LocalBroadcastManager.getInstance(requireActivity())
             .unregisterReceiver(locationServiceBroadcastReceiverVistaGeneral)
         if (locationServiceBound) {
@@ -339,7 +341,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     if(it["fecha"] == fechaDeHoy){
                         val registroLatLngs = it["registroLatLngs"] as Map<*,*>
                         listadoDeHorasDeRegistrodeNuevosGeopoints = registroLatLngs["horasConRegistro"] as ArrayList<String>
-                        /*pintarPolyline(registroLatLngs["geopoints"] as ArrayList<GeoPoint>)*/
+                        pintarPolyline(registroLatLngs["geopoints"] as ArrayList<GeoPoint>)
                     }
                 }
             }else{
@@ -421,7 +423,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 distanceRecorrida = 0
                 tiempoEnRecorrerTramo = 0f
                 topeParaDibujar = 0
-                marker.remove()
+                if (::marker.isInitialized) {
+                    marker.remove()
+                }
                 marker = map.addMarker(MarkerOptions().position(listAux.last()!!))!!
                 listAux.clear()
             }
@@ -591,7 +595,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                             }
                         }
                         //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
-                        iniciandoSnapshotListener.remove()
+
+                        if (::iniciandoSnapshotListener.isInitialized) {
+                            iniciandoSnapshotListener.remove()
+                        }
                         Snackbar.make(_binding!!.root, "El servicio de localización ha sido detenido.", Snackbar.LENGTH_SHORT).show()
                     } else {
                         val snackbar = Snackbar.make(

@@ -138,6 +138,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     @SuppressLint("SuspiciousIndentation")
     @Suppress("UNCHECKED_CAST")
     private fun validarFechaYActivarSlider(selectedDate: String) {
+
         if(registroDelVolanteroDocRef == null){
             _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
             _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
@@ -146,6 +147,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
         val registroJornada =
             registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
+        Log.i("DetalleVolanteroFragment", selectedDate)
         registroJornada.forEach {
             if (it["fecha"].toString() == selectedDate) {
                 _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
@@ -168,6 +170,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                 return
             }
         }
+
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
         _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
         _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.setText(R.string.no_hay_registros_con_esa_fecha)
@@ -233,10 +236,16 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
             if (month < 9) {
                 selectedDate = "$year-0${month + 1}-$dayOfMonth"
+                if(dayOfMonth<10){
+                    selectedDate = "$year-0${month + 1}-0$dayOfMonth"
+                }
                 validarFechaYActivarSlider(selectedDate!!)
                 return@DatePickerDialog
             } else {
                 selectedDate = "$year-${month + 1}-$dayOfMonth"
+                if(dayOfMonth<10){
+                    selectedDate = "$year-0${month + 1}-0$dayOfMonth"
+                }
                 validarFechaYActivarSlider(selectedDate!!)
                 return@DatePickerDialog
             }
@@ -345,8 +354,8 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         topeParaDibujar++
                         listAux.add(latLng)
                         if (topeParaDibujar == 23) {
-                            val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.83).toInt()
-                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
+                            val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
+                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.30).toInt()
                             val rangoMaximoHumano = rangoMayor*4
                             Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
                             Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
