@@ -244,8 +244,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         datePickerDialog?.show()
     }
 
-
-
     private fun sumarORestarValueDelSlider(num: Float) {
         if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return
         val adjustedNum = if (num == -1f) -1f else 1f // adjust the value of num to be either -1 or 1
@@ -396,6 +394,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
     }
+
     private fun cambiarTipoDeMapa() {
         if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
@@ -404,7 +403,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    fun convertSecondsToHMS(seconds: Float): String {
+    private fun convertSecondsToHMS(seconds: Float): String {
         val hours = (seconds / 3600).toInt()
         val minutes = ((seconds % 3600) / 60).toInt()
         val remainingSeconds = (seconds % 60).toInt()

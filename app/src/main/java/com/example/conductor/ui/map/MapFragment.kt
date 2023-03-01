@@ -278,6 +278,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
             )
         }
     }
+
     private fun updateButtonState(trackingLocation: Boolean) {
         if (trackingLocation) {
             _binding!!.fabMapActivarLocalizacion.setImageResource(R.drawable.baseline_stop_24)
@@ -377,8 +378,8 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
     }
 
     private fun iniciarSnapshotListenerDelRegistroTrayectoVolanteros() {
-        val docRef = cloudDB.collection("RegistroTrayectoVolanteros")
-        iniciandoSnapshotListener = docRef.addSnapshotListener { snapshot, FirebaseFirestoreException ->
+        val colRef = cloudDB.collection("RegistroTrayectoVolanteros")
+        iniciandoSnapshotListener = colRef.addSnapshotListener { snapshot, FirebaseFirestoreException ->
             if (FirebaseFirestoreException != null) {
                 _viewModel.showToast.value = "Error: " + FirebaseFirestoreException.localizedMessage
                 return@addSnapshotListener
