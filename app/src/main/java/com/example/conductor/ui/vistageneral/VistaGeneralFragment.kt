@@ -389,7 +389,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             topeParaDibujar++
             listAux.add(latLng)
             if (topeParaDibujar == 23) {
-                val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.83).toInt()
+                val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
                 val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
                 val rangoMaximoHumano = rangoMayor*4
                 Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
@@ -407,15 +407,19 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 when(color){
                     Color.RED -> {
                         tiempoEnRojo += tiempoEnRecorrerTramo/1000
+                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_red)
                     }
                     Color.YELLOW -> {
                         tiempoEnAmarillo += tiempoEnRecorrerTramo/1000
+                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_yellow)
                     }
                     Color.GREEN -> {
                         tiempoEnVerde += tiempoEnRecorrerTramo/1000
+                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_green)
                     }
                     Color.BLUE -> {
                         tiempoEnAzul += tiempoEnRecorrerTramo/1000
+                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_blue)
                     }
                 }
 
@@ -423,13 +427,21 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 distanceRecorrida = 0
                 tiempoEnRecorrerTramo = 0f
                 topeParaDibujar = 0
-                if (::marker.isInitialized) {
-                    marker.remove()
-                }
-                marker = map.addMarker(MarkerOptions().position(listAux.last()!!))!!
+
                 listAux.clear()
             }
         }
+    }
+
+    private fun redibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
+        if (::marker.isInitialized) {
+            marker.remove()
+        }
+        marker = map.addMarker(
+            MarkerOptions()
+                .position(listAux.last()!!)
+                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(icono)))
+        )!!
     }
 
     private fun startingPermissionCheck() {
@@ -461,7 +473,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                     )
                                 )
                                 .title("Marker in your actual location")
-                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero)))
+                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
                         )
                     } else {
                         map.moveCamera(
@@ -486,9 +498,16 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 _binding!!.imageViewVistaGeneralMapaSinPermisos.isGone = false
 
             }
-        } else {
-            _binding!!.fragmentContainerViewVistaGeneralMapa.isGone = true
-            _binding!!.imageViewVistaGeneralMapaSinPermisos.isGone = false
+        }else{
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        Constants.defaultLocation.latitude,
+                        Constants.defaultLocation.longitude
+                    ),
+                    Constants.cameraDefaultZoom.toFloat()
+                )
+            )
         }
     }
 

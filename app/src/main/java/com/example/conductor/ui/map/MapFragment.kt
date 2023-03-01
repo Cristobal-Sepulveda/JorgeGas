@@ -406,7 +406,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                     }else{
                                         val marker = map.addMarker(MarkerOptions()
                                             .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero)))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
                                             .title(documentChange.document.data["nombreCompleto"].toString())
                                         )
                                         volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
@@ -445,7 +445,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                     }else{
                                         val marker = map.addMarker(MarkerOptions()
                                             .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero)))
+                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
                                             .title(documentChange.document.data["nombreCompleto"].toString())
                                         )
                                         volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)

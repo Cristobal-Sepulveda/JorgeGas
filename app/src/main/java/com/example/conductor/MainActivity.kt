@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
+
         pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario()
 
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
@@ -199,41 +200,27 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
+
     private fun checkingPermissionsSettings(resolve: Boolean = true) {
-
-
-        val isPermissionGranted = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val isPostNotificationsPermissionGranted =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            } else {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
+        val permissionsToRequest = mutableListOf<String>()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.CAMERA)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
             }
+        }
 
-
-
-
-        if (!isPermissionGranted) {
+        if (permissionsToRequest.isNotEmpty()) {
             val requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted ->
-                when {
-                    !isGranted -> {
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { results ->
+                for (result in results) {
+                    if (!result.value) {
                         Snackbar.make(
                             binding.root,
                             R.string.permission_denied_explanation,
@@ -241,43 +228,16 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                         ).setAction(R.string.settings) {
                             startActivityForResult(Intent().apply {
                                 action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                data = Uri.fromParts(
-                                    "package",
-                                    "com.example.conductor",
-                                    null
-                                )
+                                data = Uri.fromParts("package", packageName, null)
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             }, 1001)
                         }.show()
+                        break
                     }
                 }
             }
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         }
-
-
-
-
-
-        if (!isCameraPermissionGranted) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CAMERA_PERMISSION
-            )
-        }
-
-
-
-
-
-        if (!isPostNotificationsPermissionGranted) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-
-
     }
 
 
