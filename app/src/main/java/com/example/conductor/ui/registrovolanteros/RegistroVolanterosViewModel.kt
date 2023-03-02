@@ -15,4 +15,8 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
     fun setSelectedDate(date: String){
         _selectedDate.value = date
     }
+
+    suspend fun obtenerTodoElRegistroTrayectoVolanteros(): Any {
+        return dataSource.obtenerTodoElRegistroTrayectoVolanteros()
+    }
 }

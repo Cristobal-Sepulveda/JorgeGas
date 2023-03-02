@@ -229,6 +229,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             getString(R.string.preference_file_key),
             Context.MODE_PRIVATE
         )
+
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
         val serviceIntent = Intent(requireActivity(), LocationService::class.java)
@@ -259,6 +260,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     VistaGeneralFragmentDirections
                         .actionNavigationVistaGeneralToNavigationGestionDeVolanteros()
                 )
+        }
+
+        _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralKilometros.text = it
         }
 
         return _binding!!.root
@@ -358,6 +363,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             latLngsDeInteres.add(latLng)
         }
         polylineOptions = PolylineOptions().width(15f)
+
+        var distanceTotalRecorrida = 0
         var distanceRecorrida = 0
         var topeParaDibujar = 0
         var tiempoEnRecorrerTramo = 0f
@@ -384,6 +391,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
             Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
 
+            distanceTotalRecorrida += distanceBetweenLatLngs
             distanceRecorrida += distanceBetweenLatLngs
             tiempoEnRecorrerTramo += timeBetweenLatLngs
             topeParaDibujar++
@@ -427,10 +435,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 distanceRecorrida = 0
                 tiempoEnRecorrerTramo = 0f
                 topeParaDibujar = 0
-
                 listAux.clear()
             }
         }
+        distanceTotalRecorrida += distanceRecorrida
+        _viewModel.editarDistanciaTotalRecorrida(distanceTotalRecorrida.toString())
+
     }
 
     private fun redibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
@@ -543,9 +553,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     _binding!!.fabVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
                     _binding!!.fabVistaGeneralSinMaterial.visibility = View.VISIBLE
                     _binding!!.fragmentContainerViewVistaGeneralMapa.visibility = View.VISIBLE
-                    _binding!!.imageViewVistaGeneralBotonVolantero.visibility = View.GONE
-                    _binding!!.imageViewVistaGeneralBotonChoferes.visibility = View.GONE
-                    _binding!!.imageViewVistaGeneralBotonCallCenter.visibility = View.GONE
+                    _binding!!.materialCardViewVistaGeneralInformacionVolantero.visibility = View.VISIBLE
+
                     val isServiceEnabled = sharedPreferences.getBoolean(
                         SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
                         false
@@ -562,7 +571,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     }
                 }
                 "Administrador" -> {
-                    _binding!!.fabVistaGeneralRegistroJornadaVolantero.visibility = View.GONE
                     _binding!!.imageViewVistaGeneralBotonVolantero.visibility = View.VISIBLE
                     _binding!!.imageViewVistaGeneralBotonChoferes.visibility = View.VISIBLE
                     _binding!!.imageViewVistaGeneralBotonCallCenter.visibility = View.VISIBLE

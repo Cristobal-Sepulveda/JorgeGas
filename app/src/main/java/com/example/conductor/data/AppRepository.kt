@@ -93,6 +93,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
+    //este solo devuelve los activos. hay que cambiarle el nombre
     override suspend fun obtenerRegistroTrayectoVolanteros(): Any = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -111,6 +112,26 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(): Any = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get()
+                colRef.addOnSuccessListener{
+                    colRef.result?.forEach { document ->
+                        Log.i("AppRepository", document.id)
+                    }
+                    return@addOnSuccessListener
+                }
+
+                colRef.addOnFailureListener {
+                    return@addOnFailureListener
+                }
+            }
+        }
+    }
+
+
 
     override suspend fun obtenerRegistroDelVolantero(id: String): Any = withContext(ioDispatcher){
         wrapEspressoIdlingResource {

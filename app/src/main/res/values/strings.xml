@@ -127,6 +127,8 @@
     <string name="registro_trayecto_volanteros">Registro de volanteros</string>
     <string name="fecha">Fecha</string>
     <string name="registro_de_volanteros">Registro de volanteros</string>
+    <string name="estad_sticas_del_d_a">Estadísticas del día</string>
+    <string name="kilometros">Kilometros</string>
 
     <!--String arrays-->
     <string-array name="roles">

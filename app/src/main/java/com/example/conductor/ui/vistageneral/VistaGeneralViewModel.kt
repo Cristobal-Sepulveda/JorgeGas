@@ -20,6 +20,10 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     val botonVolantero: LiveData<Boolean>
         get() = _botonVolantero
 
+    private var _distanciaTotalRecorrida = MutableLiveData<String>()
+    val distanciaTotalRecorrida: LiveData<String>
+        get() = _distanciaTotalRecorrida
+
     suspend fun obtenerRolDelUsuarioActual():String{
         return withContext(Dispatchers.IO) {
             return@withContext dataSource.obtenerRolDelUsuarioActual()
@@ -48,5 +52,9 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
 
     fun editarBotonVolantero(trackingLocation: Boolean){
         _botonVolantero.value = trackingLocation
+    }
+
+    fun editarDistanciaTotalRecorrida(distancia: String){
+        _distanciaTotalRecorrida.value = distancia
     }
 }

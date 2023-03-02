@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentRegistroVolanterosBinding
@@ -17,6 +18,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
 import java.util.*
@@ -46,6 +50,11 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
         _viewModel.selectedDate.observe(viewLifecycleOwner) {
             _binding!!.editTextRegistroVolanterosFecha.text = Editable.Factory.getInstance().newEditable(it)
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    _viewModel.obtenerTodoElRegistroTrayectoVolanteros()
+                }
+            }
         }
 
         return _binding!!.root
@@ -90,14 +99,14 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                 if(dayOfMonth<10){
                     selectedDate = "$year-0${month + 1}-0$dayOfMonth"
                 }
-                _binding!!.editTextRegistroVolanterosFecha.text = Editable.Factory.getInstance().newEditable(selectedDate)
+                _viewModel.setSelectedDate(selectedDate!!)
                 return@DatePickerDialog
             } else {
                 selectedDate = "$year-${month + 1}-$dayOfMonth"
                 if(dayOfMonth<10){
                     selectedDate = "$year-${month + 1}-0$dayOfMonth"
                 }
-                _binding!!.editTextRegistroVolanterosFecha.text = Editable.Factory.getInstance().newEditable(selectedDate)
+                _viewModel.setSelectedDate(selectedDate!!)
                 return@DatePickerDialog
             }
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
