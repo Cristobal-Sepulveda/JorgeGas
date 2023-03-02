@@ -87,4 +87,9 @@
             app:argType="com.example.conductor.data.data_objects.domainObjects.Usuario" />
     </fragment>
 
+    <fragment
+        android:id="@+id/navigation_registro_trayecto_volanteros"
+        android:name="com.example.conductor.ui.registrovolanteros.RegistroVolanterosFragment"
+        android:label="RegistroVolanterosFragment" />
+
 </navigation>

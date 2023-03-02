@@ -332,10 +332,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
             if (snapshot != null && snapshot.exists()) {
                 val data = snapshot.data
-/*                if(data!!["registroJornada"] == null){
+                if(data!!["registroJornada"] == null){
                     return@addSnapshotListener
-                }*/
-                val registroJornada = data!!["registroJornada"] as ArrayList<Map<String, *>> ?: return@addSnapshotListener
+                }
+                val registroJornada = data["registroJornada"] as ArrayList<Map<String, *>> ?: return@addSnapshotListener
                 val fechaDeHoy = LocalDate.now().toString()
                 registroJornada.forEach{
                     if(it["fecha"] == fechaDeHoy){

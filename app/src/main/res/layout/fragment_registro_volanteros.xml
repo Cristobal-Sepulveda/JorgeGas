@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout_registroVolantero_linearLayoutSuperior"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/yellow">
+
+        <TextView
+            android:id="@+id/textView_registroVolantero_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/registro_de_volanteros"
+            android:layout_marginStart="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_medium"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout_registroVolanteros_fecha"
+            style="?attr/textInputOutlinedStyle"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_small"
+            android:layout_marginBottom="@dimen/space_small"
+            android:hint="@string/fecha"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:expandedHintEnabled="false"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editText_registroVolanteros_fecha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView_registroVolantero_googleMaps"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout_registroVolantero_linearLayoutSuperior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout="@layout/fragment_crear_usuario"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

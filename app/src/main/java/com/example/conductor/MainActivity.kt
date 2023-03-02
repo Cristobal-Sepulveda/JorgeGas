@@ -63,17 +63,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private val dataSource: AppDataSource by inject()
     private var disableBackButton = false
 
-    // Declare the launcher at the top of your Activity/Fragment:
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            // FCM SDK (and your app) can post notifications.
-        } else {
-            // TODO: Inform user that that your app will not show notifications.
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -188,9 +177,14 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             withContext(Dispatchers.IO) {
                 val user = dataSource.obtenerUsuariosDesdeSqlite()
 
+                if(user.isEmpty()){
+                    logout()
+                    return@withContext
+                }
+
                 if (user.first().rol.isNotEmpty() && user.first().rol != "Administrador") {
-                    binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible =
-                        false
+                    binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible = false
+                    binding.navView.menu.findItem(R.id.navigation_registro_trayecto_volanteros).isVisible = false
                 }
 
                 if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {

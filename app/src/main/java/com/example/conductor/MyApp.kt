@@ -9,6 +9,7 @@ import com.example.conductor.ui.detallevolantero.DetalleVolanteroViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
+import com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
@@ -54,6 +55,12 @@ class MyApp : Application() {
             }
             single {
                 DetalleVolanteroViewModel(
+                    get(),
+                    get() as AppDataSource
+                )
+            }
+            single {
+                RegistroVolanterosViewModel(
                     get(),
                     get() as AppDataSource
                 )

@@ -244,7 +244,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             } else {
                 selectedDate = "$year-${month + 1}-$dayOfMonth"
                 if(dayOfMonth<10){
-                    selectedDate = "$year-0${month + 1}-0$dayOfMonth"
+                    selectedDate = "$year-${month + 1}-0$dayOfMonth"
                 }
                 validarFechaYActivarSlider(selectedDate!!)
                 return@DatePickerDialog

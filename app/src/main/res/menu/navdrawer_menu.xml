@@ -8,6 +8,11 @@
         android:icon="@drawable/ic_outline_insert_drive_file_24"
         />
     <item
+        android:title="@string/registro_trayecto_volanteros"
+        android:id="@+id/navigation_registro_trayecto_volanteros"
+        android:icon="@drawable/outline_auto_stories_24"
+        />
+    <item
         android:title="@string/cerrar_sesion"
         android:id="@+id/logout_item"
         android:icon="@drawable/ic_baseline_logout_24"
