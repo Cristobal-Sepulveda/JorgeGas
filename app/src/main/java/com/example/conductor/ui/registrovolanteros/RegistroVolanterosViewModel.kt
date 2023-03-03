@@ -19,4 +19,5 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
     suspend fun obtenerTodoElRegistroTrayectoVolanteros(): Any {
         return dataSource.obtenerTodoElRegistroTrayectoVolanteros()
     }
+
 }

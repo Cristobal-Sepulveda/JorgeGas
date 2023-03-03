@@ -12,7 +12,7 @@ interface AppDataSource {
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerRegistroTrayectoVolanteros(): Any
 
-    suspend fun obtenerTodoElRegistroTrayectoVolanteros(): Any
+    suspend fun obtenerTodoElRegistroTrayectoVolanteros(): MutableList<Any>
     suspend fun obtenerRegistroDelVolantero(id: String): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
     suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)

@@ -113,19 +113,18 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(): Any = withContext(ioDispatcher){
+    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(): MutableList<Any> = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
-                val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get()
-                colRef.addOnSuccessListener{
-                    colRef.result?.forEach { document ->
-                        Log.i("AppRepository", document.id)
+                try{
+                    val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get().await()
+                    val registroTrayectoVolantero = mutableListOf<Any>()
+                    for (document in colRef){
+                        registroTrayectoVolantero.add(document.data)
                     }
-                    return@addOnSuccessListener
-                }
-
-                colRef.addOnFailureListener {
-                    return@addOnFailureListener
+                    return@withContext registroTrayectoVolantero
+                }catch(e:Exception){
+                    return@withContext mutableListOf<Any>()
                 }
             }
         }
