@@ -203,6 +203,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             locationServiceBound = false
         }
     }
+
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null

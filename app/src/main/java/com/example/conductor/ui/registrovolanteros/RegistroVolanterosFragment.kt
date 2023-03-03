@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,6 +39,11 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
     private var datePickerDialog: DatePickerDialog? = null
     private var selectedDate: String? = null
+    private var listOfPolylines = mutableListOf<List<GeoPoint>>()
+    private var listOfHours = mutableListOf<List<String>>()
+    private var recienInicioElFragmento = 0
+
+    private lateinit var polylineOptions: PolylineOptions
 
     override fun onCreateView(inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,41 +53,52 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         _binding = FragmentRegistroVolanterosBinding.inflate(inflater, container, false)
         (childFragmentManager.findFragmentById(R.id.fragmentContainerView_registroVolantero_googleMaps) as? SupportMapFragment)?.getMapAsync(this)
 
-        val currentDate = LocalDate.now().toString()
-        _viewModel.setSelectedDate(currentDate)
-
         _binding!!.editTextRegistroVolanterosFecha.setOnClickListener{
             abrirCalendario(Calendar.getInstance())
         }
 
         _viewModel.selectedDate.observe(viewLifecycleOwner) {
             _binding!!.editTextRegistroVolanterosFecha.text = Editable.Factory.getInstance().newEditable(it)
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
-                    val listadoObtenido = _viewModel.obtenerTodoElRegistroTrayectoVolanteros() as MutableList<Any>
-                    if(listadoObtenido.isNotEmpty()){
-                        listadoObtenido.forEach { documento ->
-                            val docParseado = documento as HashMap<String, Any>
-                            val registroJornada =
-                                docParseado["registroJornada"] as List<HashMap<String, Any>>
-                            println(docParseado["nombreCompleto"])
-                            registroJornada.forEach { mapa ->
-                                if (mapa["fecha"] == it) {
-
-                                    println("${mapa["fecha"]}")
-                                }
-                            }
-                        }
-                    }else{
-                        Snackbar.make(_binding!!.root,
-                            "Error al cargar los datos. Intentelo nuevamente",
-                            Snackbar.LENGTH_SHORT).show()
-                    }
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    solicitarRegistroYFiltrarloAntesDePintarlo(it)
                 }
             }
         }
 
         return _binding!!.root
+    }
+
+    private suspend fun solicitarRegistroYFiltrarloAntesDePintarlo(it: String?) {
+        val listadoObtenido =
+            _viewModel.obtenerTodoElRegistroTrayectoVolanteros() as MutableList<Any>
+        if (listadoObtenido.isNotEmpty()) {
+            listadoObtenido.forEach { documento ->
+                val docParseado = documento as HashMap<String, Any>
+                val registroJornada =
+                    docParseado["registroJornada"] as List<HashMap<String, Any>>
+
+                registroJornada.forEach { mapa ->
+                    if (mapa["fecha"] == it) {
+                        val registroLatLngs = mapa["registroLatLngs"] as Map<*, *>
+                        val geoPoints = registroLatLngs["geopoints"] as List<*>
+                        val horasConRegistro =
+                            registroLatLngs["horasConRegistro"] as List<*>
+                        println(docParseado["nombreCompleto"])
+                        println("${mapa["fecha"]}")
+                        listOfPolylines.add(geoPoints as List<GeoPoint>)
+                        listOfHours.add(horasConRegistro as List<String>)
+                    }
+                }
+            }
+            pintarPolylines()
+        } else {
+            Snackbar.make(
+                _binding!!.root,
+                "Error al cargar los datos. Intentelo nuevamente",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -137,16 +154,11 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         datePickerDialog?.show()
     }
 
-    private fun pintarPolyline() {
+    private fun pintarPolylines() {
         lifecycleScope.launch{
             withContext(Dispatchers.Main) {
                 try {
-                    Log.i("DetalleVolanteroFragment", "pintarPolyline: ${latLngsDeInteres.size}")
-                    Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.first()}")
-                    Log.i("DetalleVolanteroFragment", listadoDeHorasDeRegistrodeNuevosGeopoints.first())
-                    Log.i("DetalleVolanteroFragment", "${latLngsDeInteres.last()}")
-                    Log.i("DetalleVolanteroFragment", listadoDeHorasDeRegistrodeNuevosGeopoints[latLngsDeInteres.size-1])
-
+                    map.clear()
                     polylineOptions = PolylineOptions().width(10f)
                     var distanceRecorrida = 0
                     var topeParaDibujar = 0
@@ -157,71 +169,76 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                     var tiempoEnVerde = 0f
                     var tiempoEnAzul = 0f
 
-                    latLngsDeInteres.forEachIndexed { i, latLng ->
-                        if (i == latLngsDeInteres.size - 1) {
-                            return@forEachIndexed
-                        }
-                        val latLng1 = Location("")
-                        latLng1.latitude = latLng?.latitude ?: 0.0
-                        latLng1.longitude = latLng?.longitude ?: 0.0
-                        val latLng2 = Location("")
-                        latLng2.latitude = latLngsDeInteres[i + 1]?.latitude ?: 0.0
-                        latLng2.longitude = latLngsDeInteres[i + 1]?.longitude ?: 0.0
-                        val tiempoLatLng1 = LocalTime.parse(listadoDeHorasDeRegistrodeNuevosGeopoints[i])
-                        val tiempoLatLng2 = LocalTime.parse(listadoDeHorasDeRegistrodeNuevosGeopoints[i+1])
-
-                        val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
-                        val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
-                        Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
-
-                        distanceRecorrida += distanceBetweenLatLngs
-                        tiempoEnRecorrerTramo += timeBetweenLatLngs
-                        topeParaDibujar++
-                        listAux.add(latLng)
-                        if (topeParaDibujar == 23) {
-                            val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
-                            val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.30).toInt()
-                            val rangoMaximoHumano = rangoMayor*4
-                            Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
-                            Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
-                            // Set the color based on the distance
-                            val color = when (distanceRecorrida) {
-                                in 0..rangoMenor -> Color.RED
-                                in rangoMenor..rangoMayor -> Color.YELLOW
-                                in rangoMayor..rangoMaximoHumano -> Color.GREEN
-                                else -> Color.BLUE
+                    listOfPolylines.forEachIndexed{pivote, listOfGeopoints ->
+                        Log.i("DetalleVolanteroFragment","${listOfPolylines.size}")
+                        Log.i("DetalleVolanteroFragment","$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote")
+                        listOfGeopoints.forEachIndexed loop@{i , geopoint ->
+                            if (i == listOfGeopoints.size - 1) {
+                                return@loop
                             }
-                            polylineOptions.addAll(listAux).color(color)
-                            map.addPolyline(polylineOptions)
+                            val latLng1 = Location("")
+                            latLng1.latitude = geopoint.latitude ?: 0.0
+                            latLng1.longitude = geopoint.longitude ?: 0.0
+                            val latLng2 = Location("")
+                            latLng2.latitude = listOfGeopoints[i + 1].latitude
+                            latLng2.longitude = listOfGeopoints[i + 1].longitude
+                            val tiempoLatLng1 = LocalTime.parse(listOfHours[pivote][i])
+                            val tiempoLatLng2 = LocalTime.parse(listOfHours[pivote][i+1])
 
-                            when(color){
-                                Color.RED -> {
-                                    tiempoEnRojo += tiempoEnRecorrerTramo/1000
+                            val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
+                            val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
+
+                            Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
+                            distanceRecorrida += distanceBetweenLatLngs
+                            tiempoEnRecorrerTramo += timeBetweenLatLngs
+                            topeParaDibujar++
+                            listAux.add(LatLng(geopoint.latitude, geopoint.longitude))
+                            if (topeParaDibujar == 23) {
+                                val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
+                                val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.30).toInt()
+                                val rangoMaximoHumano = rangoMayor*4
+                                Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
+                                Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
+                                // Set the color based on the distance
+                                val color = when (distanceRecorrida) {
+                                    in 0..rangoMenor -> Color.RED
+                                    in rangoMenor..rangoMayor -> Color.YELLOW
+                                    in rangoMayor..rangoMaximoHumano -> Color.GREEN
+                                    else -> Color.BLUE
                                 }
-                                Color.YELLOW -> {
-                                    tiempoEnAmarillo += tiempoEnRecorrerTramo/1000
+                                polylineOptions.addAll(listAux).color(color)
+                                map.addPolyline(polylineOptions)
+
+                                when(color){
+                                    Color.RED -> {
+                                        tiempoEnRojo += tiempoEnRecorrerTramo/1000
+                                    }
+                                    Color.YELLOW -> {
+                                        tiempoEnAmarillo += tiempoEnRecorrerTramo/1000
+                                    }
+                                    Color.GREEN -> {
+                                        tiempoEnVerde += tiempoEnRecorrerTramo/1000
+                                    }
+                                    Color.BLUE -> {
+                                        tiempoEnAzul += tiempoEnRecorrerTramo/1000
+                                    }
                                 }
-                                Color.GREEN -> {
-                                    tiempoEnVerde += tiempoEnRecorrerTramo/1000
-                                }
-                                Color.BLUE -> {
-                                    tiempoEnAzul += tiempoEnRecorrerTramo/1000
-                                }
+
+                                polylineOptions = PolylineOptions().width(10f)
+                                distanceRecorrida = 0
+                                tiempoEnRecorrerTramo = 0f
+                                topeParaDibujar = 0
+                                listAux.clear()
                             }
-
-                            polylineOptions = PolylineOptions().width(10f)
-                            distanceRecorrida = 0
-                            tiempoEnRecorrerTramo = 0f
-                            topeParaDibujar = 0
-                            listAux.clear()
                         }
                     }
-                    _binding!!.textViewDetalleVolanteroRojo.text = convertSecondsToHMS(tiempoEnRojo)
+                    return@withContext
+                    /*_binding!!.textViewDetalleVolanteroRojo.text = convertSecondsToHMS(tiempoEnRojo)
                     _binding!!.textViewDetalleVolanteroAmarillo.text = convertSecondsToHMS(tiempoEnAmarillo)
                     _binding!!.textViewDetalleVolanteroVerde.text = convertSecondsToHMS(tiempoEnVerde)
-                    _binding!!.textViewDetalleVolanteroAzul.text = convertSecondsToHMS(tiempoEnAzul)
-
+                    _binding!!.textViewDetalleVolanteroAzul.text = convertSecondsToHMS(tiempoEnAzul)*/
                 } catch (e: Exception) {
+                    Log.i("error", "$e")
                     Snackbar.make(_binding!!.root, "$e", Snackbar.LENGTH_LONG).show()
                 }
             }
