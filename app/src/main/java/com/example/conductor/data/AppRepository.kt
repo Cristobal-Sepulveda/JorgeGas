@@ -1,6 +1,9 @@
 package com.example.conductor.data
 
+import android.app.Activity
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import com.example.conductor.data.daos.UsuarioDao
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
@@ -14,6 +17,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
+import com.google.android.material.snackbar.Snackbar
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val usuarioDao: UsuarioDao,
@@ -193,5 +197,31 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                 destination,
                 apiKey
             )
+    }
+
+    override suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val task = cloudDB.collection("RegistroTrayectoVolanteros")
+                    .document(id)
+                    .update("estaActivo", false)
+
+                task.addOnFailureListener{
+                    Toast.makeText(
+                        context,
+                        "Error al actualizar el estado del volantero",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                task.addOnSuccessListener {
+                    Toast.makeText(
+                        context,
+                        "El estado del volantero a pasado a inactivo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            }
+        }
     }
 }

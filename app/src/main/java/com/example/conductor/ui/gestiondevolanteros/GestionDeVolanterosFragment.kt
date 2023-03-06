@@ -137,12 +137,6 @@ class GestionDeVolanterosFragment : BaseFragment() {
             }
         }
 
-
-
-
-
-
-
         return _binding!!.root
     }
 

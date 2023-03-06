@@ -13,6 +13,10 @@ import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.databinding.VolanteroItemViewBinding
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppDataSource, val onClickListener: OnClickListener)
@@ -55,6 +59,14 @@ class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppD
         val usuario = getItem(position)
         holder.itemView.setOnClickListener(){
             onClickListener.onClick(usuario)
+        }
+
+        holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_parar).setOnClickListener{
+            CoroutineScope(Dispatchers.Main).launch{
+                withContext(Dispatchers.IO){
+                    dataSourcee.registroTrayectoVolanterosEstaActivoFalse(usuario.id, holder.itemView.context)
+                }
+            }
         }
 
         holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_llamar).setOnClickListener{

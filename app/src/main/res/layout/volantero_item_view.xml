@@ -69,6 +69,18 @@
                 tools:text="Chofer" />
 
             <ImageView
+                android:id="@+id/imageView_volanteroItem_parar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_small"
+                android:contentDescription="@string/llamar_boton"
+                android:src="@drawable/baseline_stop_24_blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/imageView_volanteroItem_llamar"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
                 android:id="@+id/imageView_volanteroItem_llamar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

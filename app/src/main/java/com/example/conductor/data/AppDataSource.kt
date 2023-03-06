@@ -1,5 +1,6 @@
 package com.example.conductor.data
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Usuario
@@ -19,4 +20,6 @@ interface AppDataSource {
     suspend fun eliminarUsuariosEnSqlite()
     suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO>
     suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse
+
+    suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context)
 }

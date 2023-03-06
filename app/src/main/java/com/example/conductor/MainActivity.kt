@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private val cloudDB = FirebaseFirestore.getInstance()
     private val dataSource: AppDataSource by inject()
     private var disableBackButton = false
+    private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +80,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         menuHost.addMenuProvider(this, this, Lifecycle.State.RESUMED)
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setupWithNavController(navController)
+        rootView = binding.root
 
         pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario()
 

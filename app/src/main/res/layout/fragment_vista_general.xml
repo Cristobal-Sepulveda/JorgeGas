@@ -151,6 +151,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="00:00:00"
                         tools:text="00:00:00"/>
                 </LinearLayout>
 
@@ -173,6 +174,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="00:00:00"
                         tools:text="00:00:00"/>
                 </LinearLayout>
 
@@ -194,6 +196,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="00:00:00"
                         tools:text="00:00:00"/>
                 </LinearLayout>
 
@@ -216,6 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="00:00:00"
                         tools:text="00:00:00"/>
                 </LinearLayout>
 
@@ -238,6 +242,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="00:00:00"
                         tools:text="00:00:00"/>
                 </LinearLayout>
 
@@ -261,6 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_very_small"
+                        android:text="0.00km"
                         tools:text="22.1k"/>
                 </LinearLayout>
 
