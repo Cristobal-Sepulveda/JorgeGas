@@ -296,9 +296,24 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             withContext(Dispatchers.IO) {
                 var continueLogout = true
 
-                val user = dataSource.obtenerUsuariosDesdeSqlite().first()
+                val user = dataSource.obtenerUsuariosDesdeSqlite()
 
-                if (user.rol == "Volantero") {
+                if(user.isEmpty()){
+                    withContext(Dispatchers.IO) {
+                        dataSource.eliminarUsuariosEnSqlite()
+                        FirebaseAuth.getInstance().signOut()
+                        this@MainActivity.finish()
+                        startActivity(
+                            Intent(
+                                this@MainActivity,
+                                AuthenticationActivity::class.java
+                            )
+                        )
+                    }
+                    return@withContext
+                }
+
+                if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {
 
                     val registroTrayectoVolanterosUsuario = cloudDB
                         .collection("RegistroTrayectoVolanteros")

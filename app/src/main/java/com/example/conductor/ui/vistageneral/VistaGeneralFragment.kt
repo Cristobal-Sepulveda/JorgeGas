@@ -267,6 +267,23 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _binding!!.textViewVistaGeneralKilometros.text = it
         }
 
+        _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralVerde.text = it
+        }
+        _viewModel.tiempoTotalRecorridoAmarillo.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralAmarillo.text = it
+        }
+        _viewModel.tiempoTotalRecorridoRojo.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralRojo.text = it
+        }
+        _viewModel.tiempoTotalRecorridoAzul.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralAzul.text = it
+        }
+        _viewModel.tiempoTotalRecorridoRosado.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralRosado.text = it
+        }
+
+
         return _binding!!.root
     }
 
@@ -374,6 +391,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         var tiempoEnAmarillo = 0f
         var tiempoEnVerde = 0f
         var tiempoEnAzul = 0f
+        var tiempoEnRosado = 0f
 
         latLngsDeInteres.forEachIndexed { i, latLng ->
             if (i == latLngsDeInteres.size - 1) {
@@ -439,9 +457,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 listAux.clear()
             }
         }
-        distanceTotalRecorrida += distanceRecorrida
-        _viewModel.editarDistanciaTotalRecorrida(distanceTotalRecorrida.toString())
-
+        _viewModel.editarDistanciaTotalRecorrida(distanceTotalRecorrida)
+        _viewModel.editarTiempoTotalRecorrido(tiempoEnRojo, "rojo")
+        _viewModel.editarTiempoTotalRecorrido(tiempoEnAmarillo, "amarillo")
+        _viewModel.editarTiempoTotalRecorrido(tiempoEnVerde, "verde")
+        _viewModel.editarTiempoTotalRecorrido(tiempoEnAzul, "azul")
+        _viewModel.editarTiempoTotalRecorrido(tiempoEnRosado, "rosado")
     }
 
     private fun redibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
