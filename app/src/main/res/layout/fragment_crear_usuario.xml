@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         tools:context=".ui.vistageneral.VistaGeneralFragment"
+        style="@style/Container"
         >
         <TextView
             android:id="@+id/textView_crearUsuario_title"

@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentRegistroVolanterosBinding
+import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.utils.Constants
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +43,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
     private var selectedDate: String? = null
     private var listOfPolylines = mutableListOf<List<GeoPoint>>()
     private var listOfHours = mutableListOf<List<String>>()
-    private var recienInicioElFragmento = 0
+    private var listOfIds = mutableListOf<String>()
 
     private lateinit var polylineOptions: PolylineOptions
 
@@ -51,6 +53,9 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = FragmentRegistroVolanterosBinding.inflate(inflater, container, false)
+        _binding!!.viewModel = _viewModel
+        _binding!!.lifecycleOwner= this
+
         (childFragmentManager.findFragmentById(R.id.fragmentContainerView_registroVolantero_googleMaps) as? SupportMapFragment)?.getMapAsync(this)
 
         _binding!!.editTextRegistroVolanterosFecha.setOnClickListener{
@@ -69,14 +74,31 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         return _binding!!.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _viewModel.selectedDate.removeObservers(viewLifecycleOwner)
+        _binding!!.editTextRegistroVolanterosFecha.setText("")
+        _binding = null
+    }
+
     private suspend fun solicitarRegistroYFiltrarloAntesDePintarlo(it: String?) {
-        val listadoObtenido =
-            _viewModel.obtenerTodoElRegistroTrayectoVolanteros() as MutableList<Any>
+        lifecycleScope.launch{
+            withContext(Dispatchers.Main){
+                map.clear()
+            }
+        }
+        _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
+        listOfPolylines.clear()
+        listOfHours.clear()
+        listOfIds.clear()
+
+        val listadoObtenido = _viewModel.obtenerTodoElRegistroTrayectoVolanteros(requireActivity()) as MutableList<*>
         if (listadoObtenido.isNotEmpty()) {
             listadoObtenido.forEach { documento ->
-                val docParseado = documento as HashMap<String, Any>
-                val registroJornada =
-                    docParseado["registroJornada"] as List<HashMap<String, Any>>
+                val docSnapshot = documento as DocumentSnapshot
+                val id = docSnapshot.id
+                val docParseado = documento.data as HashMap<String, Any>
+                val registroJornada = docParseado["registroJornada"] as List<HashMap<String, Any>>
 
                 registroJornada.forEach { mapa ->
                     if (mapa["fecha"] == it) {
@@ -88,16 +110,19 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                         println("${mapa["fecha"]}")
                         listOfPolylines.add(geoPoints as List<GeoPoint>)
                         listOfHours.add(horasConRegistro as List<String>)
+                        listOfIds.add(id)
                     }
                 }
             }
-            pintarPolylines()
-        } else {
-            Snackbar.make(
-                _binding!!.root,
-                "Error al cargar los datos. Intentelo nuevamente",
-                Snackbar.LENGTH_SHORT
-            ).show()
+            if (listOfPolylines.isNotEmpty()) {
+                pintarPolylines()
+            } else {
+                _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
+                Snackbar.make(_binding!!.root, "No hay registros para la fecha seleccionada", Snackbar.LENGTH_LONG).show()
+            }
+
+        }else{
+            _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.ERROR)
         }
     }
 
@@ -158,7 +183,6 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         lifecycleScope.launch{
             withContext(Dispatchers.Main) {
                 try {
-                    map.clear()
                     polylineOptions = PolylineOptions().width(10f)
                     var distanceRecorrida = 0
                     var topeParaDibujar = 0
@@ -232,6 +256,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                             }
                         }
                     }
+                    _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
                     return@withContext
                     /*_binding!!.textViewDetalleVolanteroRojo.text = convertSecondsToHMS(tiempoEnRojo)
                     _binding!!.textViewDetalleVolanteroAmarillo.text = convertSecondsToHMS(tiempoEnAmarillo)
@@ -239,6 +264,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                     _binding!!.textViewDetalleVolanteroAzul.text = convertSecondsToHMS(tiempoEnAzul)*/
                 } catch (e: Exception) {
                     Log.i("error", "$e")
+                    _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.ERROR)
                     Snackbar.make(_binding!!.root, "$e", Snackbar.LENGTH_LONG).show()
                 }
             }

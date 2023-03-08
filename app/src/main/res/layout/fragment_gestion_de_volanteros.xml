@@ -9,9 +9,9 @@
             type="com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F0F0F0"
         >
 
         <com.google.android.material.textfield.TextInputLayout

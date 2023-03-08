@@ -9,10 +9,11 @@
             type="com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/Container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        android:background="#F0F0F0"
+
         tools:context=".ui.gestiondevolanteros.GestionDeVolanterosFragment">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -45,7 +46,7 @@
             android:id="@+id/imageViewMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_menu_24"
+            android:src="@drawable/baseline_filter_list_24_darkgrey"
             android:layout_marginEnd="@dimen/space_big"
             android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"

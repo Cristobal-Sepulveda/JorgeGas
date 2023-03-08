@@ -1,65 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearLayout_registroVolantero_linearLayoutSuperior"
+        style="@style/Container"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/yellow">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView_registroVolantero_titulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView_registroVolanteros_linearLayoutSuperior"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginHorizontal="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@string/registro_de_volanteros"
-            android:layout_marginStart="@dimen/space_medium"
+            android:backgroundTint="@color/white"
+            android:elevation="1dp"
+            >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_titulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/registro_de_volanteros"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginTop="@dimen/space_medium"
+                    />
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_cantidadDeVolanteros"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_registroVolanteros_titulo"
+                    android:text="@string/cantidad_de_volanteros_en_la_jornada"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginTop="@dimen/space_small"
+                    />
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_datosGenerales"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_registroVolanteros_cantidadDeVolanteros"
+                    android:text="@string/datos_generales_del_dia"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginTop= "@dimen/space_very_small"
+                    />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_verde"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:background="@drawable/my_circle_drawable_verde"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_registroVolanteros_datosGenerales"
+                    android:contentDescription="@string/verde"/>
+
+                <TextView
+                    android:id="@+id/textView_detalleVolantero_verde"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_verde"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_verde"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:text="@string/hora" />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_amarillo"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="@dimen/space_very_small"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:background="@drawable/my_circle_drawable_amarillo"
+                    app:layout_constraintStart_toEndOf="@+id/textView_detalleVolantero_verde"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_registroVolanteros_datosGenerales"
+                    android:contentDescription="@string/verde"/>
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_amarillo"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_amarillo"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_amarillo"
+                    android:text="@string/hora" />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_rojo"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:background="@drawable/my_circle_drawable_rojo"
+                    app:layout_constraintStart_toEndOf="@+id/textView_registroVolanteros_amarillo"
+                    app:layout_constraintTop_toBottomOf="@+id/textView_registroVolanteros_datosGenerales"
+                    android:contentDescription="@string/verde"/>
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_rojo"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:text="@string/hora"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_rojo"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_rojo"
+                    />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_azul"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:background="@drawable/my_circle_drawable_azul"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView_registroVolanteros_verde"
+                    android:contentDescription="@string/azul"/>
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_azul"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:text="@string/hora"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_azul"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_azul"
+                    />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_rosado"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:layout_marginStart="@dimen/space_small"
+                    android:background="@drawable/my_circle_drawable_rosado"
+                    app:layout_constraintStart_toEndOf="@+id/textView_registroVolanteros_azul"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView_registroVolanteros_verde"
+                    android:contentDescription="@string/azul"/>
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_rosado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:text="@string/hora"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_rosado"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_rosado"
+                    />
+
+                <ImageView
+                    android:id="@+id/imageView_registroVolanteros_caminado"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:background="@drawable/baseline_directions_walk_24"
+                    app:layout_constraintStart_toEndOf="@+id/textView_registroVolanteros_rosado"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView_registroVolanteros_verde"
+                    android:contentDescription="@string/azul"/>
+
+                <TextView
+                    android:id="@+id/textView_registroVolanteros_caminado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_very_small"
+                    android:layout_marginTop="@dimen/space_very_small"
+                    android:text="@string/kilometros_recorridos"
+                    app:layout_constraintStart_toEndOf="@+id/imageView_registroVolanteros_caminado"
+                    app:layout_constraintTop_toTopOf="@+id/imageView_registroVolanteros_caminado"
+                    />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textInputLayout_registroVolanteros_fecha"
+                    style="?attr/textInputOutlinedStyle"
+                    android:layout_width="130dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginBottom="@dimen/space_small"
+                    android:hint="@string/fecha"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:expandedHintEnabled="false"
+                    >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editText_registroVolanteros_fecha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/button_registroVolanteros_filtro"
+                    android:layout_width="130dp"
+                    android:layout_height="68dp"
+                    android:layout_marginStart="@dimen/space_medium"
+                    android:layout_marginBottom="1dp"
+                    android:text="@string/filtros"
+                    app:icon="@drawable/baseline_filter_list_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textInputLayout_registroVolanteros_fecha"
+                    app:layout_constraintTop_toTopOf="@+id/textInputLayout_registroVolanteros_fecha" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView_registroVolantero_googleMaps"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="@dimen/space_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView_registroVolanteros_linearLayoutSuperior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout="@layout/fragment_crear_usuario"/>
+
+        <ProgressBar
+            android:id="@+id/circularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:contentDescription="@string/loading"
+            app:cloudRequestStatusCircularProgress="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintEnd_toEndOf="@id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintTop_toTopOf="@id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintBottom_toBottomOf="@id/fragmentContainerView_registroVolantero_googleMaps"
             />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout_registroVolanteros_fecha"
-            style="?attr/textInputOutlinedStyle"
-            android:layout_width="130dp"
+        <ImageView
+            android:id="@+id/imageView_administrarCuentas_error"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_small"
-            android:layout_marginBottom="@dimen/space_small"
-            android:hint="@string/fecha"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:expandedHintEnabled="false"
-            >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editText_registroVolanteros_fecha"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-
+            android:src="@drawable/ic_connection_error_100"
+            app:cloudRequestStatusImage="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintEnd_toEndOf="@id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintTop_toTopOf="@id/fragmentContainerView_registroVolantero_googleMaps"
+            app:layout_constraintBottom_toBottomOf="@id/fragmentContainerView_registroVolantero_googleMaps"
+            android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView_registroVolantero_googleMaps"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout_registroVolantero_linearLayoutSuperior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout="@layout/fragment_crear_usuario"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

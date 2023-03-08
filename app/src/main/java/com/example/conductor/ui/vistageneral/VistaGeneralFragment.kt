@@ -174,10 +174,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                 )
                         }
                     } catch (e: Exception) {
-                        val handler = Handler(Looper.getMainLooper())
-                        handler.post {
-                            Snackbar.make(_binding!!.root, "Error:", Snackbar.LENGTH_INDEFINITE).show()
-                        }
+                        Log.i("Error", e.toString())
                     }
                 }
             }
@@ -472,7 +469,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         marker = map.addMarker(
             MarkerOptions()
                 .position(listAux.last()!!)
-                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(icono)))
+                .icon(getBitmap(icono)?.let { BitmapDescriptorFactory.fromBitmap(it) })
         )!!
     }
 
@@ -505,7 +502,11 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                     )
                                 )
                                 .title("Marker in your actual location")
-                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
+                                .icon(getBitmap(R.drawable.ic_marker_volantero_green)?.let {
+                                    BitmapDescriptorFactory.fromBitmap(
+                                        it
+                                    )
+                                })
                         )
                     } else {
                         map.moveCamera(
@@ -558,10 +559,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
-    private fun getBitmap(svgResource: Int): Bitmap {
-        val svg = AppCompatResources.getDrawable(requireActivity(), svgResource)
+    private fun getBitmap(svgResource: Int): Bitmap? {
+        val svg = AppCompatResources.getDrawable(requireActivity(), svgResource)?: return null
         val bitmap =
-            Bitmap.createBitmap(svg!!.intrinsicWidth, svg.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            Bitmap.createBitmap(svg.intrinsicWidth, svg.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         svg.setBounds(0, 0, canvas.width, canvas.height)
         svg.draw(canvas)

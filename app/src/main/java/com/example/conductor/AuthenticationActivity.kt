@@ -34,8 +34,10 @@ class AuthenticationActivity : AppCompatActivity() {
 
         installSplashScreen()
 
-        runBlocking {
-            hayUsuarioLogeado()
+        lifecycleScope.launch{
+            withContext(Dispatchers.IO) {
+                hayUsuarioLogeado()
+            }
         }
 
         super.onCreate(savedInstanceState)
@@ -52,24 +54,22 @@ class AuthenticationActivity : AppCompatActivity() {
 
 
 
-    private suspend fun hayUsuarioLogeado() {
+    private fun hayUsuarioLogeado() {
         val user = firebaseAuth.currentUser
-
-
         if (user != null) {
-            try {
-                val userInValid = cloudDB.collection("Usuarios")
-                    .document(user.uid).get().await().get("deshabilitada")
+            val userInvalid = cloudDB
+                    .collection("Usuarios")
+                    .document(user.uid).get()
 
-                if (!(userInValid as Boolean)) {
-                    val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
-                    finish()
-                    startActivity(intent)
-                } else {
-                    controlDeError(message = R.string.login_error_cuenta_deshabilitada)
+            userInvalid.addOnSuccessListener{
+                when(it.get("deshabilitada") as Boolean){
+                    false -> {
+                        val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
+                        finish()
+                        startActivity(intent)
+                    }
+                    else -> {}
                 }
-            } catch (e: Exception) {
-                controlDeError(exception = e)
             }
         }
     }
@@ -144,6 +144,12 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
 
                 chequeoDeCredenciales.addOnFailureListener{
+                    val inputMethodManager =
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(
+                        currentFocus?.windowToken,
+                        0
+                    )
                     controlDeError(it)
                 }
             }

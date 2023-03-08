@@ -129,6 +129,11 @@
     <string name="registro_de_volanteros">Registro de volanteros</string>
     <string name="estad_sticas_del_d_a">Estadísticas del día</string>
     <string name="kilometros">Kilometros</string>
+    <string name="posible_bloqueo">Error en hayUsuarioLogeado()</string>
+    <string name="filtros">Filtros</string>
+    <string name="datos_generales_del_dia">Datos generales del dia:</string>
+    <string name="cantidad_de_volanteros_en_la_jornada">Cantidad de volanteros en la jornada</string>
+    <string name="kilometros_recorridos">0.00 Km</string>
 
     <!--String arrays-->
     <string-array name="roles">

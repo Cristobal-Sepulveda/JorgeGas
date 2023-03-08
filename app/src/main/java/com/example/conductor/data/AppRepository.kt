@@ -117,20 +117,24 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(): MutableList<Any> = withContext(ioDispatcher){
+    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(context: Context): MutableList<Any> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                try{
-                    val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get().await()
-                    val registroTrayectoVolantero = mutableListOf<Any>()
-                    for (document in colRef){
-                        registroTrayectoVolantero.add(document.data)
+            val colRef = cloudDB.collection("RegistroTrayectoVolanteros")
+            val registroTrayectoVolantero = mutableListOf<Any>()
+            val deferred = CompletableDeferred<MutableList<Any>>()
+
+            colRef.get()
+                .addOnSuccessListener{ querySnapshot ->
+                    for (document in querySnapshot.documents) {
+                        registroTrayectoVolantero.add(document)
                     }
-                    return@withContext registroTrayectoVolantero
-                }catch(e:Exception){
-                    return@withContext mutableListOf<Any>()
+                    deferred.complete(registroTrayectoVolantero)
                 }
-            }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Error al obtener los datos", Toast.LENGTH_SHORT).show()
+                    deferred.complete(registroTrayectoVolantero)
+                }
+            return@withContext deferred.await()
         }
     }
 
