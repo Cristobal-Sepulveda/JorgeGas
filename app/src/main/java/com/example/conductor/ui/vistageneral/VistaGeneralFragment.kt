@@ -295,23 +295,25 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             locationServiceBound = false
         }
         locationService?.unsubscribeToLocationUpdatesVistaGeneralFragment()
-        if (!sharedPreferences.getBoolean(
-                SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
-                false
-            ) && _viewModel.usuarioEstaActivo
-        ) {
-            runBlocking {
-                withContext(Dispatchers.IO) {
-                    try {
-                        _viewModel.editarEstadoVolantero(false)
-                    } catch (e: Exception) {
-                        Log.i("sendo error", "sendo error")
+        if(::sharedPreferences.isInitialized){
+            if (!sharedPreferences.getBoolean(
+                    SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
+                    false
+                ) && _viewModel.usuarioEstaActivo
+            ) {
+                runBlocking {
+                    withContext(Dispatchers.IO) {
+                        try {
+                            _viewModel.editarEstadoVolantero(false)
+                        } catch (e: Exception) {
+                            Log.i("sendo error", "sendo error")
+                        }
                     }
                 }
             }
+            SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
+            sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         }
-        SharedPreferenceUtil.saveLocationTrackingPref(requireActivity(), false)
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         super.onDestroy()
     }
 

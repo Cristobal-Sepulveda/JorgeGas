@@ -85,12 +85,11 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         lifecycleScope.launch{
             withContext(Dispatchers.Main){
                 map.clear()
+                limpiarDataNecesaria()
             }
         }
         _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
-        listOfPolylines.clear()
-        listOfHours.clear()
-        listOfIds.clear()
+
 
         val listadoObtenido = _viewModel.obtenerTodoElRegistroTrayectoVolanteros(requireActivity()) as MutableList<*>
         if (listadoObtenido.isNotEmpty()) {
@@ -124,6 +123,18 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         }else{
             _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.ERROR)
         }
+    }
+
+    private fun limpiarDataNecesaria() {
+        listOfPolylines.clear()
+        listOfHours.clear()
+        listOfIds.clear()
+        _binding!!.textViewRegistroVolanterosVerde.setText(R.string.hora)
+        _binding!!.textViewRegistroVolanterosAmarillo.setText(R.string.hora)
+        _binding!!.textViewRegistroVolanterosRojo.setText(R.string.hora)
+        _binding!!.textViewRegistroVolanterosAzul.setText(R.string.hora)
+        _binding!!.textViewRegistroVolanterosRosado.setText(R.string.hora)
+        _binding!!.textViewRegistroVolanterosCaminado.setText(R.string.hora)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -184,6 +195,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             withContext(Dispatchers.Main) {
                 try {
                     polylineOptions = PolylineOptions().width(10f)
+                    var totalDistanciaRecorrida = 0
                     var distanceRecorrida = 0
                     var topeParaDibujar = 0
                     var tiempoEnRecorrerTramo = 0f
@@ -192,6 +204,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                     var tiempoEnAmarillo = 0f
                     var tiempoEnVerde = 0f
                     var tiempoEnAzul = 0f
+                    val tiempoEnRosado = 0f
 
                     listOfPolylines.forEachIndexed{pivote, listOfGeopoints ->
                         Log.i("DetalleVolanteroFragment","${listOfPolylines.size}")
@@ -214,6 +227,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
                             Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
                             distanceRecorrida += distanceBetweenLatLngs
+                            totalDistanciaRecorrida += distanceBetweenLatLngs
                             tiempoEnRecorrerTramo += timeBetweenLatLngs
                             topeParaDibujar++
                             listAux.add(LatLng(geopoint.latitude, geopoint.longitude))
@@ -256,12 +270,14 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                             }
                         }
                     }
+                    _binding!!.textViewRegistroVolanterosVerde.text = convertSecondsToHMS(tiempoEnVerde)
+                    _binding!!.textViewRegistroVolanterosAmarillo.text = convertSecondsToHMS(tiempoEnAmarillo)
+                    _binding!!.textViewRegistroVolanterosRojo.text = convertSecondsToHMS(tiempoEnRojo)
+                    _binding!!.textViewRegistroVolanterosAzul.text = convertSecondsToHMS(tiempoEnAzul)
+                    _binding!!.textViewRegistroVolanterosRosado.text = convertSecondsToHMS(tiempoEnRosado)
+                    _binding!!.textViewRegistroVolanterosCaminado.text = editarDistanciaTotalRecorrida(totalDistanciaRecorrida)
                     _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
                     return@withContext
-                    /*_binding!!.textViewDetalleVolanteroRojo.text = convertSecondsToHMS(tiempoEnRojo)
-                    _binding!!.textViewDetalleVolanteroAmarillo.text = convertSecondsToHMS(tiempoEnAmarillo)
-                    _binding!!.textViewDetalleVolanteroVerde.text = convertSecondsToHMS(tiempoEnVerde)
-                    _binding!!.textViewDetalleVolanteroAzul.text = convertSecondsToHMS(tiempoEnAzul)*/
                 } catch (e: Exception) {
                     Log.i("error", "$e")
                     _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.ERROR)
@@ -272,4 +288,16 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
     }
 
+    private fun convertSecondsToHMS(seconds: Float): String {
+        val hours = (seconds / 3600).toInt()
+        val minutes = ((seconds % 3600) / 60).toInt()
+        val remainingSeconds = (seconds % 60).toInt()
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+    }
+
+    fun editarDistanciaTotalRecorrida(distancia: Int ): String {
+        val distanciaKm = distancia / 1000.0
+        val distanciaKmString = "%.2fkm".format(distanciaKm)
+        return distanciaKmString
+    }
 }
