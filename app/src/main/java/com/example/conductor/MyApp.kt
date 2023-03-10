@@ -4,7 +4,6 @@ import android.app.Application
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
-import com.example.conductor.filtroregistrovolanteros.FiltroRegistroVolanterosViewModel
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.ui.detallevolantero.DetalleVolanteroViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
@@ -66,12 +65,12 @@ class MyApp : Application() {
                     get() as AppDataSource
                 )
             }
-            single {
+/*            single {
                 FiltroRegistroVolanterosViewModel(
                     get(),
                     get() as AppDataSource
                 )
-            }
+            }*/
             //LOCAL_DATABASE, here im creating the local database in the first start and
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).usuarioDao }

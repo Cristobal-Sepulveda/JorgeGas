@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
 
@@ -60,6 +59,16 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
         _binding!!.editTextRegistroVolanterosFecha.setOnClickListener{
             abrirCalendario(Calendar.getInstance())
+        }
+
+        _binding!!.buttonRegistroVolanterosFiltro.setOnClickListener{
+
+/*            val filtroRegistroVolanterosFragment = FiltroRegistroVolanterosFragment()
+            val bundle = Bundle()
+            val arrayListOfIds = ArrayList(listOfIds)
+            bundle.putStringArrayList("volanterosQueTrabajaronEseDia", arrayListOfIds)
+            filtroRegistroVolanterosFragment.arguments = bundle
+            filtroRegistroVolanterosFragment.show(childFragmentManager, "FiltroRegistroVolanterosFragment")*/
         }
 
         _viewModel.selectedDate.observe(viewLifecycleOwner) {
