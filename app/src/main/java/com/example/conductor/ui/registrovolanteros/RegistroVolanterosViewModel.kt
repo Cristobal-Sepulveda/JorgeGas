@@ -22,6 +22,10 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
     val status: LiveData<CloudRequestStatus>
         get() = _status
 
+    private var _selectedVolanteros = MutableLiveData<List<String>>()
+    val selectedVolanteros: LiveData<List<String>>
+        get() = _selectedVolanteros
+
     init{
         cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
     }
@@ -39,6 +43,14 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
                 _status.value = status
             }
         }
+    }
+
+    fun limpiarSelectedVolanteros(){
+        _selectedVolanteros.value = listOf()
+    }
+
+    fun setearSelectedVolanteros(list: List<String>){
+        _selectedVolanteros.value = list
     }
 
 }

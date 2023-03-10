@@ -133,6 +133,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:1.3.3"
     implementation "androidx.compose.ui:ui-tooling-preview:1.3.3"
 
+    //Flexbox
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
     //Google Maps
     implementation 'com.google.maps:google-maps-services:2.1.2'
     //Google Maps Directions API

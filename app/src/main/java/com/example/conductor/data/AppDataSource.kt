@@ -12,7 +12,6 @@ interface AppDataSource {
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerRegistroTrayectoVolanteros(): Any
-
     suspend fun obtenerTodoElRegistroTrayectoVolanteros(context:Context): MutableList<Any>
     suspend fun obtenerRegistroDelVolantero(id: String): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
@@ -22,4 +21,5 @@ interface AppDataSource {
     suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse
 
     suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context)
+
 }

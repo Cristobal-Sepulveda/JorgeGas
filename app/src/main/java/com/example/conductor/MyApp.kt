@@ -65,12 +65,6 @@ class MyApp : Application() {
                     get() as AppDataSource
                 )
             }
-/*            single {
-                FiltroRegistroVolanterosViewModel(
-                    get(),
-                    get() as AppDataSource
-                )
-            }*/
             //LOCAL_DATABASE, here im creating the local database in the first start and
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).usuarioDao }

@@ -96,6 +96,7 @@
             android:id="@+id/action_navigation_registro_trayecto_volanteros_to_filtroRegistroVolanterosFragment"
             app:destination="@id/navigation_filtro_registro_volanteros" />
     </fragment>
+
     <fragment
         android:id="@+id/navigation_filtro_registro_volanteros"
         android:name="com.example.conductor.ui.filtroregistrovolanteros.FiltroRegistroVolanterosFragment"

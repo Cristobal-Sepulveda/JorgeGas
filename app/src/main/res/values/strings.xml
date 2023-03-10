@@ -135,6 +135,8 @@
     <string name="cantidad_de_volanteros_en_la_jornada">Cantidad de volanteros en la jornada</string>
     <string name="kilometros_recorridos">0.00 Km</string>
     <string name="filtro_de_busqueda">Filtro de busqueda</string>
+    <string name="mensaje_filtro_volanteros">Antes de añadir filtros debes de elegir una fecha.</string>
+    <string name="filtro_sin_eleccion">Debes de seleccionar al menos un usuario antes de aplicar filtro.</string>
 
     <!--String arrays-->
     <string-array name="roles">
