@@ -36,35 +36,26 @@ class AdministrarCuentasFragment : BaseFragment() {
         _binding!!.viewModel = _viewModel
         val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario -> })
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
+
         _viewModel.displayUsuariosInRecyclerView()
 
         _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{
-            var listasDeRespaldo = mutableListOf<MutableList<Usuario>>()
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val filteredList = _viewModel.domainUsuariosInScreen.value!!.filter{
+                val filteredList = _viewModel.todosLosUsuarios.filter{
                     it.nombre.lowercase().contains(s.toString().lowercase())
                 } as MutableList<Usuario>
-                if(count ==1){
                     _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
-                    return
-                }
-                if(before == 1 ){
-                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(listasDeRespaldo.last())
-                    listasDeRespaldo.removeLast()
-                    return
+                if (s.isNullOrEmpty()) {
+                    // Reset the list to its original state if the search field is empty
+                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(_viewModel.todosLosUsuarios)
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.i("asd","$start    $count   $after")
-                if(after==1){
-                    listasDeRespaldo.add(_viewModel.domainUsuariosInScreen.value as MutableList<Usuario>)
-                    return
-                }
             }
 
             override fun afterTextChanged(s: Editable?) {
-                return
             }
         })
 

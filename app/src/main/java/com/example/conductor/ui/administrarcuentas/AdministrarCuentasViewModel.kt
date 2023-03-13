@@ -48,8 +48,7 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
                 _status.value = CloudRequestStatus.ERROR
                 Log.d("bindingAdapter", "${status.value}")
             } else {
-                _domainUsuariosInScreen.value = colRef
-                    .sortedWith(compareBy { it.nombre })
+                _domainUsuariosInScreen.value = colRef.sortedWith(compareBy { it.nombre })
                 todosLosUsuarios = _domainUsuariosInScreen.value as MutableList<Usuario>
                 _status.value = CloudRequestStatus.DONE
                 Log.d("bindingAdapter", "${status.value}")
