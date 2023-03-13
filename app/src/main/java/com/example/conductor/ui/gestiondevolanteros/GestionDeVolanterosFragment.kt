@@ -7,8 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
-import com.example.conductor.R
 import com.example.conductor.adapter.VolanteroAdapter
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.AppDataSource
@@ -45,37 +43,42 @@ class GestionDeVolanterosFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.i("asd","$start    $before    $count")
                 if(filtroSeleccionado =="Activos"){
-                    val filteredList = _viewModel.domainUsuariosActivosInScreen.value!!.filter{
+
+                    val filteredList = _viewModel.domainUsuariosVolanterosActivos.filter{
                         it.nombre.lowercase().contains(s.toString().lowercase())
                     } as MutableList<Usuario>
+
                     if(count ==1){
                         _viewModel.filtrarUsuariosActivosEnRecyclerViewPorEditText(filteredList)
                         return
                     }
                     if(before == 1 ){
-                        _viewModel.filtrarUsuariosActivosEnRecyclerViewPorEditText(listasDeRespaldoActivos.last())
+                        /*_viewModel.filtrarUsuariosActivosEnRecyclerViewPorSwitch(listasDeRespaldoActivos.last())
                         listasDeRespaldoActivos.removeLast()
-                        return
+                        return*/
                     }
                 }else{
+
                     Log.i("asd","asd")
-                    val filteredList = _viewModel.domainUsuariosInactivosInScreen.value!!.filter{
+                    val filteredList = _viewModel.domainUsuariosVolanterosInactivos.filter{
                         it.nombre.lowercase().contains(s.toString().lowercase())
                     } as MutableList<Usuario>
+
                     if(count ==1){
                         Log.i("asd", "$filteredList")
                         _viewModel.filtrarUsuariosInactivosEnRecyclerViewPorEditText(filteredList)
                         return
                     }
+
                     if(before == 1 ){
-                        _viewModel.filtrarUsuariosInactivosEnRecyclerViewPorEditText(listasDeRespaldoInactivos.last())
+                        /*_viewModel.filtrarUsuariosInactivosEnRecyclerViewPorSwitch(listasDeRespaldoInactivos.last())
                         listasDeRespaldoInactivos.removeLast()
-                        return
+                        return*/
                     }
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.i("asd","$start    $count   $after")
+                /*Log.i("asd","$start    $count   $after")
                 if(filtroSeleccionado =="Activos"){
                     if(after==1){
                         listasDeRespaldoActivos.add(_viewModel.domainUsuariosActivosInScreen.value as MutableList<Usuario>)
@@ -86,7 +89,7 @@ class GestionDeVolanterosFragment : BaseFragment() {
                         listasDeRespaldoInactivos.add(_viewModel.domainUsuariosInactivosInScreen.value as MutableList<Usuario>)
                         return
                     }
-                }
+                }*/
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -98,21 +101,14 @@ class GestionDeVolanterosFragment : BaseFragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if(tab!!.text=="Activos"){
                     filtroSeleccionado = "Activos"
-                    if(_viewModel.volanterosActivos.value == false){
-                        _binding!!.recyclerviewListaVolanteros.visibility = View.GONE
-                        if(_viewModel.domainUsuariosActivosInScreen.value!!.isEmpty()){
-                            _binding!!.textViewGestionDeVolanterosNoHayVolanterosActivos.visibility = View.VISIBLE
-                        }
-                        _viewModel.removerTextDeInteres(true)
+                    _viewModel.filtrarUsuariosActivosEnRecyclerViewPorSwitch()
+                    if(_viewModel.domainUsuariosVolanterosActivos.isEmpty()){
+                        _viewModel.noHayVolanterosActivos(true)
                     }
-                    adapter.submitList(_viewModel.domainUsuariosActivosInScreen.value)
                 }else{
                     filtroSeleccionado = "Inactivos"
-                    if(_viewModel.volanterosActivos.value == true){
-                        _viewModel.removerTextDeInteres(false)
-                    }
-                    _binding!!.recyclerviewListaVolanteros.visibility = View.VISIBLE
-                    adapter.submitList(_viewModel.domainUsuariosInactivosInScreen.value)
+                    _viewModel.noHayVolanterosActivos(false)
+                    _viewModel.filtrarUsuariosInactivosEnRecyclerViewPorSwitch()
                 }
             }
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -125,15 +121,7 @@ class GestionDeVolanterosFragment : BaseFragment() {
 
         _viewModel.displayUsuariosInRecyclerView()
 
-
-
-        _viewModel.domainUsuariosInactivosInScreen.observe(requireActivity()) {
-            it.let {
-                adapter.submitList(it as MutableList<Usuario>)
-            }
-        }
-
-        _viewModel.domainUsuariosActivosInScreen.observe(requireActivity()) {
+        _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
             it.let {
                 adapter.submitList(it as MutableList<Usuario>)
             }
