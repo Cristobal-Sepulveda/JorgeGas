@@ -19,8 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
@@ -114,6 +112,12 @@ class AuthenticationActivity : AppCompatActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
 
+                //primer error controlado: Chequear si el ambos input tienen valores, se dejo aqui por limpieza del codigo
+                if(email =="" || password ==""){
+                    controlDeError(message = R.string.login_error_campos_vacios )
+                    return@withContext
+                }
+
                 val chequeoDeCredenciales = firebaseAuth.signInWithEmailAndPassword(email, password)
 
                 chequeoDeCredenciales.addOnSuccessListener {
@@ -132,7 +136,7 @@ class AuthenticationActivity : AppCompatActivity() {
                                     currentFocus?.windowToken,
                                     0
                                 )
-                                iniciandoLogin(result, email, password)
+                                iniciandoLogin(result)
                             }
                         }
                     }
@@ -158,9 +162,9 @@ class AuthenticationActivity : AppCompatActivity() {
 
 
 
-    private suspend fun iniciandoLogin(result: QuerySnapshot, email: String, password: String) {
+    private suspend fun iniciandoLogin(result: QuerySnapshot) {
 
-        if (controlDeErrorDeInputsMonoSesionYUsuarioDeshabilitado(result,email,password)){
+        if (controlDeErrorDeMonoSesionYUsuarioDeshabilitado(result)){
             return
         }
 
@@ -206,14 +210,13 @@ class AuthenticationActivity : AppCompatActivity() {
 
 
 
-    private fun controlDeErrorDeInputsMonoSesionYUsuarioDeshabilitado(result: QuerySnapshot, email: String, password: String): Boolean {
-        //primer error controlado: Chequear si el ambos input tienen valores, se dejo aqui por limpieza del codigo
-        if(email =="" || password ==""){
-            controlDeError(message = R.string.login_error_campos_vacios )
+    private fun controlDeErrorDeMonoSesionYUsuarioDeshabilitado(result: QuerySnapshot): Boolean {
+        if(result.documents.isEmpty()){
+            controlDeError(message = R.string.login_error_credenciales_incorrectas )
             return true
         }
         //segundo error controlado: Chequear si el usuario tiene sesión iniciada en otro celular
-        if (result.documents[0].get("sesionActiva") as Boolean) {
+        if (result.documents.first().get("sesionActiva") as Boolean) {
             controlDeError(message = R.string.sesion_activa_existente )
             return true
         }

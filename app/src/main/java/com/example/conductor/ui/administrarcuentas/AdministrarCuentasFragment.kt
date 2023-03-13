@@ -45,7 +45,8 @@ class AdministrarCuentasFragment : BaseFragment() {
                 val filteredList = _viewModel.todosLosUsuarios.filter{
                     it.nombre.lowercase().contains(s.toString().lowercase())
                 } as MutableList<Usuario>
-                    _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
+
+                _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(filteredList)
                 if (s.isNullOrEmpty()) {
                     // Reset the list to its original state if the search field is empty
                     _viewModel.filtrarUsuariosEnRecyclerViewPorEditText(_viewModel.todosLosUsuarios)

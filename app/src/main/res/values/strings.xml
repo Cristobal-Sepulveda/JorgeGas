@@ -137,6 +137,7 @@
     <string name="filtro_de_busqueda">Filtro de busqueda</string>
     <string name="mensaje_filtro_volanteros">Antes de añadir filtros debes de elegir una fecha.</string>
     <string name="filtro_sin_eleccion">Debes de seleccionar al menos un usuario antes de aplicar filtro.</string>
+    <string name="login_error_credenciales_incorrectas">El usuario no existe</string>
 
     <!--String arrays-->
     <string-array name="roles">
