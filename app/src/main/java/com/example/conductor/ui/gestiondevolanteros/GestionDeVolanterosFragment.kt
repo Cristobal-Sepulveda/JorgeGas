@@ -41,42 +41,19 @@ class GestionDeVolanterosFragment : BaseFragment() {
             var listasDeRespaldoInactivos = mutableListOf<MutableList<Usuario>>()
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.i("asd","$start    $before    $count")
-                if(filtroSeleccionado =="Activos"){
-
-                    val filteredList = _viewModel.domainUsuariosVolanterosActivos.filter{
+                if (filtroSeleccionado == "Activos") {
+                    val filteredList = _viewModel.domainUsuariosVolanterosActivos.filter {
                         it.nombre.lowercase().contains(s.toString().lowercase())
                     } as MutableList<Usuario>
-
-                    if(count ==1){
-                        _viewModel.filtrarUsuariosActivosEnRecyclerViewPorEditText(filteredList)
-                        return
-                    }
-                    if(before == 1 ){
-                        /*_viewModel.filtrarUsuariosActivosEnRecyclerViewPorSwitch(listasDeRespaldoActivos.last())
-                        listasDeRespaldoActivos.removeLast()
-                        return*/
-                    }
-                }else{
-
-                    Log.i("asd","asd")
-                    val filteredList = _viewModel.domainUsuariosVolanterosInactivos.filter{
+                    _viewModel.filtrarUsuariosActivosEnRecyclerViewPorEditText(filteredList)
+                } else {
+                    val filteredList = _viewModel.domainUsuariosVolanterosInactivos.filter {
                         it.nombre.lowercase().contains(s.toString().lowercase())
                     } as MutableList<Usuario>
-
-                    if(count ==1){
-                        Log.i("asd", "$filteredList")
-                        _viewModel.filtrarUsuariosInactivosEnRecyclerViewPorEditText(filteredList)
-                        return
-                    }
-
-                    if(before == 1 ){
-                        /*_viewModel.filtrarUsuariosInactivosEnRecyclerViewPorSwitch(listasDeRespaldoInactivos.last())
-                        listasDeRespaldoInactivos.removeLast()
-                        return*/
-                    }
+                    _viewModel.filtrarUsuariosInactivosEnRecyclerViewPorEditText(filteredList)
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 /*Log.i("asd","$start    $count   $after")
                 if(filtroSeleccionado =="Activos"){
