@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Jorge Gas</string>
+    <string name="app_name">Jorge Gas\nManagement</string>
     <string name="title_home">Home</string>
     <string name="title_map">Mapa</string>
     <string name="title_profile">Perfil</string>

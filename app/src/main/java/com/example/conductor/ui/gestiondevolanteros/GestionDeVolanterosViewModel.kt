@@ -37,13 +37,17 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
     fun removerTextDeInteres(aux: Boolean){
         _volanterosActivos.value = aux
     }
+
+
     fun displayUsuariosInRecyclerView(){
         viewModelScope.launch{
             try{
+
                 val listaDeUsuariosVolanterosActivos = mutableListOf<Usuario>()
                 val listaDeUsuariosVolanterosInactivos = mutableListOf<Usuario>()
                 val listaDeUsuarios = dataSource.obtenerUsuariosDesdeFirestore()
                 val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros() as MutableList<RegistroTrayectoVolantero>
+
                 if(listaDeUsuarios.isEmpty() || registroTrayectoVolanteros.toString() == "Error"){
                     _status.value = CloudRequestStatus.ERROR
                     return@launch
@@ -61,6 +65,7 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                         }
                     }
                 }
+
                 listaDeUsuariosVolanterosActivos.sortedWith(compareBy { it.nombre })
                 listaDeUsuariosVolanterosInactivos.sortedWith(compareBy { it.nombre })
 
@@ -68,13 +73,18 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                 domainUsuariosActivosInScreenRespaldo = listaDeUsuariosVolanterosActivos
                 _domainUsuariosInactivosInScreen.value = listaDeUsuariosVolanterosInactivos
                 _domainUsuariosActivosInScreen.value = listaDeUsuariosVolanterosActivos
+
                 withContext(Dispatchers.IO) {
                     Thread.sleep(1000)
                 }
+
                 _volanterosActivos.value = listaDeUsuariosVolanterosActivos.isEmpty()
                 _status.value = CloudRequestStatus.DONE
+
             }catch(e: Exception) {
+
                 e.printStackTrace()
+
             }
         }
     }

@@ -125,6 +125,8 @@ class GestionDeVolanterosFragment : BaseFragment() {
 
         _viewModel.displayUsuariosInRecyclerView()
 
+
+
         _viewModel.domainUsuariosInactivosInScreen.observe(requireActivity()) {
             it.let {
                 adapter.submitList(it as MutableList<Usuario>)
