@@ -32,6 +32,10 @@ class AuthenticationActivity : AppCompatActivity() {
 
         installSplashScreen()
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
+        binding.imageviewLogoAbastible.visibility = View.VISIBLE
+        binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+
         lifecycleScope.launch{
             withContext(Dispatchers.IO) {
                 hayUsuarioLogeado()
@@ -39,7 +43,6 @@ class AuthenticationActivity : AppCompatActivity() {
         }
 
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
 
 
         binding.loginButton.setOnClickListener {
@@ -53,11 +56,19 @@ class AuthenticationActivity : AppCompatActivity() {
 
 
     private fun hayUsuarioLogeado() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.imageviewLogoAbastible.visibility = View.GONE
+        binding.imageviewLogoJorgeGas.visibility = View.GONE
+        binding.edittextEmail.visibility = View.GONE
+        binding.edittextPassword.visibility = View.GONE
+        binding.loginButton.visibility = View.GONE
+
         val user = firebaseAuth.currentUser
+
         if (user != null) {
             val userInvalid = cloudDB
-                    .collection("Usuarios")
-                    .document(user.uid).get()
+                .collection("Usuarios")
+                .document(user.uid).get()
 
             userInvalid.addOnSuccessListener{
                 when(it.get("deshabilitada") as Boolean){
@@ -66,9 +77,33 @@ class AuthenticationActivity : AppCompatActivity() {
                         finish()
                         startActivity(intent)
                     }
-                    else -> {}
+                    else -> {
+                        Snackbar.make(binding.container,  R.string.login_error_cuenta_deshabilitada, Snackbar.LENGTH_LONG).show()
+                        binding.progressBar.visibility = View.GONE
+                        binding.imageviewLogoAbastible.visibility = View.VISIBLE
+                        binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+                        binding.edittextEmail.visibility = View.VISIBLE
+                        binding.edittextPassword.visibility = View.VISIBLE
+                        binding.loginButton.visibility = View.VISIBLE
+                    }
                 }
             }
+
+            userInvalid.addOnFailureListener{
+                binding.progressBar.visibility = View.GONE
+                binding.imageviewLogoAbastible.visibility = View.VISIBLE
+                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+                binding.edittextEmail.visibility = View.VISIBLE
+                binding.edittextPassword.visibility = View.VISIBLE
+                binding.loginButton.visibility = View.VISIBLE
+            }
+        }else{
+            binding.progressBar.visibility = View.GONE
+            binding.imageviewLogoAbastible.visibility = View.VISIBLE
+            binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+            binding.edittextEmail.visibility = View.VISIBLE
+            binding.edittextPassword.visibility = View.VISIBLE
+            binding.loginButton.visibility = View.VISIBLE
         }
     }
 
@@ -80,6 +115,17 @@ class AuthenticationActivity : AppCompatActivity() {
 
         runOnUiThread {
             binding.progressBar.visibility = View.VISIBLE
+            binding.imageviewLogoAbastible.visibility = View.GONE
+            binding.imageviewLogoJorgeGas.visibility = View.GONE
+            binding.edittextEmail.visibility = View.GONE
+            binding.edittextPassword.visibility = View.GONE
+            binding.loginButton.visibility = View.GONE
+            val inputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(
+                binding.edittextPassword.windowToken,
+                0
+            )
         }
 
         val connectivityManager =
@@ -93,6 +139,12 @@ class AuthenticationActivity : AppCompatActivity() {
         } else {
             runOnUiThread {
                 binding.progressBar.visibility = View.GONE
+                binding.imageviewLogoAbastible.visibility = View.VISIBLE
+                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+                binding.edittextEmail.visibility = View.VISIBLE
+                binding.edittextPassword.visibility = View.VISIBLE
+                binding.loginButton.visibility = View.VISIBLE
+
                 Snackbar.make(
                     findViewById(R.id.container),
                     R.string.no_hay_internet,
@@ -130,12 +182,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     operation.addOnSuccessListener { result ->
                         lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                val inputMethodManager =
-                                    getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                                inputMethodManager.hideSoftInputFromWindow(
-                                    currentFocus?.windowToken,
-                                    0
-                                )
+
                                 iniciandoLogin(result)
                             }
                         }
@@ -148,12 +195,6 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
 
                 chequeoDeCredenciales.addOnFailureListener{
-                    val inputMethodManager =
-                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.hideSoftInputFromWindow(
-                        currentFocus?.windowToken,
-                        0
-                    )
                     controlDeError(it)
                 }
             }
@@ -185,7 +226,6 @@ class AuthenticationActivity : AppCompatActivity() {
                             guardandoDocumentoDelUsuario(result)
                         }
                     }
-                    Thread.sleep(1000)
                     finish()
                     startActivity(intent)
                 }
@@ -241,6 +281,11 @@ class AuthenticationActivity : AppCompatActivity() {
         if(exception == null){
             runOnUiThread {
                 binding.progressBar.visibility = View.GONE
+                binding.imageviewLogoAbastible.visibility = View.VISIBLE
+                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+                binding.edittextEmail.visibility = View.VISIBLE
+                binding.edittextPassword.visibility = View.VISIBLE
+                binding.loginButton.visibility = View.VISIBLE
                 Snackbar.make(
                     findViewById(R.id.container),
                     message!!,
@@ -251,6 +296,11 @@ class AuthenticationActivity : AppCompatActivity() {
         }else{
             runOnUiThread {
                 binding.progressBar.visibility = View.GONE
+                binding.imageviewLogoAbastible.visibility = View.VISIBLE
+                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+                binding.edittextEmail.visibility = View.VISIBLE
+                binding.edittextPassword.visibility = View.VISIBLE
+                binding.loginButton.visibility = View.VISIBLE
                 Snackbar.make(
                     findViewById(R.id.container),
                     "Error: ${exception.message}",

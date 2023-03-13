@@ -18,7 +18,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/logo_normal" />
+            android:src="@drawable/logo_normal" />
 
         <ImageView
             android:id="@+id/imageview_logoJorgeGas"
@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="@dimen/space_big"
             app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
-            app:srcCompat="@drawable/icono_app_sin_fondo" />
+            android:src="@drawable/icono_app_sin_fondo" />
 
         <EditText
             android:id="@+id/edittext_email"
