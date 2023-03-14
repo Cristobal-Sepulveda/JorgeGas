@@ -28,10 +28,13 @@ class AppRepository(private val usuarioDao: UsuarioDao,
     override suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
+                val deferred = CompletableDeferred<MutableList<Usuario>>()
                 val listAux = mutableListOf<Usuario>()
-                try{
-                    val colRef = cloudDB.collection("Usuarios").get().await()
-                    for (document in colRef){
+
+                val colRef = cloudDB.collection("Usuarios").get()
+
+                colRef.addOnSuccessListener{
+                    for (document in it){
                         val usuario = Usuario(
                             document.id,
                             document.get("fotoPerfil") as String,
@@ -46,25 +49,31 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         )
                         listAux.add(usuario)
                     }
-                    return@withContext listAux
-                }catch(ex: Exception){
-                    Log.i("AppRepository", ex.message!!)
-                    return@withContext listAux
+                    deferred.complete(listAux)
                 }
+                colRef.addOnFailureListener{
+                    deferred.complete(listAux)
+                }
+                return@withContext deferred.await()
             }
         }
     }
 
-    override suspend fun ingresarUsuarioAFirestore(usuario: Usuario){
+    override suspend fun ingresarUsuarioAFirestore(usuario: Usuario): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                try{
-                    cloudDB.collection("Usuarios")
-                        .document(usuario.id).set(usuario)
-                    return@withContext true
-                }catch(e:Exception){
-                    return@withContext false
-                }
+                val deferred = CompletableDeferred<Boolean>()
+                val ingresandoUsuarioAFirestore = cloudDB
+                    .collection("Usuarios")
+                    .document(usuario.id).set(usuario)
+                ingresandoUsuarioAFirestore
+                    .addOnSuccessListener {
+                        deferred.complete(true)
+                    }
+                    .addOnFailureListener {
+                        deferred.complete(false)
+                    }
+                return@withContext deferred.await()
             }
         }
     }

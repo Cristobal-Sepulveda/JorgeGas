@@ -13,6 +13,11 @@
         android:icon="@drawable/outline_auto_stories_24"
         />
     <item
+        android:title="@string/ajustes"
+        android:id="@+id/navigation_ajustes"
+        android:icon="@drawable/baseline_settings_24"
+        />
+    <item
         android:title="@string/cerrar_sesion"
         android:id="@+id/logout_item"
         android:icon="@drawable/ic_baseline_logout_24"

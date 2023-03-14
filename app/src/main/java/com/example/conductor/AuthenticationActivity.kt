@@ -15,6 +15,7 @@ import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityAuthenticationBinding
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +27,10 @@ class AuthenticationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthenticationBinding
     private val cloudDB = FirebaseFirestore.getInstance()
-    private val dataSource: AppDataSource by inject()
+    val dataSource: AppDataSource by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        super.onCreate(savedInstanceState)
         installSplashScreen()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
@@ -38,32 +39,18 @@ class AuthenticationActivity : AppCompatActivity() {
 
         lifecycleScope.launch{
             withContext(Dispatchers.IO) {
-                hayUsuarioLogeado()
+                hayUsuarioLogeado(firebaseAuth.currentUser)
             }
         }
-
-        super.onCreate(savedInstanceState)
-
 
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
 
-
     }
 
-
-
-
-    private fun hayUsuarioLogeado() {
-        binding.progressBar.visibility = View.VISIBLE
-        binding.imageviewLogoAbastible.visibility = View.GONE
-        binding.imageviewLogoJorgeGas.visibility = View.GONE
-        binding.edittextEmail.visibility = View.GONE
-        binding.edittextPassword.visibility = View.GONE
-        binding.loginButton.visibility = View.GONE
-
-        val user = firebaseAuth.currentUser
+    fun hayUsuarioLogeado(user: FirebaseUser?) : Boolean {
+        aparecerYDesaparecerElementosAlIniciarLogin()
 
         if (user != null) {
             val userInvalid = cloudDB
@@ -79,47 +66,24 @@ class AuthenticationActivity : AppCompatActivity() {
                     }
                     else -> {
                         Snackbar.make(binding.container,  R.string.login_error_cuenta_deshabilitada, Snackbar.LENGTH_LONG).show()
-                        binding.progressBar.visibility = View.GONE
-                        binding.imageviewLogoAbastible.visibility = View.VISIBLE
-                        binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-                        binding.edittextEmail.visibility = View.VISIBLE
-                        binding.edittextPassword.visibility = View.VISIBLE
-                        binding.loginButton.visibility = View.VISIBLE
+                        aparecerYDesaparecerElementosTrasNoLogin()
                     }
                 }
             }
 
             userInvalid.addOnFailureListener{
-                binding.progressBar.visibility = View.GONE
-                binding.imageviewLogoAbastible.visibility = View.VISIBLE
-                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-                binding.edittextEmail.visibility = View.VISIBLE
-                binding.edittextPassword.visibility = View.VISIBLE
-                binding.loginButton.visibility = View.VISIBLE
+                aparecerYDesaparecerElementosTrasNoLogin()
             }
+            return true
         }else{
-            binding.progressBar.visibility = View.GONE
-            binding.imageviewLogoAbastible.visibility = View.VISIBLE
-            binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-            binding.edittextEmail.visibility = View.VISIBLE
-            binding.edittextPassword.visibility = View.VISIBLE
-            binding.loginButton.visibility = View.VISIBLE
+            aparecerYDesaparecerElementosTrasNoLogin()
+            return false
         }
     }
 
-
-
-
-
     private fun launchSignInFlow() {
-
         runOnUiThread {
-            binding.progressBar.visibility = View.VISIBLE
-            binding.imageviewLogoAbastible.visibility = View.GONE
-            binding.imageviewLogoJorgeGas.visibility = View.GONE
-            binding.edittextEmail.visibility = View.GONE
-            binding.edittextPassword.visibility = View.GONE
-            binding.loginButton.visibility = View.GONE
+            aparecerYDesaparecerElementosAlIniciarLogin()
             val inputMethodManager =
                 getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(
@@ -138,12 +102,7 @@ class AuthenticationActivity : AppCompatActivity() {
             preIntentarLogin(email, password)
         } else {
             runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                binding.imageviewLogoAbastible.visibility = View.VISIBLE
-                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-                binding.edittextEmail.visibility = View.VISIBLE
-                binding.edittextPassword.visibility = View.VISIBLE
-                binding.loginButton.visibility = View.VISIBLE
+                aparecerYDesaparecerElementosTrasNoLogin()
 
                 Snackbar.make(
                     findViewById(R.id.container),
@@ -153,12 +112,6 @@ class AuthenticationActivity : AppCompatActivity() {
             }
         }
     }
-
-
-
-
-
-
 
     private fun preIntentarLogin(email: String, password: String) {
         lifecycleScope.launch {
@@ -201,8 +154,6 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
-
-
     private suspend fun iniciandoLogin(result: QuerySnapshot) {
 
         if (controlDeErrorDeMonoSesionYUsuarioDeshabilitado(result)){
@@ -238,18 +189,6 @@ class AuthenticationActivity : AppCompatActivity() {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     private fun controlDeErrorDeMonoSesionYUsuarioDeshabilitado(result: QuerySnapshot): Boolean {
         if(result.documents.isEmpty()){
             controlDeError(message = R.string.login_error_credenciales_incorrectas )
@@ -280,12 +219,7 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun controlDeError(exception: Exception? = null,  message: Int? = null) {
         if(exception == null){
             runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                binding.imageviewLogoAbastible.visibility = View.VISIBLE
-                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-                binding.edittextEmail.visibility = View.VISIBLE
-                binding.edittextPassword.visibility = View.VISIBLE
-                binding.loginButton.visibility = View.VISIBLE
+                aparecerYDesaparecerElementosTrasNoLogin()
                 Snackbar.make(
                     findViewById(R.id.container),
                     message!!,
@@ -295,12 +229,7 @@ class AuthenticationActivity : AppCompatActivity() {
             }
         }else{
             runOnUiThread {
-                binding.progressBar.visibility = View.GONE
-                binding.imageviewLogoAbastible.visibility = View.VISIBLE
-                binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
-                binding.edittextEmail.visibility = View.VISIBLE
-                binding.edittextPassword.visibility = View.VISIBLE
-                binding.loginButton.visibility = View.VISIBLE
+                aparecerYDesaparecerElementosTrasNoLogin()
                 Snackbar.make(
                     findViewById(R.id.container),
                     "Error: ${exception.message}",
@@ -311,7 +240,23 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
+    private fun aparecerYDesaparecerElementosTrasNoLogin() {
+        binding.progressBar.visibility = View.GONE
+        binding.imageviewLogoAbastible.visibility = View.VISIBLE
+        binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+        binding.edittextEmail.visibility = View.VISIBLE
+        binding.edittextPassword.visibility = View.VISIBLE
+        binding.loginButton.visibility = View.VISIBLE
+    }
 
+    private fun aparecerYDesaparecerElementosAlIniciarLogin() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.imageviewLogoAbastible.visibility = View.GONE
+        binding.imageviewLogoJorgeGas.visibility = View.GONE
+        binding.edittextEmail.visibility = View.GONE
+        binding.edittextPassword.visibility = View.GONE
+        binding.loginButton.visibility = View.GONE
+    }
 
 }
 

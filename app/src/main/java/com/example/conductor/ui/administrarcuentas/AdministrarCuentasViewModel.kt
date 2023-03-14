@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -88,11 +89,13 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
         }
     }
 
-    fun ingresarUsuarioAFirestore(usuario: Usuario){
+    suspend fun ingresarUsuarioAFirestore(usuario: Usuario):Boolean{
+        val deferred = CompletableDeferred<Boolean>()
         viewModelScope.launch{
             withContext(Dispatchers.IO){
-                dataSource.ingresarUsuarioAFirestore(usuario)
+                deferred.complete(dataSource.ingresarUsuarioAFirestore(usuario))
             }
         }
+        return deferred.await()
     }
 }

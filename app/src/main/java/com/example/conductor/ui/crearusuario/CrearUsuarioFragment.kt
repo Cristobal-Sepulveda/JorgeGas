@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
@@ -114,13 +115,78 @@ class CrearUsuarioFragment : BaseFragment() {
         val password2 = _binding!!.editTextDataUsuarioConfirmarPassword.text.toString()
         val rol = _binding!!.editTextDataUsuarioRol.text.toString();
 
-        if(imageBitmap == null){
+        if (validarInputsYFoto(nombre, apellidos, email, password, password2, rol)) return
+
+        val actualUserEmail = firebaseAuth.currentUser!!.email
+        var actualUserPassword = ""
+        _viewModel.todosLosUsuarios.forEach {
+            if(it.usuario == firebaseAuth.currentUser!!.email){
+                actualUserPassword = it.password
+            }
+        }
+
+        val creandoUsuarioEnFirebaseAuth = firebaseAuth.createUserWithEmailAndPassword(email, password)
+
+        creandoUsuarioEnFirebaseAuth.addOnSuccessListener{
+            val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
+            val usuario = Usuario(
+                it.user!!.uid,
+                foto,
+                nombre,
+                apellidos,
+                telefono,
+                email,
+                password,
+                deshabilitada = false,
+                sesionActiva = false,
+                rol = rol
+            )
+
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    val creandoUsuarioEnFirestore = _viewModel.ingresarUsuarioAFirestore(usuario)
+                    if(creandoUsuarioEnFirestore){
+                        firebaseAuth.signOut()
+                        firebaseAuth.signInWithEmailAndPassword(actualUserEmail!!, actualUserPassword).await()
+                        Snackbar.make(
+                            _binding!!.root,
+                            "La cuenta ha sido creada con exito.",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }else{
+                        Snackbar.make(_binding!!.root,
+                            getString(R.string.error_al_crear_cuenta_firestore),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
+        }
+
+        creandoUsuarioEnFirebaseAuth.addOnFailureListener {
+            Snackbar.make(_binding!!.root,
+                getString(R.string.error_al_crear_cuenta_fireauth),
+                Snackbar.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun validarInputsYFoto(
+        nombre: String,
+        apellidos: String,
+        email: String,
+        password: String,
+        password2: String,
+        rol: String
+    ): Boolean {
+        if (imageBitmap == null) {
             Snackbar.make(
                 _binding!!.root,
                 "Debes de tomar una foto para poder guardar un usuario",
                 Snackbar.LENGTH_SHORT
             ).show()
-            return
+            return true
         }
         if (nombre.isEmpty() || apellidos.isEmpty() ||
             email.isEmpty() || password.isEmpty() ||
@@ -131,15 +197,15 @@ class CrearUsuarioFragment : BaseFragment() {
                 "Debes completar todos los campos antes de crear una cuenta.",
                 Snackbar.LENGTH_SHORT
             ).show()
-            return
+            return true
         }
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Snackbar.make(
                 _binding!!.root,
                 "El email que ingresaste no es valido",
                 Snackbar.LENGTH_SHORT
             ).show()
-            return
+            return true
         }
         if (password != password2) {
             Snackbar.make(
@@ -147,7 +213,7 @@ class CrearUsuarioFragment : BaseFragment() {
                 "Las contraseñas no coincide.",
                 Snackbar.LENGTH_SHORT
             ).show()
-            return
+            return true
         }
         if (password.length < 6) {
             Snackbar.make(
@@ -155,59 +221,17 @@ class CrearUsuarioFragment : BaseFragment() {
                 "La contraseña debe tener a lo menos 6 caracteres.",
                 Snackbar.LENGTH_SHORT
             ).show()
-            return
+            return true
         }
-        if(apellidos.split(" ").size !=2){
+        if (apellidos.split(" ").size != 2) {
             Snackbar.make(
                 _binding!!.root,
                 "Ingrese los 2 apellidos separados por un espacio",
                 Snackbar.LENGTH_SHORT
             ).show()
 
-            return
+            return true
         }
-        try{
-            val actualUserEmail = firebaseAuth.currentUser!!.email
-            var actualUserPassword = ""
-            _viewModel.todosLosUsuarios.forEach {
-                if(it.usuario == firebaseAuth.currentUser!!.email){
-                    actualUserPassword = it.password
-                }
-            }
-            val aux = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
-            val usuario = Usuario(
-                aux.user!!.uid,
-                foto,
-                nombre,
-                apellidos,
-                telefono,
-                email,
-                password,
-                false,
-                false,
-                rol
-            )
-            _viewModel.ingresarUsuarioAFirestore(usuario)
-            firebaseAuth.signOut()
-            firebaseAuth.signInWithEmailAndPassword(actualUserEmail!!, actualUserPassword).await()
-            Snackbar.make(
-                _binding!!.root,
-                "La cuenta ha sido creada con exito.",
-                Snackbar.LENGTH_SHORT
-            ).show()
-
-        }catch(e:Exception){
-            Log.i("asd","$e.message")
-
-            Snackbar.make(
-                _binding!!.root,
-                "${e.message}",
-                Snackbar.LENGTH_SHORT
-            ).show()
-        }
+        return false
     }
-
-
-
 }

@@ -20,4 +20,5 @@
     <color name="lightGrey">#c3c3c3</color>
     <color name="drawer_nav_header_background">#F5F5F5</color>
     <color name="card_views">#c3c3c3</color>
+    <color name="hiperlink">#0000EE</color>
 </resources>

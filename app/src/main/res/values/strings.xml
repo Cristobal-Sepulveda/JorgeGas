@@ -138,6 +138,16 @@
     <string name="mensaje_filtro_volanteros">Antes de añadir filtros debes de elegir una fecha.</string>
     <string name="filtro_sin_eleccion">Debes de seleccionar al menos un usuario antes de aplicar filtro.</string>
     <string name="login_error_credenciales_incorrectas">El usuario no existe</string>
+    <string name="error_al_crear_cuenta_fireauth">Error al crear la cuenta, intente de nuevo.</string>
+    <string name="error_al_crear_cuenta_firestore">Error al crear la cuenta, intente de nuevo con un nuevo mail.</string>
+    <string name="jorgegas">JorgeGas</string>
+    <string name="app">app</string>
+    <string name="version">Vers. 1.10</string>
+    <string name="primeros_pasos">Primeros pasos</string>
+    <string name="primeros_pasos_pregunta">¿Primeros pasos?</string>
+    <string name="primeros_pasos_pregunta_contenido">¡Revisa nuestra sección de preguntas  frecuentes!</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="ver_aquí">Ver Aquí</string>
 
     <!--String arrays-->
     <string-array name="roles">

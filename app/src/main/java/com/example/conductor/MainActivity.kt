@@ -6,17 +6,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -176,7 +180,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
     private fun pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario() {
         lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
                 val user = dataSource.obtenerUsuariosDesdeSqlite()
 
                 if(user.isEmpty()){
@@ -191,6 +195,29 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
                 if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {
                     binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
+                }
+
+                val usuariosEnFirestore = dataSource.obtenerUsuariosDesdeFirestore()
+
+                if(usuariosEnFirestore.isNotEmpty()){
+                    usuariosEnFirestore.forEach{
+                        if(it.id == firebaseAuth.currentUser!!.uid){
+                            binding.navView.getHeaderView(0).findViewById<TextView>(R.id.textView_drawerNavHeader_nombreUsuario).text = "${it.nombre} ${it.apellidos}"
+                            binding.navView.getHeaderView(0).findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = it.rol
+                            val aux = it.fotoPerfil
+                            if(aux.last().toString() == "=" || (aux.first().toString() == "/" && aux[1].toString() == "9")){
+                                val decodedString  = Base64.decode(aux, Base64.DEFAULT)
+                                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                                binding.navView.getHeaderView(0).findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil).setImageBitmap(decodedByte)
+                            }else{
+                                val aux2= aux.indexOf("=")+1
+                                val aux3 = aux.substring(0, aux2)
+                                val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
+                                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                                binding.navView.getHeaderView(0).findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil).setImageBitmap(decodedByte)
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -31,7 +31,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.conductor"
+        applicationId "com.jorgegas.jorgegasmanagement"
         minSdk 26
         targetSdk 33
         versionCode 1
@@ -181,6 +181,11 @@ dependencies {
 
     //Material Design
     implementation 'com.google.android.material:material:1.8.0'
+
+    //Mockito
+    testImplementation 'org.mockito:mockito-core:5.1.1'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
+    androidTestImplementation 'org.mockito:mockito-core:5.1.1'
 
     //Moshi
     implementation 'com.squareup.moshi:moshi:1.14.0'

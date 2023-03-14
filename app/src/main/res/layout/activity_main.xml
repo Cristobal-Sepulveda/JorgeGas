@@ -23,7 +23,99 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:menu="@menu/navdrawer_menu"
-            app:headerLayout="@layout/drawer_nav_header" />
+            app:headerLayout="@layout/drawer_nav_header">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:clickable="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_primeros_pasos"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/primeros_pasos"
+                    />
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/primeros_pasos_pregunta"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    />
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/primeros_pasos_pregunta_contenido"
+                    android:layout_marginHorizontal="@dimen/space_big"
+                    />
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/ver_aquí"
+                    android:textColor="@color/hiperlink"
+                    android:layout_marginBottom="100dp"
+                    />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#EEEEEE"
+                    >
+                    <ImageView
+                        android:id="@+id/imageView_footer_logo"
+                        android:layout_height="50dp"
+                        android:layout_width="50dp"
+                        android:layout_marginStart="@dimen/space_big"
+                        android:layout_marginVertical="@dimen/space_big"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:src="@drawable/icono_app_sin_fondo"
+                        android:contentDescription="@string/logo_jorge_gas"
+                        />
+
+                    <TextView
+                        android:id="@+id/textView_footer_jorgeGas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/space_small"
+                        app:layout_constraintStart_toEndOf="@+id/imageView_footer_logo"
+                        app:layout_constraintTop_toTopOf="@+id/imageView_footer_logo"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView_footer_logo"
+                        android:text="@string/jorgegas"
+                        android:textAppearance="?attr/textAppearanceHeadline6"/>
+
+                    <TextView
+                        android:id="@+id/textView_footer_app"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@+id/textView_footer_jorgeGas"
+                        app:layout_constraintTop_toTopOf="@+id/imageView_footer_logo"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView_footer_logo"
+                        android:text="@string/app"
+                        android:layout_marginStart="@dimen/space_small"/>
+
+                    <TextView
+                        android:id="@+id/textView_footer_version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        app:layout_constraintStart_toEndOf="@+id/imageView_footer_logo"
+                        app:layout_constraintTop_toBottomOf="@+id/textView_footer_jorgeGas"
+                        android:text="@string/version" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

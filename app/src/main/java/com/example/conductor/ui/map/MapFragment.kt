@@ -8,7 +8,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -155,12 +157,14 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                             )
                                         )
                                 }
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    requireActivity(),
-                                    "No se pudo guardar la ubicación: $e",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            }catch (e: Exception){
+                                Handler(Looper.getMainLooper()).post{
+                                    Toast.makeText(
+                                        requireActivity(),
+                                        "No se pudo guardar la ubicación: $e",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         }
                     }

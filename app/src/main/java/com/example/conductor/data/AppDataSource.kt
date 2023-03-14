@@ -8,7 +8,7 @@ import com.example.conductor.data.network.DistanceMatrixResponse
 
 interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
-    suspend fun ingresarUsuarioAFirestore(usuario:Usuario)
+    suspend fun ingresarUsuarioAFirestore(usuario:Usuario):Boolean
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerRegistroTrayectoVolanteros(): Any
@@ -19,7 +19,6 @@ interface AppDataSource {
     suspend fun eliminarUsuariosEnSqlite()
     suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO>
     suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse
-
     suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context)
 
 }
