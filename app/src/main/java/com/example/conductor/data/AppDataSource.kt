@@ -20,5 +20,6 @@ interface AppDataSource {
     suspend fun obtenerUsuariosDesdeSqlite(): List<UsuarioDBO>
     suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse
     suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context)
+    suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context): Boolean
 
 }

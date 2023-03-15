@@ -237,4 +237,27 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+    override suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context):Boolean = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                val task = cloudDB.collection("Usuarios")
+                    .document(firebaseAuth.currentUser!!.uid)
+                    .update("fotoPerfil", fotoPerfil)
+
+                task.addOnFailureListener {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(context, "Error al actualizar la foto de perfil", Toast.LENGTH_LONG).show()
+                    }
+                    continuation.resumeWith(Result.failure(it))
+                }
+                task.addOnSuccessListener {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        usuarioDao.actualizarFotoPerfil(fotoPerfil)
+                    }
+                    continuation.resumeWith(Result.success(true))
+                }
+            }
+        }
+    }
 }

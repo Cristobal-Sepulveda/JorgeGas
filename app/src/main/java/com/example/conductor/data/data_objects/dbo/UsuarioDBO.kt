@@ -9,5 +9,6 @@ data class UsuarioDBO(
     val nombre: String,
     val apellidos: String,
     val rol: String,
+    val fotoPerfil:String,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
     )

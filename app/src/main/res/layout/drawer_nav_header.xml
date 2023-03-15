@@ -21,6 +21,20 @@
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/card_vistageneral_callcenter"/>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/circleImageView_drawerNavHeader_iconoTomarFoto"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/baseline_camera_alt_24"
+        app:civ_border_color="#c0c0c0"
+        app:civ_border_width="1dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.565"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/circleImageView_drawerNavHeader_fotoPerfil" />
+
     <TextView
         android:id="@+id/textView_drawerNavHeader_nombreUsuario"
         android:layout_width="wrap_content"

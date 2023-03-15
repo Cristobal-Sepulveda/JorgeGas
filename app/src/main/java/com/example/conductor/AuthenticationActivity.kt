@@ -211,7 +211,9 @@ class AuthenticationActivity : AppCompatActivity() {
         val usuarioASqlite = UsuarioDBO(
             nombre = "${result.documents[0].get("nombre")}",
             apellidos = "${result.documents[0].get("apellidos")}",
-            rol = "${result.documents[0].get("rol")}")
+            rol = "${result.documents[0].get("rol")}",
+            fotoPerfil = "${result.documents[0].get("fotoPerfil")}",
+            )
 
         dataSource.guardarUsuarioEnSqlite(usuarioASqlite)
     }

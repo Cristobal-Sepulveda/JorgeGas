@@ -18,4 +18,7 @@ interface UsuarioDao {
 
     @Query("delete from UsuarioDBO")
     fun eliminarUsuarios()
+
+    @Query("UPDATE UsuarioDBO SET fotoPerfil =:fotoPerfil WHERE id IN (SELECT id FROM UsuarioDBO ORDER BY id ASC LIMIT 1)")
+    fun actualizarFotoPerfil(fotoPerfil: String)
 }

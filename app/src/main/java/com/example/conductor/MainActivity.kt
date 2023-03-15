@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Base64
 import android.util.Log
@@ -19,14 +21,12 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -49,13 +49,12 @@ import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity(), MenuProvider {
 
@@ -67,6 +66,25 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     private val dataSource: AppDataSource by inject()
     private var disableBackButton = false
     private lateinit var rootView: View
+    private var imageBitmap: Bitmap? = null
+
+    private val requestTakePicture = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            imageBitmap = result.data?.extras?.get("data") as? Bitmap
+            val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val intentoDeGuardarEnFirestore = dataSource.actualizarFotoDePerfilEnFirestoreYRoom(foto, this@MainActivity)
+                    if (intentoDeGuardarEnFirestore) {
+                        Log.i("intentoDeGuardarEnFirestore", "true")
+                            withContext(Dispatchers.Main) {
+                                decodeAndSetImageWithPhoto(foto)
+                            }
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,6 +113,9 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 }
             }
             true
+        }
+        binding.navView.getHeaderView(0).findViewById<CircleImageView>(R.id.circleImageView_drawerNavHeader_iconoTomarFoto).setOnClickListener {
+            dispatchTakePictureIntent()
         }
     }
 
@@ -188,6 +209,8 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                     return@withContext
                 }
 
+                ponerElNombreRolYFotoEnElDrawableMenu(user)
+
                 if (user.first().rol.isNotEmpty() && user.first().rol != "Administrador") {
                     binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible = false
                     binding.navView.menu.findItem(R.id.navigation_registro_trayecto_volanteros).isVisible = false
@@ -196,33 +219,65 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {
                     binding.fragmentBaseInterface.bottomNavigationView.visibility = View.GONE
                 }
-
-                val usuariosEnFirestore = dataSource.obtenerUsuariosDesdeFirestore()
-
-                if(usuariosEnFirestore.isNotEmpty()){
-                    usuariosEnFirestore.forEach{
-                        if(it.id == firebaseAuth.currentUser!!.uid){
-                            binding.navView.getHeaderView(0).findViewById<TextView>(R.id.textView_drawerNavHeader_nombreUsuario).text = "${it.nombre} ${it.apellidos}"
-                            binding.navView.getHeaderView(0).findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = it.rol
-                            val aux = it.fotoPerfil
-                            if(aux.last().toString() == "=" || (aux.first().toString() == "/" && aux[1].toString() == "9")){
-                                val decodedString  = Base64.decode(aux, Base64.DEFAULT)
-                                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-                                binding.navView.getHeaderView(0).findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil).setImageBitmap(decodedByte)
-                            }else{
-                                val aux2= aux.indexOf("=")+1
-                                val aux3 = aux.substring(0, aux2)
-                                val decodedString  = Base64.decode(aux3, Base64.DEFAULT)
-                                val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-                                binding.navView.getHeaderView(0).findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil).setImageBitmap(decodedByte)
-                            }
-                        }
-                    }
-                }
             }
         }
     }
 
+    private fun dispatchTakePictureIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(this.packageManager)?.also {
+                requestTakePicture.launch(takePictureIntent)
+            }
+        }
+    }
+
+    private fun ponerElNombreRolYFotoEnElDrawableMenu(user: List<UsuarioDBO>) {
+        binding.navView.getHeaderView(0)
+            .findViewById<TextView>(R.id.textView_drawerNavHeader_nombreUsuario).text =
+            user.first().nombre + " " + user.first().apellidos
+        binding.navView.getHeaderView(0)
+            .findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = user.first().rol
+
+        decodeAndSetImageWithUsuarioDBO(user.first())
+
+    }
+    private fun decodeAndSetImageWithUsuarioDBO(user: UsuarioDBO){
+        val circleImageView = binding.navView.getHeaderView(0)
+            .findViewById<CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil)
+
+        circleImageView.invalidate()
+
+        if (user.fotoPerfil.last().toString() == "=" || (user.fotoPerfil.first().toString() == "/" && user.fotoPerfil[1].toString() == "9")) {
+            val decodedString = Base64.decode(user.fotoPerfil, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            circleImageView.setImageBitmap(decodedByte)
+        } else {
+            val aux2 = user.fotoPerfil.indexOf("=") + 1
+            val aux3 = user.fotoPerfil.substring(0, aux2)
+            val decodedString = Base64.decode(aux3, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            circleImageView.setImageBitmap(decodedByte)
+        }
+    }
+
+    private fun decodeAndSetImageWithPhoto(fotoPerfil: String){
+        val circleImageView = binding.navView.getHeaderView(0)
+            .findViewById<CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil)
+
+        circleImageView.invalidate()
+
+        if (fotoPerfil.last().toString() == "=" || (fotoPerfil.first().toString() == "/" && fotoPerfil[1].toString() == "9")) {
+            val decodedString = Base64.decode(fotoPerfil, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            circleImageView.setImageBitmap(decodedByte)
+        } else {
+            val aux2 = fotoPerfil.indexOf("=") + 1
+            val aux3 = fotoPerfil.substring(0, aux2)
+            val decodedString = Base64.decode(aux3, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            circleImageView.setImageBitmap(decodedByte)
+        }
+    }
 
     private fun checkingPermissionsSettings(resolve: Boolean = true) {
         val permissionsToRequest = mutableListOf<String>()
@@ -403,6 +458,13 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 }
             }
         }
+    }
+
+    private fun parseandoImagenParaSubirlaAFirestore(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+        return Base64.encodeToString(data, Base64.NO_PADDING)
     }
 
     fun setDisableBackButton(disable: Boolean) {
