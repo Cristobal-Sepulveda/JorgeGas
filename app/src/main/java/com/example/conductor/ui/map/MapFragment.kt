@@ -21,6 +21,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
@@ -62,6 +64,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
     private var lastKnownLocation: Location? = null
     private var backPressedCallback: OnBackPressedCallback? = null
     // Listens for location broadcasts from LocationService.
+
     private inner class LocationServiceBroadcastReceiverMap : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_MAP_LOCATION_BROADCAST) {
@@ -200,6 +203,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
 
         _binding = FragmentMapBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
+        setHasOptionsMenu(true)
         (childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment)?.getMapAsync(this)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         //Obteniendo sharedPreferences y poniendo un listener a cualquier cambio en esta key
@@ -269,9 +273,23 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
             }
         }
     }
+    @Deprecated("Deprecated in Java")
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.clear()
+        requireActivity().menuInflater.inflate(R.menu.map_menu, menu)
+    }
 
-
-
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.item_mapMenu_estadoActual -> {
+                val action = MapFragmentDirections.actionNavigationMapToEstadoActualFragment()
+                findNavController().navigate(action)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // Updates button states if new while in use location is added to SharedPreferences.
         if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {

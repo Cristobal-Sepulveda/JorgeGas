@@ -6,6 +6,7 @@
     <item
         android:title="@string/modo_claro"
         android:id="@+id/modoClaro"/>
+
     <item
         android:title="@string/acerca_de"
         android:id="@+id/acercaDe"/>

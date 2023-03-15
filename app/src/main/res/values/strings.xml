@@ -148,6 +148,7 @@
     <string name="primeros_pasos_pregunta_contenido">¡Revisa nuestra sección de preguntas  frecuentes!</string>
     <string name="ajustes">Ajustes</string>
     <string name="ver_aquí">Ver Aquí</string>
+    <string name="estado_actual">Estado actual</string>
 
     <!--String arrays-->
     <string-array name="roles">

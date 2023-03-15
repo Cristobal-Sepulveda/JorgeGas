@@ -39,6 +39,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
+import com.example.conductor.ui.estadoactual.EstadoActualFragment
 import com.example.conductor.ui.map.MapFragment
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
@@ -157,12 +158,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                     "Esta funcionalidad se implementará en un futuro.",
                     Toast.LENGTH_LONG
                 ).show()
-            }
-            R.id.navigation_administrar_cuentas -> {
-                return NavigationUI.onNavDestinationSelected(
-                    menuItem,
-                    navController
-                )
             }
         }
         return false

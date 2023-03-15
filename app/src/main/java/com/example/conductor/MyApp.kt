@@ -6,6 +6,7 @@ import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.ui.detallevolantero.DetalleVolanteroViewModel
+import com.example.conductor.ui.estadoactual.EstadoActualViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
@@ -61,6 +62,12 @@ class MyApp : Application() {
             }
             single {
                 RegistroVolanterosViewModel(
+                    get(),
+                    get() as AppDataSource
+                )
+            }
+            single{
+                EstadoActualViewModel(
                     get(),
                     get() as AppDataSource
                 )

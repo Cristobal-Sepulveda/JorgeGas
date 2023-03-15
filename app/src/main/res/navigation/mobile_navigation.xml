@@ -21,7 +21,11 @@
         android:name="com.example.conductor.ui.map.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map"
-        />
+        >
+        <action
+            android:id="@+id/action_navigation_map_to_estadoActualFragment"
+            app:destination="@id/estadoActualFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_gestion_de_volanteros"
@@ -108,5 +112,9 @@
             android:name="volanterosQueTrabajaronEseDia"
             app:argType="string[]" />
     </fragment>
+    <fragment
+        android:id="@+id/estadoActualFragment"
+        android:name="com.example.conductor.ui.estadoactual.EstadoActualFragment"
+        android:label="EstadoActualFragment" />
 
 </navigation>
