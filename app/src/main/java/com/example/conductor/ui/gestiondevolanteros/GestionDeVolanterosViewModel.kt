@@ -36,9 +36,9 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                 val listaDeUsuariosVolanterosActivos = mutableListOf<Usuario>()
                 val listaDeUsuariosVolanterosInactivos = mutableListOf<Usuario>()
                 val listaDeUsuarios = dataSource.obtenerUsuariosDesdeFirestore()
-                val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros() as MutableList<RegistroTrayectoVolantero>
+                val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros()
 
-                if(listaDeUsuarios.isEmpty() || registroTrayectoVolanteros.toString() == "Error"){
+                if(listaDeUsuarios.isEmpty() || registroTrayectoVolanteros.isEmpty()){
                     _status.value = CloudRequestStatus.ERROR
                     return@launch
                 }

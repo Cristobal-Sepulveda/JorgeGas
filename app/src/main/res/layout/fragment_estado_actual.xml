@@ -51,8 +51,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textInputLayout_editar_nombre"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
+        <ProgressBar
+            android:id="@+id/circularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:contentDescription="@string/loading"
+            app:cloudRequestStatusCircularProgress="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            />
 
+        <ImageView
+            android:id="@+id/imageView_administrarCuentas_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_connection_error_100"
+            app:cloudRequestStatusImage="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
+
+        <TextView
+            android:id="@+id/textView_estadoActual_noHayVolanterosActivos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_hay_volanteros_activos_en_estos_momentos"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_estadoActual_listaDeVolanterosActivos"
+            android:visibility="gone"
+            app:noHayVolanterosActivos="@{viewModel.volanterosActivos}"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

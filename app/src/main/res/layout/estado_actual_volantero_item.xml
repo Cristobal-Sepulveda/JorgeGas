@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <data>
+        <variable
+            name ="volanteroYRecorridoItem"
+            type ="com.example.conductor.data.data_objects.domainObjects.VolanteroYRecorrido"/>
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/volanteroItemCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:elevation="10dp"
+        app:strokeColor="#c0c0c0"
+        app:strokeWidth="1dp"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleImageView_fotoPerfil"
+                android:layout_width="85dp"
+                android:layout_height="85dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_baseline_person_24"
+                app:civ_border_color="#c0c0c0"
+                app:civ_border_width="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/space_medium"
+                />
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_usuarioNombre"
+                style="@style/recyclerViewItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:maxLength="22"
+                android:minWidth="280dp"
+                android:text="@{volanteroYRecorridoItem.nombre+' '+volanteroYRecorridoItem.apellidos}"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_small"
+                app:layout_constraintStart_toEndOf="@+id/circleImageView_fotoPerfil"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Nombre Apellido Apellido"
+                />
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_verde"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/my_circle_drawable_verde"
+                app:layout_constraintStart_toEndOf="@id/circleImageView_fotoPerfil"
+                app:layout_constraintTop_toBottomOf="@+id/textView_estadoActualVolanteroItem_usuarioNombre"
+                android:contentDescription="@string/verde"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_verde"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_verde"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_verde"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                android:text="@{volanteroYRecorridoItem.tiempoEnVerde}"
+                tools:text="@string/hora" />
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_amarillo"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/my_circle_drawable_amarillo"
+                app:layout_constraintStart_toEndOf="@+id/textView_estadoActualVolanteroItem_verde"
+                app:layout_constraintTop_toBottomOf="@+id/textView_estadoActualVolanteroItem_usuarioNombre"
+                android:contentDescription="@string/verde"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_amarillo"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_amarillo"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_amarillo"
+                android:text="@{volanteroYRecorridoItem.tiempoEnAmarillo}"
+                tools:text="@string/hora" />
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_rojo"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/my_circle_drawable_rojo"
+                app:layout_constraintStart_toEndOf="@id/circleImageView_fotoPerfil"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_estadoActualVolanteroItem_verde"
+                android:contentDescription="@string/rojo"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_rojo"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_rojo"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_rojo"
+                android:text="@{volanteroYRecorridoItem.tiempoEnRojo}"
+                tools:text="@string/hora"
+                />
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_azul"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/my_circle_drawable_azul"
+                app:layout_constraintStart_toEndOf="@id/textView_estadoActualVolanteroItem_rojo"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_estadoActualVolanteroItem_amarillo"
+                android:contentDescription="@string/azul"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_azul"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_azul"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_azul"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                android:text="@{volanteroYRecorridoItem.tiempoEnAzul}"
+                tools:text="@string/hora" />
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_rosado"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/my_circle_drawable_rosado"
+                app:layout_constraintStart_toEndOf="@+id/circleImageView_fotoPerfil"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_estadoActualVolanteroItem_rojo"
+                android:contentDescription="@string/verde"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_rosado"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_rosado"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_rosado"
+                android:text="@{volanteroYRecorridoItem.tiempoEnRosado}"
+                tools:text="@string/hora"/>
+
+            <ImageView
+                android:id="@+id/imageView_estadoActualVolanteroItem_caminado"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_medium"
+                android:background="@drawable/baseline_directions_walk_24"
+                app:layout_constraintStart_toEndOf="@+id/textView_estadoActualVolanteroItem_rosado"
+                app:layout_constraintTop_toBottomOf="@+id/imageView_estadoActualVolanteroItem_azul"
+                android:contentDescription="@string/rojo"/>
+
+            <TextView
+                android:id="@+id/textView_estadoActualVolanteroItem_caminado"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/space_very_small"
+                android:layout_marginStart="@dimen/space_very_small"
+                app:layout_constraintStart_toEndOf="@+id/imageView_estadoActualVolanteroItem_caminado"
+                app:layout_constraintTop_toTopOf="@+id/imageView_estadoActualVolanteroItem_caminado"
+                android:text="@{volanteroYRecorridoItem.kilometrosRecorridos}"
+                tools:text="@string/kilometros_recorridos" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

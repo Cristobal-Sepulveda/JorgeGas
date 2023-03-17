@@ -3,15 +3,19 @@ package com.example.conductor.data
 import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
+import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.data.network.DistanceMatrixResponse
+import com.google.firebase.firestore.DocumentSnapshot
 
 interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
+    suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero>
+
+    suspend fun obtenerRegistroTrayectoVolanterosColRef(): List<DocumentSnapshot>
     suspend fun ingresarUsuarioAFirestore(usuario:Usuario):Boolean
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
-    suspend fun obtenerRegistroTrayectoVolanteros(): Any
     suspend fun obtenerTodoElRegistroTrayectoVolanteros(context:Context): MutableList<Any>
     suspend fun obtenerRegistroDelVolantero(id: String): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean

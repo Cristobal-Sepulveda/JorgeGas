@@ -18,6 +18,7 @@ import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.DocumentSnapshot
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val usuarioDao: UsuarioDao,
@@ -54,6 +55,46 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                 colRef.addOnFailureListener{
                     deferred.complete(listAux)
                 }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
+    override suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val deferred = CompletableDeferred<MutableList<RegistroTrayectoVolantero>>()
+                val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get()
+                colRef.addOnSuccessListener {
+                    val registroTrayectoVolantero = mutableListOf<RegistroTrayectoVolantero>()
+                    for (document in it) {
+                        registroTrayectoVolantero.add(
+                            RegistroTrayectoVolantero(
+                                document.id, document.get("estaActivo") as Boolean
+                            )
+                        )
+                    }
+                    deferred.complete(registroTrayectoVolantero)
+                }
+                colRef.addOnFailureListener {
+                    deferred.complete(mutableListOf())
+                }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
+    override suspend fun obtenerRegistroTrayectoVolanterosColRef(): List<DocumentSnapshot> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val deferred = CompletableDeferred<List<DocumentSnapshot>>()
+                cloudDB.collection("RegistroTrayectoVolanteros").get()
+                    .addOnSuccessListener{
+                        deferred.complete(it.documents)
+                    }
+                    .addOnFailureListener {
+                        deferred.complete(emptyList())
+                    }
                 return@withContext deferred.await()
             }
         }
@@ -107,24 +148,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
     }
 
     //este solo devuelve los activos. hay que cambiarle el nombre
-    override suspend fun obtenerRegistroTrayectoVolanteros(): Any = withContext(ioDispatcher) {
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher) {
-                try {
-                    val colRef = cloudDB.collection("RegistroTrayectoVolanteros").get().await()
-                    val registroTrayectoVolantero = mutableListOf<RegistroTrayectoVolantero>()
-                    for (document in colRef){
-                        registroTrayectoVolantero.add(RegistroTrayectoVolantero(
-                            document.id, document.get("estaActivo") as Boolean)
-                        )
-                    }
-                    return@withContext registroTrayectoVolantero
-                } catch (e: Exception) {
-                    return@withContext "Error"
-                }
-            }
-        }
-    }
+
 
     override suspend fun obtenerTodoElRegistroTrayectoVolanteros(context: Context): MutableList<Any> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
