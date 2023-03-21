@@ -76,8 +76,10 @@ class MyApp : Application() {
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).usuarioDao }
 
+            single { getDatabase(this@MyApp).latLngYHoraActualDao }
+
             //REPOSITORY
-            single { AppRepository(get()) as AppDataSource }
+            single { AppRepository(get(),get()) as AppDataSource }
         }
 
         startKoin {

@@ -1,6 +1,7 @@
 package com.example.conductor.ui.vistageneral
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -23,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
+import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
 import com.example.conductor.utils.*
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
@@ -70,9 +72,18 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
             /*aqui obtengo la localizacion*/
             val location = intent.getParcelableExtra<Location>(EXTRA_LOCATION) ?: return
+
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     try {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        val phoneCurrentHour = LocalTime.now().toString()
+                        Log.i("Localizacion recibida", phoneCurrentHour)
+                        _viewModel.guardarLatLngYHoraActualEnRoom(
+                            LatLngYHoraActualDBO(latitude,longitude,phoneCurrentHour)
+                        )
+
                         val fechaDeHoy = LocalDate.now().toString()
                         /*obtengo el registro del usuario en google cloud, con el objetivo
                         * de registrar la nueva localizacion*/
@@ -248,6 +259,23 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             iniciarODetenerLocationService()
         }
 
+        _binding!!.fabVistaGeneralEnviarRegistroDiario.setOnClickListener{
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Atención")
+            builder.setMessage("¿Estas seguro que deseas reportar tu trayecto? Si lo haces el trayecto se borrara.")
+            builder.setPositiveButton("OK") { dialog, which ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        _viewModel.guardarLatLngYHoraActualEnFirestore(requireContext())
+                    }
+                }
+            }
+            builder.setNegativeButton("Cancelar") { dialog, which ->
+                // Do something when Cancel button is clicked
+            }
+            builder.show()
+        }
+
         _binding!!.fabVistaGeneralSinMaterial.setOnClickListener{
 
         }
@@ -263,7 +291,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
         }
-
         _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralVerde.text = it
         }
@@ -407,7 +434,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
             val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
             val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
-            Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
 
             distanceTotalRecorrida += distanceBetweenLatLngs
             distanceRecorrida += distanceBetweenLatLngs
@@ -418,8 +444,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
                 val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
                 val rangoMaximoHumano = rangoMayor*4
-                Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
-                Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
                 // Set the color based on the distance
                 val color = when (distanceRecorrida) {
                     in 0..rangoMenor -> Color.RED
@@ -576,6 +600,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             when (_viewModel.obtenerRolDelUsuarioActual()) {
                 "Volantero" -> {
                     _binding!!.fabVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
+                    _binding!!.fabVistaGeneralEnviarRegistroDiario.visibility = View.VISIBLE
                     _binding!!.fabVistaGeneralSinMaterial.visibility = View.VISIBLE
                     _binding!!.fragmentContainerViewVistaGeneralMapa.visibility = View.VISIBLE
                     _binding!!.materialCardViewVistaGeneralInformacionVolantero.visibility = View.VISIBLE

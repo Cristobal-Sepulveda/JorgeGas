@@ -149,6 +149,8 @@
     <string name="ajustes">Ajustes</string>
     <string name="ver_aquí">Ver Aquí</string>
     <string name="estado_actual">Estado actual</string>
+    <string name="el_registro_diario_no_se_guardo">El registro diarío no se guardo con exito. Intentelo Nuevamente.</string>
+    <string name="el_registro_diario_se_guardo">El registro diarío se ha guardado con éxito.</string>
 
     <!--String arrays-->
     <string-array name="roles">

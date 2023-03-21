@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
+import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.ACTION_MAP_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
@@ -22,10 +24,16 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-
 class LocationService : Service() {
+
+    private val dataSource: AppDataSource by inject()
+
     /*
      * Checks whether the bound activity has really gone away (foreground service with notification
      * created) or simply orientation change (no-op).
@@ -47,15 +55,18 @@ class LocationService : Service() {
     // last location to create a Notification if the user navigates away from the app.
     private var currentLocation: Location? = null
 
+
+
+
     override fun onCreate() {
         Log.d("LocationService", "onCreate()")
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         // FusedLocationProviderClient - Main class for receiving location updates.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        // LocationRequest - Requirements for the location updates, i.e., how often you should receive
+        // LocationRequest - Requirements for the location updates, i.e.,
+        // how often you should receive
         // updates, the priority, etc.
         locationRequest = LocationRequest.create().apply {
-
             // Sets the desired interval for active location updates. This interval is inexact. You
             // may not receive updates at all if no location sources are available, or you may
             // receive them less frequently than requested. You may also receive updates more
@@ -77,11 +88,14 @@ class LocationService : Service() {
 
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-
-        // LocationCallback - Called when FusedLocationProviderClient has a new Location.
+        /** Antena VistaGeneralFragment : LocationCallback
+         * Called from VistaGeneralFragment when FusedLocationProviderClient has a
+         * new Location. */
         vistaGeneralFragmentLocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
+
+
                 /* Normally, you want to save a new location to a database. We are simplifying
                    things a bit and just saving it as a local variable, as we only need it again
                    if a Notification is created (when the user navigates away from app).*/
@@ -95,7 +109,9 @@ class LocationService : Service() {
                 LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
             }
         }
-
+        /** Antena MapFragment : LocationCallback
+         * Called from MapFragment when FusedLocationProviderClient has a
+         * new Location. */
         mapFragmentLocationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
@@ -103,6 +119,8 @@ class LocationService : Service() {
                         things a bit and just saving it as a local variable, as we only need it again
                         if a Notification is created (when the user navigates away from app).
                         */
+
+
                 currentLocation = locationResult.lastLocation
                 /* Notify our Activity that a new location was added. Again, if this was a
                    production app, the Activity would be listening for changes to a database
@@ -114,8 +132,9 @@ class LocationService : Service() {
             }
         }
 
-    }
 
+
+    }
 
     //APIS de comunicacion con la App
     @SuppressLint("MissingPermission")

@@ -1,11 +1,13 @@
 package com.example.conductor.ui.vistageneral
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.conductor.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.ui.map.CloudDownloadComplete
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +95,14 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
             "azul" -> _tiempoTotalRecorridoAzul.value = tiempoString
             "rosado" -> _tiempoTotalRecorridoRosado.value = tiempoString
         }
+    }
+
+    suspend fun guardarLatLngYHoraActualEnRoom(latLngYHoraActualDBO: LatLngYHoraActualDBO){
+        dataSource.guardarLatLngYHoraActualEnRoom(latLngYHoraActualDBO)
+    }
+
+    suspend fun guardarLatLngYHoraActualEnFirestore(context: Context){
+        dataSource.guardarLatLngYHoraActualEnFirestore(context)
     }
 
 }
