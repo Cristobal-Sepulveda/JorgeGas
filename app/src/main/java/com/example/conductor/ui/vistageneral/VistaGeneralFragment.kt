@@ -242,6 +242,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
         val serviceIntent = Intent(requireActivity(), LocationService::class.java)
+
         requireActivity().bindService(
             serviceIntent,
             locationServiceConnection,
@@ -280,13 +281,51 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         }
 
-        _binding!!.imageViewVistaGeneralBotonVolantero.setOnClickListener {
+        _binding!!.imageViewVistaGeneralVolanterosFlechaBaja.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility = View.GONE
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility = View.VISIBLE
+        }
+
+        _binding!!.imageViewVistaGeneralVolanterosFlechaArriba.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility = View.GONE
+        }
+
+        _binding!!.imageViewVistaGeneralChoferesFlechaBaja.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility = View.GONE
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility = View.VISIBLE
+        }
+
+        _binding!!.imageViewVistaGeneralChoferesFlechaArriba.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility = View.GONE
+        }
+
+        _binding!!.imageViewVistaGeneralCallCenterFlechaBaja.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.GONE
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.VISIBLE
+        }
+
+        _binding!!.imageViewVistaGeneralCallCenterFlechaArriba.setOnClickListener{
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
+        }
+        _binding!!.textViewVistaGeneralGestionDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
                     VistaGeneralFragmentDirections
                         .actionNavigationVistaGeneralToNavigationGestionDeVolanteros()
                 )
         }
+        _binding!!.textViewVistaGeneralRegistroDeVolanterosInforme.setOnClickListener {
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(
+                    VistaGeneralFragmentDirections
+                        .actionNavigationVistaGeneralToNavigationRegistroTrayectoVolanteros()
+                )
+        }
+
+
 
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
@@ -621,9 +660,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     }
                 }
                 "Administrador" -> {
-                    _binding!!.imageViewVistaGeneralBotonVolantero.visibility = View.VISIBLE
-                    _binding!!.imageViewVistaGeneralBotonChoferes.visibility = View.VISIBLE
-                    _binding!!.imageViewVistaGeneralBotonCallCenter.visibility = View.VISIBLE
+                    _binding!!.materialCardViewVistaGeneralCardVolanteros.visibility = View.VISIBLE
+                    _binding!!.materialCardViewVistaGeneralBotonChoferes.visibility = View.VISIBLE
+                    _binding!!.materialCardViewVistaGeneralCardCallCenter.visibility = View.VISIBLE
                 }
                 "Error" -> Toast.makeText(
                     requireActivity(),

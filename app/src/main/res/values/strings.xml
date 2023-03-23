@@ -78,7 +78,7 @@
     <string name="conductores">Conductores</string>
     <string name="todos">Todos</string>
     <string name="cuentas">Cuentas</string>
-    <string name="gestion_de_volanteros">Gestion de Volanteros</string>
+    <string name="gestion_de_volanteros">Gestion de volanteros</string>
     <string name="inactivos">Inactivos</string>
     <string name="activos">Activos</string>
     <string name="llamar_boton">Boton para llamar</string>
@@ -151,6 +151,11 @@
     <string name="estado_actual">Estado actual</string>
     <string name="el_registro_diario_no_se_guardo">El registro diarío no se guardo con exito. Intentelo Nuevamente.</string>
     <string name="el_registro_diario_se_guardo">El registro diarío se ha guardado con éxito.</string>
+    <string name="gestion_de_choferes">Gestion de choferes</string>
+    <string name="flecha_baja">flechaBaja</string>
+    <string name="reporte_de_volanteros">Reporte de volanteros</string>
+    <string name="ver_mas">Ver mas</string>
+    <string name="gestion_de_call_center">Gestion de call center</string>
 
     <!--String arrays-->
     <string-array name="roles">

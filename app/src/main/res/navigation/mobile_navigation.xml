@@ -14,7 +14,11 @@
         <action
             android:id="@+id/action_navigation_vista_general_to_navigation_gestion_de_volanteros"
             app:destination="@id/navigation_gestion_de_volanteros" />
+        <action
+            android:id="@+id/action_navigation_vista_general_to_navigation_registro_trayecto_volanteros"
+            app:destination="@id/navigation_registro_trayecto_volanteros" />
     </fragment>
+
 
     <fragment
         android:id="@+id/navigation_map"
@@ -76,6 +80,7 @@
             android:name="usuarioDetails"
             app:argType="com.example.conductor.data.data_objects.domainObjects.Usuario" />
     </fragment>
+
     <fragment
         android:id="@+id/navigation_detalle_volantero"
         android:name="com.example.conductor.ui.detallevolantero.DetalleVolanteroFragment"
