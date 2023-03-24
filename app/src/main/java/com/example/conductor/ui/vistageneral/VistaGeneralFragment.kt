@@ -638,12 +638,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         lifecycleScope.launch {
             when (_viewModel.obtenerRolDelUsuarioActual()) {
                 "Volantero" -> {
-                    _binding!!.fabVistaGeneralRegistroJornadaVolantero.visibility = View.VISIBLE
-                    _binding!!.fabVistaGeneralEnviarRegistroDiario.visibility = View.VISIBLE
-                    _binding!!.fabVistaGeneralSinMaterial.visibility = View.VISIBLE
-                    _binding!!.fragmentContainerViewVistaGeneralMapa.visibility = View.VISIBLE
-                    _binding!!.materialCardViewVistaGeneralInformacionVolantero.visibility = View.VISIBLE
-
+                    _binding!!.constraintLayoutVistaGeneralUiVolanteros.visibility = View.VISIBLE
                     val isServiceEnabled = sharedPreferences.getBoolean(
                         SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
                         false
@@ -659,10 +654,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         }
                     }
                 }
+
                 "Administrador" -> {
-                    _binding!!.materialCardViewVistaGeneralCardVolanteros.visibility = View.VISIBLE
-                    _binding!!.materialCardViewVistaGeneralBotonChoferes.visibility = View.VISIBLE
-                    _binding!!.materialCardViewVistaGeneralCardCallCenter.visibility = View.VISIBLE
+                    _binding!!.nestedScrollViewVistaGeneralUiAdministradores.visibility = View.VISIBLE
                 }
                 "Error" -> Toast.makeText(
                     requireActivity(),

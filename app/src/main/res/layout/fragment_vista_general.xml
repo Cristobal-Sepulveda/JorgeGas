@@ -25,6 +25,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/materialCardView_vistaGeneral_cardVolanteros"
                         android:layout_width="match_parent"
@@ -36,9 +37,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:cardElevation="4dp"
                         app:cardUseCompatPadding="true"
-                        android:visibility="gone"
-                        app:cardCornerRadius="@dimen/space_medium"
-                        tools:visibility="visible">
+                        app:cardCornerRadius="@dimen/space_medium">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
@@ -95,11 +94,10 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
+                                android:visibility="gone"
                                 app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_volanterosLinearLayoutReducido"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                android:visibility="gone"
-                                tools:visibility="visible"
                                 >
                                 <TextView
                                     android:id="@+id/textView_vistaGeneral_registroDeVolanterosInforme"
@@ -160,9 +158,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_cardVolanteros"
                         app:cardElevation="4dp"
                         app:cardUseCompatPadding="true"
-                        android:visibility="gone"
-                        app:cardCornerRadius="@dimen/space_medium"
-                        tools:visibility="visible">
+                        app:cardCornerRadius="@dimen/space_medium">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
@@ -267,9 +263,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_botonChoferes"
                         app:cardElevation="4dp"
                         app:cardUseCompatPadding="true"
-                        android:visibility="gone"
-                        app:cardCornerRadius="@dimen/space_medium"
-                        tools:visibility="visible">
+                        app:cardCornerRadius="@dimen/space_medium">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
@@ -379,16 +373,13 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:cardElevation="1dp"
                     android:background="@drawable/bottom_left_border"
-                    android:visibility="gone"
-                    style="?attr/materialCardViewElevatedStyle"
-                    tools:visibility="visible">
+                    style="?attr/materialCardViewElevatedStyle">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:layout_marginEnd="@dimen/space_very_small"
                         >
-
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -532,6 +523,7 @@
 
 
                 </com.google.android.material.card.MaterialCardView>
+
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
                     android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -541,8 +533,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:visibility="gone"
-                    tools:layout="@layout/fragment_crear_usuario"
                     />
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fab_vistaGeneral_enviarRegistroDiario"
@@ -553,11 +543,9 @@
                     android:layout_marginBottom="@dimen/space_medium"
                     android:layout_marginStart="@dimen/space_medium"
                     app:backgroundTint="@color/orange"
-                    android:visibility="gone"
                     app:fabCustomSize="48dp"
                     android:src="@drawable/round_upload_file_24"
-                    android:contentDescription="@string/falta_material"
-                    tools:visibility="visible"/>
+                    android:contentDescription="@string/falta_material" />
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fab_vistaGeneral_registroJornadaVolantero"
                     android:layout_width="100dp"
@@ -567,11 +555,10 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginBottom="@dimen/space_medium"
                     app:backgroundTint="@color/green"
-                    android:visibility="gone"
                     app:fabCustomSize="100dp"
                     android:contentDescription="@string/iniciar_turno"
-                    app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}"
-                    tools:visibility="visible"/>
+                    app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}" />
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fab_vistaGeneral_sinMaterial"
                     android:layout_width="48dp"
@@ -581,11 +568,9 @@
                     android:layout_marginBottom="@dimen/space_medium"
                     android:layout_marginEnd="@dimen/space_medium"
                     app:backgroundTint="@color/orange"
-                    android:visibility="gone"
                     app:fabCustomSize="48dp"
                     android:src="@drawable/baseline_notifications_active_24"
-                    android:contentDescription="@string/falta_material"
-                    tools:visibility="visible"/>
+                    android:contentDescription="@string/falta_material" />
                 <ImageView
                     android:id="@+id/imageView_vistaGeneral_mapaSinPermisos"
                     android:layout_width="match_parent"
