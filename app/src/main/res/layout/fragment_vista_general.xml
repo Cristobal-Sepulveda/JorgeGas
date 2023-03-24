@@ -9,584 +9,594 @@
             name="viewModel"
             type="com.example.conductor.ui.vistageneral.VistaGeneralViewModel" />
     </data>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             style="@style/Container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".ui.vistageneral.VistaGeneralFragment">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView_vistaGeneral_cardVolanteros"
+            <!--UI Administradores-->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView_vistaGeneral_uiAdministradores"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_medium"
-                android:layout_marginHorizontal="@dimen/space_big"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true"
+                android:layout_height="match_parent"
                 android:visibility="gone"
-                app:cardCornerRadius="@dimen/space_medium"
                 tools:visibility="visible">
-
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/imageView_vistaGeneral_volanteros"
+                    android:layout_height="match_parent">
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView_vistaGeneral_cardVolanteros"
                         android:layout_width="match_parent"
-                        android:layout_height="126dp"
-                        android:src="@drawable/card_volanteros"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_medium"
+                        android:layout_marginHorizontal="@dimen/space_big"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:contentDescription="@string/call_center" />
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_volanterosLinearLayoutReducido"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#C7FFE9"
-                        app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_volanteros"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        >
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeVolanteros"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ver_mas"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginVertical="@dimen/space_medium"
-                            android:layout_marginStart="@dimen/space_big"
-                            android:layout_weight="1"
-                            tools:text="@string/ver_mas"/>
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_volanterosFlechaBaja"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/baseline_arrow_drop_down_24"
-                            android:layout_marginVertical="12dp"
-                            android:layout_marginEnd="@dimen/space_small"
-                            android:contentDescription="@string/flecha_baja"
-                            />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_volanterosLinearLayoutAmpliado"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_volanterosLinearLayoutReducido"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:cardElevation="4dp"
+                        app:cardUseCompatPadding="true"
                         android:visibility="gone"
-                        tools:visibility="visible"
-                        >
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_registroDeVolanterosInforme"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/reporte_de_volanteros"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginStart="@dimen/space_big"
-                            android:layout_marginVertical="@dimen/space_small"
-                            tools:text="@string/reporte_de_volanteros"/>
-                        <com.google.android.material.divider.MaterialDivider
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                        app:cardCornerRadius="@dimen/space_medium"
+                        tools:visibility="visible">
 
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeVolanterosInforme"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/gestion_de_volanteros"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginStart="@dimen/space_big"
-                            android:layout_marginVertical="@dimen/space_small"
-                            tools:text="@string/gestion_de_volanteros"/>
-
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
                             android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:background="#C7FFE9"
-                            android:gravity="center_horizontal">
+                            android:orientation="vertical">
 
                             <ImageView
-                                android:id="@+id/imageView_vistaGeneral_volanterosFlechaArriba"
-                                android:layout_width="wrap_content"
+                                android:id="@+id/imageView_vistaGeneral_volanteros"
+                                android:layout_width="match_parent"
+                                android:layout_height="126dp"
+                                android:src="@drawable/card_volanteros"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:contentDescription="@string/call_center" />
+
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_volanterosLinearLayoutReducido"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/baseline_arrow_drop_up_24"
-                                android:layout_marginVertical="12dp"
-                                android:layout_marginEnd="@dimen/space_small"
-                                android:contentDescription="@string/flecha_baja"
-                                />
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
+                                android:orientation="horizontal"
+                                android:background="#C7FFE9"
+                                app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_volanteros"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                >
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView_vistaGeneral_botonChoferes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_medium"
-                android:layout_marginHorizontal="@dimen/space_big"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_cardVolanteros"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true"
-                android:visibility="gone"
-                app:cardCornerRadius="@dimen/space_medium"
-                tools:visibility="visible">
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeVolanteros"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/ver_mas"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginVertical="@dimen/space_medium"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_weight="1"
+                                    tools:text="@string/ver_mas"/>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:orientation="vertical">
+                                <ImageView
+                                    android:id="@+id/imageView_vistaGeneral_volanterosFlechaBaja"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/baseline_arrow_drop_down_24"
+                                    android:layout_marginVertical="12dp"
+                                    android:layout_marginEnd="@dimen/space_small"
+                                    android:contentDescription="@string/flecha_baja"
+                                    />
+                            </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/imageView_vistaGeneral_botonChoferes"
-                        android:layout_width="match_parent"
-                        android:layout_height="126dp"
-                        android:src="@drawable/card_choferes"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:contentDescription="@string/call_center" />
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_volanterosLinearLayoutAmpliado"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_volanterosLinearLayoutReducido"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:visibility="gone"
+                                tools:visibility="visible"
+                                >
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_registroDeVolanterosInforme"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/reporte_de_volanteros"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_marginVertical="@dimen/space_small"
+                                    tools:text="@string/reporte_de_volanteros"/>
+                                <com.google.android.material.divider.MaterialDivider
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_choferesLinearLayoutReducido"
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeVolanterosInforme"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/gestion_de_volanteros"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_marginVertical="@dimen/space_small"
+                                    tools:text="@string/gestion_de_volanteros"/>
+
+                                <LinearLayout
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:orientation="horizontal"
+                                    android:background="#C7FFE9"
+                                    android:gravity="center_horizontal">
+
+                                    <ImageView
+                                        android:id="@+id/imageView_vistaGeneral_volanterosFlechaArriba"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/baseline_arrow_drop_up_24"
+                                        android:layout_marginVertical="12dp"
+                                        android:layout_marginEnd="@dimen/space_small"
+                                        android:contentDescription="@string/flecha_baja"
+                                        />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView_vistaGeneral_botonChoferes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#FCB9BA"
-                        app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_botonChoferes"
+                        android:layout_marginTop="@dimen/space_medium"
+                        android:layout_marginHorizontal="@dimen/space_big"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        >
+                        app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_cardVolanteros"
+                        app:cardElevation="4dp"
+                        app:cardUseCompatPadding="true"
+                        android:visibility="gone"
+                        app:cardCornerRadius="@dimen/space_medium"
+                        tools:visibility="visible">
 
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeChoferes"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ver_mas"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginVertical="@dimen/space_medium"
-                            android:layout_marginStart="@dimen/space_big"
-                            android:layout_weight="1"
-                            tools:text="@string/ver_mas"/>
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_choferesFlechaBaja"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/baseline_arrow_drop_down_24"
-                            android:layout_marginVertical="12dp"
-                            android:layout_marginEnd="@dimen/space_small"
-                            android:contentDescription="@string/flecha_baja"
-                            />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_choferesLinearLayoutAmpliado"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_choferesLinearLayoutReducido"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeChoferesAmpliado"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
                             android:layout_width="match_parent"
-                            android:text="@string/gestion_de_choferes"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginVertical="@dimen/space_medium"
-                            android:layout_marginStart="@dimen/space_big"
-                            tools:text="@string/gestion_de_choferes"/>
-
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:background="#FCB9BA"
-                            android:gravity="center_horizontal">
+                            android:orientation="vertical">
 
                             <ImageView
-                                android:id="@+id/imageView_vistaGeneral_choferesFlechaArriba"
-                                android:layout_width="wrap_content"
+                                android:id="@+id/imageView_vistaGeneral_botonChoferes"
+                                android:layout_width="match_parent"
+                                android:layout_height="126dp"
+                                android:src="@drawable/card_choferes"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:contentDescription="@string/call_center" />
+
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_choferesLinearLayoutReducido"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/baseline_arrow_drop_up_24"
-                                android:layout_marginVertical="12dp"
-                                android:layout_marginEnd="@dimen/space_small"
-                                android:contentDescription="@string/flecha_baja"
-                                />
-                        </LinearLayout>
-                    </LinearLayout>
+                                android:orientation="horizontal"
+                                android:background="#FCB9BA"
+                                app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_botonChoferes"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                >
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeChoferes"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/ver_mas"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginVertical="@dimen/space_medium"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_weight="1"
+                                    tools:text="@string/ver_mas"/>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView_vistaGeneral_cardCallCenter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_medium"
-                android:layout_marginHorizontal="@dimen/space_big"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_botonChoferes"
-                app:cardElevation="4dp"
-                app:cardUseCompatPadding="true"
-                android:visibility="gone"
-                app:cardCornerRadius="@dimen/space_medium"
-                tools:visibility="visible">
+                                <ImageView
+                                    android:id="@+id/imageView_vistaGeneral_choferesFlechaBaja"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/baseline_arrow_drop_down_24"
+                                    android:layout_marginVertical="12dp"
+                                    android:layout_marginEnd="@dimen/space_small"
+                                    android:contentDescription="@string/flecha_baja"
+                                    />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:orientation="vertical">
+                            </LinearLayout>
 
-                    <ImageView
-                        android:id="@+id/imageView_vistaGeneral_callCenter"
-                        android:layout_width="match_parent"
-                        android:layout_height="128dp"
-                        android:src="@drawable/card_call_center"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:contentDescription="@string/call_center" />
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_choferesLinearLayoutAmpliado"
+                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_choferesLinearLayoutReducido"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeChoferesAmpliado"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:text="@string/gestion_de_choferes"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginVertical="@dimen/space_medium"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    tools:text="@string/gestion_de_choferes"/>
 
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_callCenterLinearLayoutReducido"
+                                <LinearLayout
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:orientation="horizontal"
+                                    android:background="#FCB9BA"
+                                    android:gravity="center_horizontal">
+
+                                    <ImageView
+                                        android:id="@+id/imageView_vistaGeneral_choferesFlechaArriba"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/baseline_arrow_drop_up_24"
+                                        android:layout_marginVertical="12dp"
+                                        android:layout_marginEnd="@dimen/space_small"
+                                        android:contentDescription="@string/flecha_baja"
+                                        />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/materialCardView_vistaGeneral_cardCallCenter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#BACBDE"
-                        app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_callCenter"
+                        android:layout_marginTop="@dimen/space_medium"
+                        android:layout_marginHorizontal="@dimen/space_big"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        >
+                        app:layout_constraintTop_toBottomOf="@+id/materialCardView_vistaGeneral_botonChoferes"
+                        app:cardElevation="4dp"
+                        app:cardUseCompatPadding="true"
+                        android:visibility="gone"
+                        app:cardCornerRadius="@dimen/space_medium"
+                        tools:visibility="visible">
 
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeCallCenter"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ver_mas"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginVertical="@dimen/space_medium"
-                            android:layout_marginStart="@dimen/space_big"
-                            android:layout_weight="1"
-                            tools:text="@string/ver_mas"/>
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_callCenterFlechaBaja"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/baseline_arrow_drop_down_24"
-                            android:layout_marginVertical="12dp"
-                            android:layout_marginEnd="@dimen/space_small"
-                            android:contentDescription="@string/flecha_baja"
-                            />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linearLayout_vistaGeneral_callCenterLinearLayoutAmpliado"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_callCenterLinearLayoutReducido"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_gestionDeCallCenterAmpliado"
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_height="wrap_content"
                             android:layout_width="match_parent"
-                            android:text="@string/gestion_de_call_center"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/text_medium"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
-                            android:layout_marginVertical="@dimen/space_medium"
-                            android:layout_marginStart="@dimen/space_big"
-                            tools:text="@string/gestion_de_call_center"/>
-
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
-                            android:background="#BACBDE"
-                            android:gravity="center_horizontal">
+                            android:orientation="vertical">
 
                             <ImageView
-                                android:id="@+id/imageView_vistaGeneral_callCenterFlechaArriba"
-                                android:layout_width="wrap_content"
+                                android:id="@+id/imageView_vistaGeneral_callCenter"
+                                android:layout_width="match_parent"
+                                android:layout_height="128dp"
+                                android:src="@drawable/card_call_center"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:contentDescription="@string/call_center" />
+
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_callCenterLinearLayoutReducido"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/baseline_arrow_drop_up_24"
-                                android:layout_marginVertical="12dp"
-                                android:layout_marginEnd="@dimen/space_small"
-                                android:contentDescription="@string/flecha_baja"
-                                />
-                        </LinearLayout>
-                    </LinearLayout>
+                                android:orientation="horizontal"
+                                android:background="#BACBDE"
+                                app:layout_constraintTop_toBottomOf="@id/imageView_vistaGeneral_callCenter"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                >
+
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeCallCenter"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/ver_mas"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginVertical="@dimen/space_medium"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_weight="1"
+                                    tools:text="@string/ver_mas"/>
+
+                                <ImageView
+                                    android:id="@+id/imageView_vistaGeneral_callCenterFlechaBaja"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:src="@drawable/baseline_arrow_drop_down_24"
+                                    android:layout_marginVertical="12dp"
+                                    android:layout_marginEnd="@dimen/space_small"
+                                    android:contentDescription="@string/flecha_baja"
+                                    />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linearLayout_vistaGeneral_callCenterLinearLayoutAmpliado"
+                                android:layout_height="wrap_content"
+                                android:layout_width="match_parent"
+                                app:layout_constraintTop_toBottomOf="@id/linearLayout_vistaGeneral_callCenterLinearLayoutReducido"
+                                android:orientation="vertical"
+                                android:visibility="gone">
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeCallCenterAmpliado"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:text="@string/gestion_de_call_center"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginVertical="@dimen/space_medium"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    tools:text="@string/gestion_de_call_center"/>
+
+                                <LinearLayout
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="match_parent"
+                                    android:orientation="horizontal"
+                                    android:background="#BACBDE"
+                                    android:gravity="center_horizontal">
+
+                                    <ImageView
+                                        android:id="@+id/imageView_vistaGeneral_callCenterFlechaArriba"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/baseline_arrow_drop_up_24"
+                                        android:layout_marginVertical="12dp"
+                                        android:layout_marginEnd="@dimen/space_small"
+                                        android:contentDescription="@string/flecha_baja"
+                                        />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.core.widget.NestedScrollView>
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_vistaGeneral_enviarRegistroDiario"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/space_medium"
-                android:layout_marginStart="@dimen/space_medium"
-                app:backgroundTint="@color/orange"
-                android:visibility="gone"
-                app:fabCustomSize="48dp"
-                android:src="@drawable/round_upload_file_24"
-                android:contentDescription="@string/falta_material"
-                tools:visibility="visible"/>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_vistaGeneral_registroJornadaVolantero"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/space_medium"
-                app:backgroundTint="@color/green"
-                android:visibility="gone"
-                app:fabCustomSize="100dp"
-                android:contentDescription="@string/iniciar_turno"
-                app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}"
-                tools:visibility="visible"/>
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_vistaGeneral_sinMaterial"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/space_medium"
-                android:layout_marginEnd="@dimen/space_medium"
-                app:backgroundTint="@color/orange"
-                android:visibility="gone"
-                app:fabCustomSize="48dp"
-                android:src="@drawable/baseline_notifications_active_24"
-                android:contentDescription="@string/falta_material"
-                tools:visibility="visible"/>
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <!--UI Volanteros-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout_vistaGeneral_uiVolanteros"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:visibility="gone"
-                tools:layout="@layout/fragment_crear_usuario"
-                />
-
-            <ImageView
-                android:id="@+id/imageView_vistaGeneral_mapaSinPermisos"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:src="@drawable/mapa_sin_permisos"
-                android:visibility="gone"
-                android:contentDescription="@string/mapa_sin_permisos_autorizados" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView_vistaGeneral_informacionVolantero"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:cardElevation="1dp"
-                android:background="@drawable/bottom_left_border"
-                android:visibility="gone"
-                style="?attr/materialCardViewElevatedStyle"
                 tools:visibility="visible">
-                <LinearLayout
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView_vistaGeneral_informacionVolantero"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:cardElevation="1dp"
+                    android:background="@drawable/bottom_left_border"
+                    android:visibility="gone"
+                    style="?attr/materialCardViewElevatedStyle"
+                    tools:visibility="visible">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginEnd="@dimen/space_very_small"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_verde"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:background="@drawable/my_circle_drawable_verde"
+                                android:contentDescription="@string/verde"/>
+
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_verde"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="00:00:00"
+                                tools:text="00:00:00"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_amarillo"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:background="@drawable/my_circle_drawable_amarillo"
+                                android:contentDescription="@string/amarillo"/>
+
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_amarillo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="00:00:00"
+                                tools:text="00:00:00"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_rojo"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:background="@drawable/my_circle_drawable_rojo"
+                                android:contentDescription="@string/rojo"/>
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_rojo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="00:00:00"
+                                tools:text="00:00:00"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_azul"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:background="@drawable/my_circle_drawable_azul"
+                                android:contentDescription="@string/azul"/>
+
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_azul"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="00:00:00"
+                                tools:text="00:00:00"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_rosado"
+                                android:layout_width="10dp"
+                                android:layout_height="10dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:background="@drawable/my_circle_drawable_rosado"
+                                android:contentDescription="@string/rosado"/>
+
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_rosado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="00:00:00"
+                                tools:text="00:00:00"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView_vistaGeneral_kilometros"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginTop="@dimen/space_small"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:layout_marginBottom="@dimen/space_small"
+                                android:background="@drawable/baseline_directions_walk_24"
+                                android:contentDescription="@string/kilometros"/>
+
+                            <TextView
+                                android:id="@+id/textView_vistaGeneral_kilometros"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/space_very_small"
+                                android:text="0.00km"
+                                tools:text="22.1k"/>
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </com.google.android.material.card.MaterialCardView>
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_marginEnd="@dimen/space_very_small"
-                    >
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_verde"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:background="@drawable/my_circle_drawable_verde"
-                            android:contentDescription="@string/verde"/>
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_verde"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="00:00:00"
-                            tools:text="00:00:00"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_amarillo"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:background="@drawable/my_circle_drawable_amarillo"
-                            android:contentDescription="@string/amarillo"/>
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_amarillo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="00:00:00"
-                            tools:text="00:00:00"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_rojo"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:background="@drawable/my_circle_drawable_rojo"
-                            android:contentDescription="@string/rojo"/>
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_rojo"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="00:00:00"
-                            tools:text="00:00:00"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_azul"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:background="@drawable/my_circle_drawable_azul"
-                            android:contentDescription="@string/azul"/>
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_azul"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="00:00:00"
-                            tools:text="00:00:00"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_rosado"
-                            android:layout_width="10dp"
-                            android:layout_height="10dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:background="@drawable/my_circle_drawable_rosado"
-                            android:contentDescription="@string/rosado"/>
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_rosado"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="00:00:00"
-                            tools:text="00:00:00"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/imageView_vistaGeneral_kilometros"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
-                            android:layout_marginTop="@dimen/space_small"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:layout_marginBottom="@dimen/space_small"
-                            android:background="@drawable/baseline_directions_walk_24"
-                            android:contentDescription="@string/kilometros"/>
-
-                        <TextView
-                            android:id="@+id/textView_vistaGeneral_kilometros"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/space_very_small"
-                            android:text="0.00km"
-                            tools:text="22.1k"/>
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-
-        </com.google.android.material.card.MaterialCardView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"
+                    tools:layout="@layout/fragment_crear_usuario"
+                    />
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_vistaGeneral_enviarRegistroDiario"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="@dimen/space_medium"
+                    android:layout_marginStart="@dimen/space_medium"
+                    app:backgroundTint="@color/orange"
+                    android:visibility="gone"
+                    app:fabCustomSize="48dp"
+                    android:src="@drawable/round_upload_file_24"
+                    android:contentDescription="@string/falta_material"
+                    tools:visibility="visible"/>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_vistaGeneral_registroJornadaVolantero"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="@dimen/space_medium"
+                    app:backgroundTint="@color/green"
+                    android:visibility="gone"
+                    app:fabCustomSize="100dp"
+                    android:contentDescription="@string/iniciar_turno"
+                    app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}"
+                    tools:visibility="visible"/>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_vistaGeneral_sinMaterial"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="@dimen/space_medium"
+                    android:layout_marginEnd="@dimen/space_medium"
+                    app:backgroundTint="@color/orange"
+                    android:visibility="gone"
+                    app:fabCustomSize="48dp"
+                    android:src="@drawable/baseline_notifications_active_24"
+                    android:contentDescription="@string/falta_material"
+                    tools:visibility="visible"/>
+                <ImageView
+                    android:id="@+id/imageView_vistaGeneral_mapaSinPermisos"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/mapa_sin_permisos"
+                    android:visibility="gone"
+                    android:contentDescription="@string/mapa_sin_permisos_autorizados" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
