@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.base.BaseFragment
@@ -48,7 +47,7 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.time.LocalDate
 import java.time.LocalTime
-
+import java.time.Duration
 
 class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener{
 
@@ -57,6 +56,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
     private val cloudDB = FirebaseFirestore.getInstance()
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
     private var volanterosActivosAMarcarEnElMapa: HashMap<String,Marker> = HashMap()
+    private var rastroDeLosVolanterosAMarcarEnElMapa: HashMap<String, Polyline> = HashMap()
+    private var listadoDeHorasDeRegistroDeNuevosGeopoints: HashMap<String,ArrayList<String>> = HashMap()
+
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var sharedPreferences: SharedPreferences
@@ -195,7 +197,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
             locationServiceBound = false
         }
     }
-
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
@@ -409,37 +410,114 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
             if (snapshot != null && !snapshot.isEmpty) {
                 for (documentChange in snapshot.documentChanges) {
                     when (documentChange.type) {
+
                         DocumentChange.Type.ADDED -> {
-                            Log.i("DocumentChange", "ADDED")
-                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
-                            Log.i("DocumentChange", "ADDED: $listOfGeopoints")
+                            val registroJornada = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
-                            for (element in listOfGeopoints) {
+
+                            for (element in registroJornada) {
                                 if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
-                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]!!["geopoints"]!!.last()
-                                    Log.i("DocumentChange", "ADDED: $nuevoVolanteroGeopoint")
-                                    if(documentChange.document.data["rol"] == "Administrador"){
-                                        val marker = map.addMarker(MarkerOptions()
-                                            .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
-                                            .title(documentChange.document.data["nombreCompleto"].toString())
+                                    Log.i("DocumentChange", "ADDED: ${documentChange.document.data["nombreCompleto"]} ${element["fecha"]}")
+                                    val listadoDeGeoPoints = element["registroLatLngs"]!!["geopoints"]!!
+                                    listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id] =
+                                        element["registroLatLngs"]!!["horasConRegistro"]!! as ArrayList<String>
+                                    val polyLineOptions = PolylineOptions()
+
+                                    val geoPoints = if (listadoDeGeoPoints.size <= 4) {
+                                        listadoDeGeoPoints
+                                    } else {
+                                        listadoDeGeoPoints.subList(listadoDeGeoPoints.size - 4, listadoDeGeoPoints.size)
+                                    }
+
+                                    geoPoints.forEach{ geoPoint ->
+                                        polyLineOptions.add(LatLng(geoPoint.latitude,geoPoint.longitude))
+                                    }
+
+                                    if (listadoDeGeoPoints.size > 4) {
+                                        val sublist = listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.subList(
+                                            listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.size - 4,
+                                            listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.size
                                         )
-                                        volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
-                                    }else{
-                                        val marker = map.addMarker(MarkerOptions()
-                                            .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
-                                            .title(documentChange.document.data["nombreCompleto"].toString())
-                                        )
-                                        volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                        listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id] =
+                                            ArrayList(sublist)
+                                    }
+
+                                    var tiempoEnRecorrerTramo = 0f
+                                    var distanceRecorrida = 0
+                                    geoPoints.forEachIndexed{ i, latLng ->
+                                        if(i == geoPoints.size-1){
+                                            return@forEachIndexed
+                                        }
+                                        val latLng1 = Location("")
+                                        latLng1.latitude = latLng.latitude
+                                        latLng1.longitude = latLng.longitude
+                                        val latLng2 = Location("")
+                                        latLng2.latitude = geoPoints[i+1].latitude
+                                        latLng2.longitude = geoPoints[i+1].longitude
+
+                                        val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
+                                        val tiempoLatLng1 = LocalTime.parse(listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!![i])
+                                        val tiempoLatLng2 = LocalTime.parse(listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!![i+1])
+                                        val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
+                                        tiempoEnRecorrerTramo += timeBetweenLatLngs
+                                        distanceRecorrida += distanceBetweenLatLngs
+                                    }
+
+                                    val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
+                                    val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
+                                    val rangoMaximoHumano = rangoMayor*4
+                                    // Set the color based on the distance
+                                    val color = when (distanceRecorrida) {
+                                        in 0..rangoMenor -> Color.RED
+                                        in rangoMenor..rangoMayor -> Color.YELLOW
+                                        in rangoMayor..rangoMaximoHumano -> Color.GREEN
+                                        else -> Color.BLUE
+                                    }
+
+                                    // Set the color and width of the polyline
+                                    polyLineOptions.color(color)
+                                    polyLineOptions.width(10f)
+
+                                    Log.i("ADDED", "$polyLineOptions")
+                                    val newPolyline = map.addPolyline(polyLineOptions)
+                                    rastroDeLosVolanterosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, newPolyline)
+
+                                    val nuevoVolanteroGeoPoint = element["registroLatLngs"]!!["geopoints"]!!.last()
+
+                                    val markerIcon = when (color) {
+                                        Color.RED -> R.drawable.ic_marker_volantero_red
+                                        Color.YELLOW -> R.drawable.ic_marker_volantero_yellow
+                                        Color.GREEN -> R.drawable.ic_marker_volantero_green
+                                        else -> R.drawable.ic_marker_volantero_blue
+                                    }
+
+                                    when(documentChange.document.data["rol"]){
+                                        "Administrador" -> {
+                                            val marker = map.addMarker(MarkerOptions()
+                                                .position(LatLng(nuevoVolanteroGeoPoint.latitude,nuevoVolanteroGeoPoint.longitude))
+                                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
+                                                .title(documentChange.document.data["nombreCompleto"].toString())
+                                            )
+                                            volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                        }
+                                        else -> {
+                                            val marker = map.addMarker(MarkerOptions()
+                                                .position(LatLng(nuevoVolanteroGeoPoint.latitude,nuevoVolanteroGeoPoint.longitude))
+                                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(markerIcon)))
+                                                .title(documentChange.document.data["nombreCompleto"].toString())
+                                            )
+
+                                            volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                        }
                                     }
                                 }
                             }
                         }
+
                         DocumentChange.Type.MODIFIED -> {
-                            Log.i("DocumentChange", "MODIFIED")
-                            val listOfGeopoints = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
+                            val registroJornada = documentChange.document.data["registroJornada"] as List<Map<String, Map<String ,List<GeoPoint>>>>
                             val estaActivo = documentChange.document.data["estaActivo"] as Boolean
+
                             if(!estaActivo){
                                 for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
                                     if(mapIdMarker.key == documentChange.document.id) {
@@ -449,33 +527,121 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
                                 volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
                                 return@addSnapshotListener
                             }
-                            for (element in listOfGeopoints) {
-                                if(element["fecha"].toString() == LocalDate.now().toString() && estaActivo){
+
+                            for (element in registroJornada) {
+                                if(element["fecha"].toString() == LocalDate.now().toString()){
                                     for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
                                         if(mapIdMarker.key == documentChange.document.id)
                                           mapIdMarker.value.remove()
                                     }
-                                    val nuevoVolanteroGeopoint = element["registroLatLngs"]!!["geopoints"]!!.last()
-                                    volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
-                                    if(documentChange.document.data["rol"] == "Administrador"){
-                                        val marker = map.addMarker(MarkerOptions()
-                                            .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
-                                            .title(documentChange.document.data["nombreCompleto"].toString())
-                                        )
-                                        volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
-                                    }else{
-                                        val marker = map.addMarker(MarkerOptions()
-                                            .position(LatLng(nuevoVolanteroGeopoint.latitude,nuevoVolanteroGeopoint.longitude))
-                                            .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.ic_marker_volantero_green)))
-                                            .title(documentChange.document.data["nombreCompleto"].toString())
-                                        )
-                                        volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                    for(polyLine in rastroDeLosVolanterosAMarcarEnElMapa){
+                                        if(polyLine.key == documentChange.document.id){
+                                            polyLine.value.remove()
+                                        }
                                     }
-                                    Log.i("Firestore","La ubicación de un usuario ha sido actualizada")
+
+                                    volanterosActivosAMarcarEnElMapa.remove(documentChange.document.id)
+                                    rastroDeLosVolanterosAMarcarEnElMapa.remove(documentChange.document.id)
+
+                                    val listadoDeGeoPoints = element["registroLatLngs"]!!["geopoints"]!!
+                                    val polyLineOptions = PolylineOptions()
+                                    val geoPoints = if (listadoDeGeoPoints.size <= 4) {
+                                        listadoDeGeoPoints
+                                    } else {
+                                        listadoDeGeoPoints.subList(listadoDeGeoPoints.size - 4, listadoDeGeoPoints.size)
+                                    }
+                                    geoPoints.forEach{ geoPoint ->
+                                        polyLineOptions.add(LatLng(geoPoint.latitude,geoPoint.longitude))
+                                    }
+
+                                    listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id] =
+                                        element["registroLatLngs"]!!["horasConRegistro"]!! as ArrayList<String>
+                                    if (listadoDeGeoPoints.size > 4) {
+                                        val sublist = listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.subList(
+                                            listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.size - 4,
+                                            listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!!.size
+                                        )
+                                        listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id] =
+                                            ArrayList(sublist)
+                                    }
+
+                                    var tiempoEnRecorrerTramo = 0f
+                                    var distanceRecorrida = 0
+                                    geoPoints.forEachIndexed{ i, latLng ->
+                                        if(i == geoPoints.size-1){
+                                            return@forEachIndexed
+                                        }
+                                        val latLng1 = Location("")
+                                        latLng1.latitude = latLng.latitude
+                                        latLng1.longitude = latLng.longitude
+                                        val latLng2 = Location("")
+                                        latLng2.latitude = geoPoints[i+1].latitude
+                                        latLng2.longitude = geoPoints[i+1].longitude
+                                        val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
+                                        val tiempoLatLng1 = LocalTime.parse(listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!![i])
+                                        val tiempoLatLng2 = LocalTime.parse(listadoDeHorasDeRegistroDeNuevosGeopoints[documentChange.document.id]!![i+1])
+                                        val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
+                                        tiempoEnRecorrerTramo += timeBetweenLatLngs
+                                        distanceRecorrida += distanceBetweenLatLngs
+                                    }
+
+                                    val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
+                                    val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.3).toInt()
+                                    val rangoMaximoHumano = rangoMayor*4
+
+                                    Log.i("MapFragment", "Rango mayor: $rangoMayor")
+                                    Log.i("MapFragment", "Rango menor: $rangoMenor")
+                                    Log.i("MapFragment", "Rango maximo humano: $rangoMaximoHumano")
+                                    Log.i("MapFragment", "Distancia recorrida: $distanceRecorrida")
+                                    Log.i("MapFragment", "Tiempo en recorrer tramo: $tiempoEnRecorrerTramo")
+
+                                    // Set the color based on the distance
+                                    val color = when (distanceRecorrida) {
+                                        in 0..rangoMenor -> Color.RED
+                                        in rangoMenor..rangoMayor -> Color.YELLOW
+                                        in rangoMayor..rangoMaximoHumano -> Color.GREEN
+                                        else -> Color.BLUE
+                                    }
+
+                                    // Set the color and width of the polyline
+                                    polyLineOptions.color(color)
+                                    polyLineOptions.width(10f)
+
+                                    Log.i("MODIFIED", "$polyLineOptions")
+                                    val newPolyline = map.addPolyline(polyLineOptions)
+                                    rastroDeLosVolanterosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, newPolyline)
+
+                                    val nuevoVolanteroGeoPoint = element["registroLatLngs"]!!["geopoints"]!!.last()
+                                    val markerIcon = when (color) {
+                                        Color.RED -> R.drawable.ic_marker_volantero_red
+                                        Color.YELLOW -> R.drawable.ic_marker_volantero_yellow
+                                        Color.GREEN -> R.drawable.ic_marker_volantero_green
+                                        else -> R.drawable.ic_marker_volantero_blue
+                                    }
+
+                                    when(documentChange.document.data["rol"]){
+                                        "Administrador" -> {
+                                            val marker = map.addMarker(MarkerOptions()
+                                                .position(LatLng(nuevoVolanteroGeoPoint.latitude,nuevoVolanteroGeoPoint.longitude))
+                                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(R.drawable.supervisor_1)))
+                                                .title(documentChange.document.data["nombreCompleto"].toString())
+                                            )
+                                            volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                        }
+                                        else -> {
+                                            val marker = map.addMarker(MarkerOptions()
+                                                .position(LatLng(nuevoVolanteroGeoPoint.latitude,nuevoVolanteroGeoPoint.longitude))
+                                                .icon(BitmapDescriptorFactory.fromBitmap(getBitmap(markerIcon)))
+                                                .title(documentChange.document.data["nombreCompleto"].toString())
+                                            )
+                                            volanterosActivosAMarcarEnElMapa.putIfAbsent(documentChange.document.id, marker!!)
+                                        }
+                                    }
+                                    Log.i("MODIFIED","La ubicación de ${documentChange.document.data["nombreCompleto"]} ha sido actualizada")
                                 }
                             }
                         }
+
                         DocumentChange.Type.REMOVED -> {
                             Log.i("DocumentChange", "Removed")
                             for(mapIdMarker in volanterosActivosAMarcarEnElMapa){
