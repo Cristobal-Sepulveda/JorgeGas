@@ -711,6 +711,10 @@ class MapFragment : BaseFragment(), OnMapReadyCallback, SharedPreferences.OnShar
         svg.draw(canvas)
         return bitmap
     }
+
+    private fun pintarPolyline(){
+
+    }
 }
 
 

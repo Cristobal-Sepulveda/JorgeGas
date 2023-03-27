@@ -310,6 +310,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.VISIBLE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
         }
+
         _binding!!.textViewVistaGeneralGestionDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
