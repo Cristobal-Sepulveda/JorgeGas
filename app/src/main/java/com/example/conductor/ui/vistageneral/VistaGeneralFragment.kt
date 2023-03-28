@@ -23,7 +23,7 @@ import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
 import com.example.conductor.utils.*
@@ -318,6 +318,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         .actionNavigationVistaGeneralToNavigationGestionDeVolanteros()
                 )
         }
+
         _binding!!.textViewVistaGeneralRegistroDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
@@ -326,23 +327,26 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 )
         }
 
-
-
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
         }
+
         _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralVerde.text = it
         }
+
         _viewModel.tiempoTotalRecorridoAmarillo.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralAmarillo.text = it
         }
+
         _viewModel.tiempoTotalRecorridoRojo.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralRojo.text = it
         }
+
         _viewModel.tiempoTotalRecorridoAzul.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralAzul.text = it
         }
+
         _viewModel.tiempoTotalRecorridoRosado.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralRosado.text = it
         }
@@ -695,18 +699,20 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     private fun iniciarODetenerLocationService() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val enabled =
-                    sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+                val enabled = sharedPreferences.getBoolean(
+                    SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
+
                 if (enabled) {
                     if (_viewModel.editarEstadoVolantero(false)) {
                         locationService?.unsubscribeToLocationUpdatesVistaGeneralFragment()
+
                         lifecycleScope.launch{
                             withContext(Dispatchers.Main){
                                 map.clear()
                             }
                         }
-                        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
 
+                        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
                         if (::iniciandoSnapshotListener.isInitialized) {
                             iniciandoSnapshotListener.remove()
                         }

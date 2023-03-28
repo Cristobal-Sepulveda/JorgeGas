@@ -5,7 +5,7 @@ import android.util.Log
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.conductor.base.BaseViewModel
+import com.example.conductor.ui.estadoactual.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.google.firebase.firestore.FirebaseFirestore

@@ -20,7 +20,7 @@ import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.BuildConfig
 import com.example.conductor.R
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants
 import com.example.conductor.databinding.FragmentDetalleVolanteroBinding
@@ -57,6 +57,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private lateinit var polylineOptions: PolylineOptions
     private lateinit var bundle: Usuario
     private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -71,9 +72,10 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDelVolantero(bundle.id)
+                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDiariosDelVolantero(bundle.id)
             }
         }
+
         cargarDatosDelVolantero(bundle)
 
         _binding!!.sliderDetalleVolanteroTrayecto.addOnChangeListener { _, value, _ ->
@@ -148,6 +150,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         val registroJornada =
             registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
         Log.i("DetalleVolanteroFragment", selectedDate)
+
         registroJornada.forEach {
             if (it["fecha"].toString() == selectedDate) {
                 _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = true
@@ -191,6 +194,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT)
             .show()
     }
+
 
     @SuppressLint("SetTextI18n")
     private fun cargarDatosDelVolantero(bundle: Usuario) {
@@ -264,6 +268,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
     }
 
+
     @Suppress("UNCHECKED_CAST")
     private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
         /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
@@ -288,10 +293,18 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         for (registro in registroJornada) {
             //aquí valido si el documento tiene registro de jornada en la fecha seleccionada en el calendario
             if (registro["fecha"].toString() == selectedDate) {
+                val listadoDeGeoPointsDelDiaSeleccionado = mutableListOf<GeoPoint>()
+                val listAux = ArrayList<String>()
                 //Aquí obtengo desde el map el listado de la hora de registro de un geopoints y, el listado de geopoints.
-                val registroLatLngsDelDiaSeleccionado = registro["registroLatLngs"]
-                listadoDeHorasDeRegistrodeNuevosGeopoints = registroLatLngsDelDiaSeleccionado!!["horasConRegistro"] as ArrayList<String>
-                val geopointsRegistradosDelDia = registroLatLngsDelDiaSeleccionado["geopoints"] as ArrayList<GeoPoint>
+                val latLngsDelDiaSeleccionado = registro["latLngs"] as List<Map<*,*>>
+
+                latLngsDelDiaSeleccionado.forEach {
+                    listAux.add(it["hora"].toString())
+                    val lat = it["lat"] as Double
+                    val lng = it["lng"] as Double
+                    listadoDeGeoPointsDelDiaSeleccionado.add(GeoPoint(lat, lng))
+                }
+                listadoDeHorasDeRegistrodeNuevosGeopoints = listAux
 
                 listadoDeHorasDeRegistrodeNuevosGeopoints.forEachIndexed { i, horaRegistrada ->
                     val horaRegistradaHoursEnCiclo = horaRegistrada.substring(0, 2).toFloat()
@@ -299,7 +312,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
 
                     if(horaRegistradaHoursEnCiclo >= hourInSlide.toFloat() && horaRegistradaMinutesEnCiclo >= minutesInSlide.toFloat()){
                         for(aux in 0..i){
-                            val geopoint = geopointsRegistradosDelDia[aux]
+                            val geopoint = listadoDeGeoPointsDelDiaSeleccionado[aux]
                             val latLng = LatLng(geopoint.latitude, geopoint.longitude)
                             latLngsDeInteres.add(latLng)
                         }

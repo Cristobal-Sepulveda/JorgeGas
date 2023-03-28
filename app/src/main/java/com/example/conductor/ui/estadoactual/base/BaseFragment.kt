@@ -1,4 +1,4 @@
-package com.example.conductor.base
+package com.example.conductor.ui.estadoactual.base
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment

@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.example.conductor.R
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.databinding.FragmentFiltroRegistroVolanterosBinding
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.registrovolanteros.RegistroVolanterosFragment
@@ -64,7 +64,7 @@ class FiltroRegistroVolanterosFragment: BottomSheetDialogFragment() {
                 withContext(Dispatchers.IO) {
                     _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
                     val listaObtenida =
-                        _viewModel.obtenerTodoElRegistroTrayectoVolanteros(requireContext()) as MutableList<*>
+                        _viewModel.obtenerRegistroDiariosRoomDesdeFirestore(requireContext()) as MutableList<*>
                     if (listaObtenida.isNotEmpty()) {
                         listaObtenida.forEach { documento ->
                             withContext(Dispatchers.Main) {

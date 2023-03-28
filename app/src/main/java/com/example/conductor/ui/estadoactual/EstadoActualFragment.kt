@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.conductor.adapter.EstadoActualVolanteroAdapter
 import com.example.conductor.adapter.VolanteroAdapter
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.data.data_objects.domainObjects.VolanteroYRecorrido

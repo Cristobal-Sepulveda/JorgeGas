@@ -18,7 +18,7 @@ interface AppDataSource {
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerTodoElRegistroTrayectoVolanteros(context:Context): MutableList<Any>
-    suspend fun obtenerRegistroDelVolantero(id: String): Any
+    suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
     suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)
     suspend fun eliminarUsuariosEnSqlite()
@@ -28,4 +28,6 @@ interface AppDataSource {
     suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context): Boolean
     suspend fun guardarLatLngYHoraActualEnRoom(latLngYHoraActualEnRoom: LatLngYHoraActualDBO):Boolean
     suspend fun guardarLatLngYHoraActualEnFirestore(context: Context): Boolean
+
+    suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context): List<DocumentSnapshot>
 }

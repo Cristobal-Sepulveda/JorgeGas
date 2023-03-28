@@ -107,6 +107,23 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
+    override suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context): List<DocumentSnapshot> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val deferred = CompletableDeferred<List<DocumentSnapshot>>()
+                cloudDB.collection("RegistroDiariosDeVolanteros").get()
+                    .addOnSuccessListener{
+                        deferred.complete(it.documents)
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error al obtener los datos.", Toast.LENGTH_LONG).show()
+                        deferred.complete(emptyList())
+                    }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
     override suspend fun ingresarUsuarioAFirestore(usuario: Usuario): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -167,17 +184,17 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     deferred.complete(registroTrayectoVolantero)
                 }
                 .addOnFailureListener {
-                    Toast.makeText(context, "Error al obtener los datos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error al obtener los datos", Toast.LENGTH_LONG).show()
                     deferred.complete(registroTrayectoVolantero)
                 }
             return@withContext deferred.await()
         }
     }
-    override suspend fun obtenerRegistroDelVolantero(id: String): Any = withContext(ioDispatcher){
+    override suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 try{
-                    return@withContext cloudDB.collection("RegistroTrayectoVolanteros")
+                    return@withContext cloudDB.collection("RegistroDiariosDeVolanteros")
                         .document(id).get().await()
                 }catch(e:Exception){
                     return@withContext "Error"
@@ -188,14 +205,17 @@ class AppRepository(private val usuarioDao: UsuarioDao,
     override suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource{
             withContext(ioDispatcher){
-                try{
-                    cloudDB.collection("RegistroTrayectoVolanteros")
+                val deferred = CompletableDeferred<Boolean>()
+                cloudDB.collection("RegistroTrayectoVolanteros")
                     .document(firebaseAuth.currentUser!!.uid)
                     .update("estaActivo", estaActivo)
-                    return@withContext true
-                }catch(e:Exception){
-                    return@withContext false
-                }
+                    .addOnSuccessListener {
+                        deferred.complete(true)
+                    }
+                    .addOnFailureListener {
+                        deferred.complete(false)
+                    }
+                return@withContext deferred.await()
             }
         }
     }

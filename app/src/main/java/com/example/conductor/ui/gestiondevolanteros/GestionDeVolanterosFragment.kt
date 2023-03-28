@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.conductor.adapter.VolanteroAdapter
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentGestionDeVolanterosBinding

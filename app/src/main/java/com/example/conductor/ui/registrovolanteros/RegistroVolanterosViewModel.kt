@@ -5,9 +5,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.conductor.base.BaseViewModel
+import com.example.conductor.ui.estadoactual.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
+import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +29,11 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
 
     init{
         cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
+    }
+
+    suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context):
+            List<DocumentSnapshot> {
+        return dataSource.obtenerRegistroDiariosRoomDesdeFirestore(context)
     }
     fun setSelectedDate(date: String){
         _selectedDate.value = date

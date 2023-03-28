@@ -10,9 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import com.example.conductor.R
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.databinding.FragmentRegistroVolanterosBinding
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.filtroregistrovolanteros.FiltroRegistroVolanterosFragment
@@ -39,13 +38,11 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
     override val _viewModel: RegistroVolanterosViewModel by inject()
     private var _binding: FragmentRegistroVolanterosBinding? = null
     private lateinit var map: GoogleMap
-
     private var datePickerDialog: DatePickerDialog? = null
     private var selectedDate: String? = null
     private var listOfPolylines = mutableListOf<List<GeoPoint>>()
     private var listOfHours = mutableListOf<List<String>>()
     private var listOfIds = mutableListOf<String>()
-
     private lateinit var polylineOptions: PolylineOptions
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -88,9 +85,12 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             if(it.isEmpty()){
                 return@observe
             }
-
             if(it.size != listOfIds.size){
+                Log.i("RegistroVolanteros", "selectedVolanteros: $it")
                 lifecycleScope.launch {
+                    withContext(Dispatchers.Main) {
+                        limpiarDataNecesaria()
+                    }
                     withContext(Dispatchers.IO) {
                         solicitarRegistroYFiltrarloAntesDePintarlo(_viewModel.selectedDate.value)
                     }
@@ -101,74 +101,18 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         return _binding!!.root
     }
 
-    override fun onResume(){
-        super.onResume()
-        Log.i("onResume", "onResume")
-        // Set up the result listener
-
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _viewModel.selectedDate.removeObservers(viewLifecycleOwner)
+        _viewModel.setSelectedDate("")
         _binding!!.editTextRegistroVolanterosFecha.setText("")
         _binding = null
     }
 
-    private suspend fun solicitarRegistroYFiltrarloAntesDePintarlo(it: String?) {
-        lifecycleScope.launch{
-            withContext(Dispatchers.Main){
-                map.clear()
-                limpiarDataNecesaria()
-            }
-        }
-        _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
-
-        val listadoObtenido = _viewModel.obtenerTodoElRegistroTrayectoVolanteros(requireActivity()) as MutableList<*>
-        if (listadoObtenido.isNotEmpty()) {
-            listadoObtenido.forEach { documento ->
-                val docSnapshot = documento as DocumentSnapshot
-                val id = docSnapshot.id
-                val docParseado = documento.data as HashMap<String, Any>
-                val registroJornada = docParseado["registroJornada"] as List<HashMap<String, Any>>
-
-                registroJornada.forEach { mapa ->
-                    if (mapa["fecha"] == it) {
-                        val registroLatLngs = mapa["registroLatLngs"] as Map<*, *>
-                        val geoPoints = registroLatLngs["geopoints"] as List<*>
-                        val horasConRegistro =
-                            registroLatLngs["horasConRegistro"] as List<*>
-                        println(docParseado["nombreCompleto"])
-                        println("${mapa["fecha"]}")
-                        if(_viewModel.selectedVolanteros.value!!.isEmpty()){
-                            listOfPolylines.add(geoPoints as List<GeoPoint>)
-                            listOfHours.add(horasConRegistro as List<String>)
-                            listOfIds.add(id)
-                        }else{
-                            if(_viewModel.selectedVolanteros.value!!.contains(id)){
-                                listOfPolylines.add(geoPoints as List<GeoPoint>)
-                                listOfHours.add(horasConRegistro as List<String>)
-                                listOfIds.add(id)
-                            }
-                        }
-                    }
-                }
-            }
-            if (listOfPolylines.isNotEmpty()) {
 
 
-                pintarPolylines()
-            } else {
-                _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
-                Snackbar.make(_binding!!.root, "No hay registros para la fecha seleccionada", Snackbar.LENGTH_LONG).show()
-            }
-
-        }else{
-            _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.ERROR)
-        }
-    }
-
-    private fun limpiarDataNecesaria() {
+    private fun limpiarDataNecesaria(){
         listOfPolylines.clear()
         listOfHours.clear()
         listOfIds.clear()
@@ -232,6 +176,62 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             }
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         datePickerDialog?.show()
+    }
+
+    private suspend fun solicitarRegistroYFiltrarloAntesDePintarlo(selectedDate: String?) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                map.clear()
+                limpiarDataNecesaria()
+            }
+        }
+
+        _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
+        val registroDiariosVolanteros = _viewModel.obtenerRegistroDiariosRoomDesdeFirestore(requireActivity())
+
+        if (registroDiariosVolanteros.isNotEmpty()) {
+
+            registroDiariosVolanteros.forEach { documentSnapshot ->
+                val id = documentSnapshot.id
+                val docParseado = documentSnapshot.data as Map<*, *>
+                val registroJornada = docParseado["registroJornada"] as List<Map<*,*>>
+
+                registroJornada.forEach { mapa ->
+                    if (mapa["fecha"] == selectedDate) {
+                        val latLngs = mapa["latLngs"] as List<Map<*, *>>
+                        val geoPoints: MutableList<GeoPoint> = mutableListOf()
+                        val horasConRegistro: MutableList<String> = mutableListOf()
+
+                        if(_viewModel.selectedVolanteros.value!!.isEmpty()){
+                            latLngs.forEach{
+                                val lat = it["lat"] as Double
+                                val lng = it["lng"] as Double
+                                val geoPoint = GeoPoint(lat, lng)
+                                val hora = it["hora"] as String
+                                geoPoints.add(geoPoint)
+                                horasConRegistro.add(hora)
+                            }
+                        }else{
+                            if(_viewModel.selectedVolanteros.value!!.contains(id)){
+                                latLngs.forEach{
+                                    val lat = it["lat"] as Double
+                                    val lng = it["lng"] as Double
+                                    val geoPoint = GeoPoint(lat, lng)
+                                    val hora = it["hora"] as String
+                                    geoPoints.add(geoPoint)
+                                    horasConRegistro.add(hora)
+                                }
+                            }
+                        }
+                        listOfPolylines.add(geoPoints)
+                        listOfHours.add(horasConRegistro)
+                        listOfIds.add(id)
+                    }
+                }
+            }
+            _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
+            pintarPolylines()
+        }
     }
 
     private fun pintarPolylines() {

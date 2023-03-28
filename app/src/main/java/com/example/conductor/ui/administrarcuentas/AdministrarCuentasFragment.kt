@@ -11,7 +11,7 @@ import android.widget.PopupMenu
 import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
-import com.example.conductor.base.BaseFragment
+import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
