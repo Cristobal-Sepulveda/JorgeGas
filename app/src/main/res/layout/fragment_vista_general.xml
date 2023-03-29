@@ -583,5 +583,6 @@
                     android:visibility="gone"
                     android:contentDescription="@string/mapa_sin_permisos_autorizados" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

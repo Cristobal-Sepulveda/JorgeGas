@@ -2,6 +2,7 @@ package com.example.conductor
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -24,6 +25,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -236,6 +238,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         decodeAndSetImageWithUsuarioDBO(user.first())
 
     }
+
     private fun decodeAndSetImageWithUsuarioDBO(user: UsuarioDBO){
         val circleImageView = binding.navView.getHeaderView(0)
             .findViewById<CircleImageView>(R.id.circleImageView_drawerNavHeader_fotoPerfil)
@@ -293,7 +296,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { results ->
                 for (result in results) {
-                    if (!result.value) {
+                    if (!result.value && result.key == Manifest.permission.ACCESS_FINE_LOCATION) {
                         Snackbar.make(
                             binding.root,
                             R.string.permission_denied_explanation,
@@ -309,7 +312,17 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                     }
                 }
             }
-            requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
+            if (permissionsToRequest.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Permiso de ubicación")
+                    .setMessage("Jorge Gas Management necesita este permiso para poder guardar tu trayecto y generar informes requeridos por la administración. Este registro solo ocurre cuando apretas el botón iniciar y se detiene al apretar el botón detener. Si no lo aceptas no podrás trabajar.")
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
+                    }
+                    .show()
+            } else {
+                requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
+            }
         }
     }
 
