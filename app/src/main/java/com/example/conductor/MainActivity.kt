@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             if (permissionsToRequest.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 AlertDialog.Builder(this)
                     .setTitle("Permiso de ubicación")
-                    .setMessage("Jorge Gas Management necesita este permiso para poder guardar tu trayecto y generar informes requeridos por la administración. Este registro solo ocurre cuando apretas el botón iniciar y se detiene al apretar el botón detener. Si no lo aceptas no podrás trabajar.")
+                    .setMessage(R.string.aviso_de_permiso)
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
                     }

@@ -156,6 +156,18 @@
     <string name="reporte_de_volanteros">Reporte de volanteros</string>
     <string name="ver_mas">Ver mas</string>
     <string name="gestion_de_call_center">Gestion de call center</string>
+    <string name="aviso_de_permiso">
+        Jorge Gas Management necesita el permiso de localización para:\n\n
+
+        1) Registrar tu ubicación durante toda la jornada, siempre que la aplicación esté en uso o en segundo plano, y solo si estas transmitiendo mediante el botón para ello.\n\n
+
+        2) Desplegar en tu pantalla la ruta que has recorrido junto a la distancia y tiempos.\n\n
+
+        3) Mostrar tu localización en el mapa de los supervisores solo si estas transmitiendo mediante el botón para ello.\n\n
+
+        4) Generar informes de tus recorridos para la administración.\n\n
+
+        Si no lo aceptas, no podrás trabajar.</string>
 
     <!--String arrays-->
     <string-array name="roles">
