@@ -232,11 +232,15 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         binding.navView.getHeaderView(0)
             .findViewById<TextView>(R.id.textView_drawerNavHeader_nombreUsuario).text =
             user.first().nombre + " " + user.first().apellidos
-        binding.navView.getHeaderView(0)
-            .findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = user.first().rol
 
+        if(user.first().apellidos =="Soto Rodriguez"){
+            binding.navView.getHeaderView(0)
+                .findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = "Modo Dios"
+        }else{
+            binding.navView.getHeaderView(0)
+                .findViewById<TextView>(R.id.textView_drawerNavHeader_rol).text = user.first().rol
+        }
         decodeAndSetImageWithUsuarioDBO(user.first())
-
     }
 
     private fun decodeAndSetImageWithUsuarioDBO(user: UsuarioDBO){
