@@ -16,7 +16,8 @@ object Constants {
     const val ACTION_MAP_LOCATION_BROADCAST = "$PACKAGE_NAME.action.MAP_LOCATION_BROADCAST"
     internal const val EXTRA_LOCATION = "$PACKAGE_NAME.extra.LOCATION"
     const val NOTIFICATION_CHANNEL_ID = "jorge_gas_empresa"
-
+    const val JWTAPI_URL = "http://10.0.2.2:8080"
+    //const val JWTAPI_URL = "https://ahora-si-dkc7p57skq-tl.a.run.app/"
 
 }
 

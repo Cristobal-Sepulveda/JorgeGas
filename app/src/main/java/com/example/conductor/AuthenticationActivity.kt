@@ -126,7 +126,6 @@ class AuthenticationActivity : AppCompatActivity() {
                 val chequeoDeCredenciales = firebaseAuth.signInWithEmailAndPassword(email, password)
 
                 chequeoDeCredenciales.addOnSuccessListener {
-
                     val operation = cloudDB
                         .collection("Usuarios")
                         .whereEqualTo("usuario", email)
@@ -160,6 +159,13 @@ class AuthenticationActivity : AppCompatActivity() {
             return
         }
 
+        if(solicitarTokenDeSesion(this) == "error"){
+            runOnUiThread {
+                aparecerYDesaparecerElementosTrasNoLogin()
+            }
+            return
+        }
+
         lifecycleScope.launch{
             withContext(Dispatchers.IO){
                 val ultimoControlDeError = cloudDB.collection("Usuarios")
@@ -170,6 +176,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     runOnUiThread {
                         binding.progressBar.visibility = View.GONE
                     }
+
                     val intent = Intent(this@AuthenticationActivity, MainActivity::class.java)
 
                     lifecycleScope.launch {
@@ -182,6 +189,11 @@ class AuthenticationActivity : AppCompatActivity() {
                 }
 
                 ultimoControlDeError.addOnFailureListener{
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            dataSource.eliminarTokenDeSesion()
+                        }
+                    }
                     controlDeError(exception = it)
                 }
             }
@@ -236,8 +248,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     findViewById(R.id.container),
                     "Error: ${exception.message}",
                     Snackbar.LENGTH_LONG
-                )
-                    .show()
+                ).show()
             }
         }
     }
@@ -260,5 +271,8 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.loginButton.visibility = View.GONE
     }
 
+    private suspend fun solicitarTokenDeSesion(context: Context): String{
+        return dataSource.solicitarTokenDeSesion(context)
+    }
 }
 

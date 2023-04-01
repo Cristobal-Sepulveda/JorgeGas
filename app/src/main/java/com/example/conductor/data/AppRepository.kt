@@ -6,8 +6,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import com.example.conductor.R
+import com.example.conductor.data.daos.JwtDao
 import com.example.conductor.data.daos.LatLngYHoraActualDao
 import com.example.conductor.data.daos.UsuarioDao
+import com.example.conductor.data.data_objects.dbo.JwtDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
@@ -20,15 +22,24 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
+import com.example.conductor.utils.JwtApi
+import com.example.conductor.utils.JwtApiService
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
+import com.google.gson.JsonObject
+import com.squareup.moshi.Moshi
+import org.json.JSONObject
+import retrofit2.HttpException
+import retrofit2.await
+import retrofit2.awaitResponse
 import java.time.LocalDate
 import java.time.LocalTime
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val usuarioDao: UsuarioDao,
                     private val latLngYHoraActualDao: LatLngYHoraActualDao,
+                    private val jwtDao: JwtDao,
                     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDataSource {
 
     private val cloudDB = FirebaseFirestore.getInstance()
@@ -427,4 +438,57 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
+    override suspend fun solicitarTokenDeSesion(context: Context): String = withContext(ioDispatcher){
+        wrapEspressoIdlingResource{
+            withContext(Dispatchers.IO){
+                val deferred = CompletableDeferred<String>()
+                try{
+                    val token = JwtApi.RETROFIT_SERVICE_TOKEN.getToken().await()
+                    jwtDao.guardarJwt(JwtDBO(token))
+                    deferred.complete(token)
+                }catch(e:Exception){
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(context, "Error al solicitar el token de sesión", Toast.LENGTH_LONG).show()
+                    }
+                    deferred.complete("error")
+                }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
+    override suspend fun validarTokenDeSesion(): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(Dispatchers.IO){
+                val deferred = CompletableDeferred<Boolean>()
+                try{
+                    val token = jwtDao.obtenerJwt().first().token
+                    println(token)
+                    val isTokenValid = JwtApi.RETROFIT_SERVICE_TOKEN.validateToken(token).await()
+                    println(isTokenValid)
+                    deferred.complete(true)
+                }catch(e: HttpException){
+                    println(e.response()?.code())
+                    println(e.response()?.errorBody()?.string())
+                    if(e.response()?.errorBody()?.string() == "No se proporcionó un token"){
+                        print("hola")
+                        deferred.complete(true)
+                    }
+                    else{
+                        deferred.complete(true)
+                        //jwtDao.eliminarJwt()
+                    }
+                }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
+    override suspend fun eliminarTokenDeSesion() {
+        wrapEspressoIdlingResource {
+            withContext(Dispatchers.IO) {
+                jwtDao.eliminarJwt()
+            }
+        }
+    }
 }

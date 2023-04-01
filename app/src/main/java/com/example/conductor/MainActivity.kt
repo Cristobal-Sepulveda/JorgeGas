@@ -141,11 +141,16 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.modoClaro -> {
-                Toast.makeText(
+                lifecycleScope.launch{
+                    withContext(Dispatchers.IO){
+                        validarToken()
+                    }
+                }
+/*                Toast.makeText(
                     this,
                     "Esta funcionalidad se implementará en un futuro.",
                     Toast.LENGTH_LONG
-                ).show()
+                ).show()*/
             }
             R.id.modoOscuro -> {
                 Toast.makeText(
@@ -196,6 +201,11 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
+    private suspend fun validarToken(){
+        if(!dataSource.validarTokenDeSesion()){
+            launchLogoutFlow()
+        }
+    }
     private fun pintandoSideBarMenuYBottomAppBarSegunElPerfilDelUsuario() {
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
@@ -330,7 +340,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
-
     private fun checkingDeviceLocationSettings(resolve: Boolean = true) {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -369,7 +378,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
-
     private suspend fun launchLogoutFlow() {
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -377,7 +385,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         //aquí chequeo si hay internet
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
             logout()
-        } else {
+        }else{
             Snackbar.make(
                 binding.root,
                 R.string.no_hay_internet,
@@ -385,7 +393,6 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             ).show()
         }
     }
-
 
     private suspend fun logout() {
         lifecycleScope.launch {
@@ -479,7 +486,4 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         return Base64.encodeToString(data, Base64.NO_PADDING)
     }
 
-    fun setDisableBackButton(disable: Boolean) {
-        disableBackButton = disable
-    }
 }

@@ -28,6 +28,8 @@ interface AppDataSource {
     suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context): Boolean
     suspend fun guardarLatLngYHoraActualEnRoom(latLngYHoraActualEnRoom: LatLngYHoraActualDBO):Boolean
     suspend fun guardarLatLngYHoraActualEnFirestore(context: Context): Boolean
-
     suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context): List<DocumentSnapshot>
+    suspend fun solicitarTokenDeSesion(context: Context): String
+    suspend fun eliminarTokenDeSesion()
+    suspend fun validarTokenDeSesion(): Boolean
 }

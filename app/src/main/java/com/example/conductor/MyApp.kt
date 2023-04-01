@@ -78,8 +78,10 @@ class MyApp : Application() {
 
             single { getDatabase(this@MyApp).latLngYHoraActualDao }
 
+            single { getDatabase(this@MyApp).jwtDao }
+
             //REPOSITORY
-            single { AppRepository(get(),get()) as AppDataSource }
+            single { AppRepository(get(),get(),get()) as AppDataSource }
         }
 
         startKoin {
