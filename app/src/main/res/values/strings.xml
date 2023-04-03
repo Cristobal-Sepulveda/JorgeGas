@@ -168,6 +168,7 @@
         4) Generar informes de tus recorridos para la administración.\n\n
 
         Si no lo aceptas, no podrás trabajar.</string>
+    <string name="proxima_funcionalidad">Esta funcionalidad se implementará en un futuro.</string>
 
     <!--String arrays-->
     <string-array name="roles">

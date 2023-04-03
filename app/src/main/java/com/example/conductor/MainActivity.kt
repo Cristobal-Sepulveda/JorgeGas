@@ -141,28 +141,28 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.modoClaro -> {
-                lifecycleScope.launch{
+/*                lifecycleScope.launch{
                     withContext(Dispatchers.IO){
                         validarToken()
                     }
-                }
-/*                Toast.makeText(
+                }*/
+                Toast.makeText(
                     this,
-                    "Esta funcionalidad se implementará en un futuro.",
+                    R.string.proxima_funcionalidad,
                     Toast.LENGTH_LONG
-                ).show()*/
+                ).show()
             }
             R.id.modoOscuro -> {
                 Toast.makeText(
                     this,
-                    "Esta funcionalidad se implementará en un futuro.",
+                    R.string.proxima_funcionalidad,
                     Toast.LENGTH_LONG
                 ).show()
             }
             R.id.acercaDe -> {
                 Toast.makeText(
                     this,
-                    "Esta funcionalidad se implementará en un futuro.",
+                    R.string.proxima_funcionalidad,
                     Toast.LENGTH_LONG
                 ).show()
             }
