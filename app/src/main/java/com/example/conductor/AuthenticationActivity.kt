@@ -84,17 +84,14 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun launchSignInFlow() {
         runOnUiThread {
             aparecerYDesaparecerElementosAlIniciarLogin()
-            val inputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(
-                binding.edittextPassword.windowToken,
-                0
-            )
+            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(binding.edittextPassword.windowToken, 0)
         }
 
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val activeNetwork = connectivityManager.activeNetworkInfo
+
         //aquí chequeo si hay internet
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
             val email = binding.edittextEmail.text.toString()
@@ -103,7 +100,6 @@ class AuthenticationActivity : AppCompatActivity() {
         } else {
             runOnUiThread {
                 aparecerYDesaparecerElementosTrasNoLogin()
-
                 Snackbar.make(
                     findViewById(R.id.container),
                     R.string.no_hay_internet,
@@ -116,8 +112,8 @@ class AuthenticationActivity : AppCompatActivity() {
     private fun preIntentarLogin(email: String, password: String) {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-
-                //primer error controlado: Chequear si el ambos input tienen valores, se dejo aqui por limpieza del codigo
+                /*primer error controlado: Chequear si el ambos input tienen valores,
+                 se dejo aqui por limpieza del codigo*/
                 if(email =="" || password ==""){
                     controlDeError(message = R.string.login_error_campos_vacios )
                     return@withContext
@@ -159,12 +155,12 @@ class AuthenticationActivity : AppCompatActivity() {
             return
         }
 
-        if(solicitarTokenDeSesion(this) == "error"){
+/*        if(solicitarTokenDeSesion(this) == "error"){
             runOnUiThread {
                 aparecerYDesaparecerElementosTrasNoLogin()
             }
             return
-        }
+        }*/
 
         lifecycleScope.launch{
             withContext(Dispatchers.IO){
