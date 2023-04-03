@@ -52,6 +52,7 @@ import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -307,8 +308,8 @@ class MainActivity : AppCompatActivity(), MenuProvider {
 
         if (permissionsToRequest.isNotEmpty()) {
             val requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()
-            ) { results ->
+                ActivityResultContracts.RequestMultiplePermissions()) { results ->
+
                 for (result in results) {
                     if (!result.value && result.key == Manifest.permission.ACCESS_FINE_LOCATION) {
                         Snackbar.make(
@@ -326,6 +327,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                     }
                 }
             }
+
             if (permissionsToRequest.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 AlertDialog.Builder(this)
                     .setTitle("Permiso de ubicación")
@@ -462,6 +464,14 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                     docRef.addOnSuccessListener {
                         lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
+                                // When a user logs out
+                                FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        // Remove the FCM token from your backend server
+                                        Log.i("MyFirebaseMsgService", "Remove the FCM token from your backend server")
+                                    }
+                                }
+
                                 dataSource.eliminarUsuariosEnSqlite()
                                 FirebaseAuth.getInstance().signOut()
                                 this@MainActivity.finish()

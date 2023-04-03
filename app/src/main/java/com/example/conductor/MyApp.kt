@@ -11,6 +11,7 @@ import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
 import com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module

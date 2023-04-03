@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,7 +132,6 @@ class AuthenticationActivity : AppCompatActivity() {
                     operation.addOnSuccessListener { result ->
                         lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-
                                 iniciandoLogin(result)
                             }
                         }
@@ -161,6 +162,10 @@ class AuthenticationActivity : AppCompatActivity() {
             }
             return
         }*/
+        if(!dataSource.guardandoTokenDeFCMEnFirestore()) {
+            controlDeError(message = R.string.login_error_falla_en_fcm)
+            return
+        }
 
         lifecycleScope.launch{
             withContext(Dispatchers.IO){
@@ -169,6 +174,7 @@ class AuthenticationActivity : AppCompatActivity() {
                     .update("sesionActiva", true)
 
                 ultimoControlDeError.addOnSuccessListener {
+
                     runOnUiThread {
                         binding.progressBar.visibility = View.GONE
                     }
