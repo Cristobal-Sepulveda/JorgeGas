@@ -467,20 +467,26 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                                 // When a user logs out
                                 FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
+                                        lifecycleScope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                if(dataSource.eliminandoTokenDeFCMEnFirestore()){
+                                                    dataSource.eliminarUsuariosEnSqlite()
+                                                    FirebaseAuth.getInstance().signOut()
+                                                    this@MainActivity.finish()
+                                                    startActivity(
+                                                        Intent(
+                                                            this@MainActivity,
+                                                            AuthenticationActivity::class.java
+                                                        )
+                                                    )
+                                                    Log.i("MyFirebaseMsgService", "Remove the FCM token from your backend server")
+                                                }
+                                            }
+                                        }
                                         // Remove the FCM token from your backend server
-                                        Log.i("MyFirebaseMsgService", "Remove the FCM token from your backend server")
+
                                     }
                                 }
-
-                                dataSource.eliminarUsuariosEnSqlite()
-                                FirebaseAuth.getInstance().signOut()
-                                this@MainActivity.finish()
-                                startActivity(
-                                    Intent(
-                                        this@MainActivity,
-                                        AuthenticationActivity::class.java
-                                    )
-                                )
                             }
                         }
                     }

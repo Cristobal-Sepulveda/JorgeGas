@@ -33,4 +33,5 @@ interface AppDataSource {
     suspend fun eliminarTokenDeSesion()
     suspend fun validarTokenDeSesion(): Boolean
     suspend fun guardandoTokenDeFCMEnFirestore(): Boolean
+    suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean
 }
