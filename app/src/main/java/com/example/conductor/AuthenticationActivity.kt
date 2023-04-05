@@ -35,6 +35,7 @@ class AuthenticationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
         binding.imageviewLogoAbastible.visibility = View.VISIBLE
         binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
@@ -214,6 +215,7 @@ class AuthenticationActivity : AppCompatActivity() {
             return true
         }
         //tercer error controlado: Chequear si el usuario está deshabilitado
+
         if (result.documents[0].get("deshabilitada") as Boolean) {
             controlDeError(message = R.string.login_error_cuenta_deshabilitada )
             return true

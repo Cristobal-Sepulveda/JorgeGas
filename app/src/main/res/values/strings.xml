@@ -170,6 +170,11 @@
         Si no lo aceptas, no podrás trabajar.</string>
     <string name="proxima_funcionalidad">Esta funcionalidad se implementará en un futuro.</string>
     <string name="login_error_falla_en_fcm">Error en obtener token de sesión de FCM, intentelo nuevamente.</string>
+    <string name="asistencia">Asistencia</string>
+    <string name="control_de_asistencia">Control de asistencia</string>
+    <string name="tomar_foto">Tomar foto</string>
+    <string name="entrada">Entrada</string>
+    <string name="salida">Salida</string>
 
     <!--String arrays-->
     <string-array name="roles">

@@ -122,4 +122,10 @@
         android:name="com.example.conductor.ui.estadoactual.EstadoActualFragment"
         android:label="EstadoActualFragment" />
 
+    <fragment
+        android:id="@+id/navigation_asistencia"
+        android:name="com.example.conductor.ui.asistencia.AsistenciaFragment"
+        android:label="AsistenciaFragment" />
+
+
 </navigation>

@@ -23,7 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.databinding.FragmentMapBinding
 import com.example.conductor.utils.*
 import com.example.conductor.utils.Constants.ACTION_MAP_LOCATION_BROADCAST

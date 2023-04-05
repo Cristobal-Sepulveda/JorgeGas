@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView_asistencia_titulo"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/control_de_asistencia"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textSize="@dimen/text_medium_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/space_big"
+        />
+
+    <ImageView
+        android:id="@+id/imageView_asistencia_tomarFoto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_asistencia_titulo"
+        android:layout_marginTop="@dimen/space_big"
+        android:src="@drawable/baseline_camera_alt_24_3c"
+        android:contentDescription="@string/tomar_foto"
+        />
+
+    <Button
+        android:id="@+id/button_asistencia_entrada"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/entrada"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_asistencia_button_entrada"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_asistencia_salida"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_asistencia_tomarFoto"
+        />
+
+    <Button
+        android:id="@+id/button_asistencia_salida"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/salida"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_asistencia_button_salida"
+        app:layout_constraintStart_toEndOf="@+id/button_asistencia_entrada"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_asistencia_tomarFoto"
+        />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_asistencia_listadoDiasConRegistro"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_asistencia_entrada"
+        android:layout_margin="@dimen/space_big"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

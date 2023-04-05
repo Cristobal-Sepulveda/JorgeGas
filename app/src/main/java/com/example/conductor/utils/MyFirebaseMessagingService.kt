@@ -14,6 +14,7 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.conductor.MainActivity
+import com.example.conductor.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -39,9 +40,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         // Check if message contains a notification payload.
-        remoteMessage.notification?.let {
+       remoteMessage.notification?.let {
+           it.body?.let { it1 -> sendNotification(it1) }
             Log.d(TAG, "Message Notification Body: ${it.body}")
         }
+
+
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
@@ -92,7 +96,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val channelId = "fcm_default_channel"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("FCM Message")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Jorge Gas Management")
             .setContentText(messageBody)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)

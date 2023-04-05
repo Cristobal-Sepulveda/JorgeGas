@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "752787555489",
-    "project_id": "jorgegas-management-desarrollo",
-    "storage_bucket": "jorgegas-management-desarrollo.appspot.com"
+    "project_number": "595873838532",
+    "project_id": "jorgegas-management-desa-a0dc2",
+    "storage_bucket": "jorgegas-management-desa-a0dc2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:752787555489:android:43d4644b919f4a57a85ce0",
+        "mobilesdk_app_id": "1:595873838532:android:49a132023f1ce5208ee091",
         "android_client_info": {
           "package_name": "com.jorgegas.jorgegasmanagement"
         }
       },
       "oauth_client": [
         {
-          "client_id": "752787555489-i3mmqvkcsdn7m6e68gqgeneiigcm844r.apps.googleusercontent.com",
+          "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDTlczcM7z1SMMgjJYOuIv5LhXLOqtV4Zg"
+          "current_key": "AIzaSyDZ7blJDPgE5sDkSCj_Ial6u5JsnmEh1hc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "752787555489-i3mmqvkcsdn7m6e68gqgeneiigcm844r.apps.googleusercontent.com",
+              "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

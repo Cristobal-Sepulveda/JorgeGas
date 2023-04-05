@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.databinding.FragmentRegistroVolanterosBinding
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.filtroregistrovolanteros.FiltroRegistroVolanterosFragment
@@ -24,7 +24,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

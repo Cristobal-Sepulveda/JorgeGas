@@ -514,4 +514,22 @@ class AppRepository(private val usuarioDao: UsuarioDao,
 
         }
     }
+
+    override suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(Dispatchers.IO){
+                val deferred = CompletableDeferred<Boolean>()
+
+                cloudDB.collection("Usuarios")
+                    .document(firebaseAuth.currentUser!!.uid).update("tokenDeFCM", "")
+                    .addOnSuccessListener {
+                        deferred.complete(true)
+                    }
+                    .addOnFailureListener {
+                        deferred.complete(false)
+                    }
+                deferred.await()
+            }
+        }
+    }
 }

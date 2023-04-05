@@ -3,15 +3,13 @@ package com.example.conductor.ui.administrarcuentas
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import androidx.navigation.fragment.findNavController
 import com.example.conductor.R
 import com.example.conductor.adapter.UsuarioAdapter
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentAdministrarCuentasBinding
