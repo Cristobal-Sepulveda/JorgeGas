@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.conductor.ui.estadoactual.base.BaseViewModel
+import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.google.firebase.firestore.DocumentSnapshot

@@ -126,4 +126,10 @@
         android:name="com.example.conductor.ui.asistencia.AsistenciaFragment"
         android:label="AsistenciaFragment" />
 
+    <fragment
+        android:id="@+id/navigation_asistencia"
+        android:name="com.example.conductor.ui.asistencia.AsistenciaFragment"
+        android:label="AsistenciaFragment" />
+
+
 </navigation>

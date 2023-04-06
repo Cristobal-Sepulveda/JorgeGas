@@ -1,19 +1,14 @@
 package com.example.conductor.ui.filtroregistrovolanteros
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
 import com.example.conductor.databinding.FragmentFiltroRegistroVolanterosBinding
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
-import com.example.conductor.ui.registrovolanteros.RegistroVolanterosFragment
 import com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip

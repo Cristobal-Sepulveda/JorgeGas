@@ -34,8 +34,8 @@ android {
         applicationId "com.jorgegas.jorgegasmanagement"
         minSdk 26
         targetSdk 33
-        versionCode 4
-        versionName "1.4"
+        versionCode 6
+        versionName "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 googleMapsApiKey : googleMapsApiKey,
@@ -168,11 +168,12 @@ dependencies {
     // Add the dependencies for the desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore:24.4.4'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
     implementation "com.google.firebase:firebase-auth-ktx"
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-firestore:24.4.5'
+    implementation 'com.google.firebase:firebase-messaging:23.1.2'
 
     // Add the dependency for the Performance Monitoring library
     // When using the BoM, you don't specify versions in Firebase library dependencies

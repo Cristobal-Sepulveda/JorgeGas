@@ -31,8 +31,13 @@ interface AppDataSource {
     suspend fun solicitarTokenDeSesion(context: Context): String
     suspend fun eliminarTokenDeSesion()
     suspend fun validarTokenDeSesion(): Boolean
+<<<<<<< HEAD
     suspend fun registrarIngresoDeJornada(context: Context): Boolean
     suspend fun registrarSalidaDeJornada(context: Context): Boolean
     suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean
     suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean
+=======
+    suspend fun guardandoTokenDeFCMEnFirestore(): Boolean
+    suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean
+>>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
 }

@@ -9,9 +9,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +21,7 @@ import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
 import com.example.conductor.utils.*
@@ -32,8 +30,6 @@ import com.example.conductor.utils.Constants.EXTRA_LOCATION
 import com.example.conductor.utils.Constants.firebaseAuth
 import com.example.conductor.utils.SharedPreferenceUtil
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

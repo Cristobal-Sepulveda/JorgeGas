@@ -1,10 +1,8 @@
 package com.example.conductor.data
 
-import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LiveData
 import com.example.conductor.R
 import com.example.conductor.data.daos.JwtDao
 import com.example.conductor.data.daos.LatLngYHoraActualDao
@@ -23,18 +21,11 @@ import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.example.conductor.utils.JwtApi
-import com.example.conductor.utils.JwtApiService
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.GeoPoint
-import com.google.gson.JsonObject
-import com.squareup.moshi.Moshi
-import org.json.JSONObject
+import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
 import retrofit2.await
-import retrofit2.awaitResponse
 import java.time.LocalDate
-import java.time.LocalTime
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val usuarioDao: UsuarioDao,
@@ -492,6 +483,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
+<<<<<<< HEAD
     override suspend fun registrarIngresoDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -527,6 +519,53 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<Boolean>()
                 deferred.complete(true)
+=======
+    override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(Dispatchers.IO){
+                val deferred = CompletableDeferred<Boolean>()
+
+                FirebaseMessaging.getInstance().token
+                    .addOnSuccessListener { token ->
+                        Log.i("MyFirebaseMsgService", "token: $token")
+                        if (token == null) {
+                            deferred.complete(false)
+                            return@addOnSuccessListener
+                        }
+
+                        cloudDB.collection("Usuarios")
+                            .document(firebaseAuth.currentUser!!.uid).update("tokenDeFCM", token)
+                            .addOnSuccessListener{
+                                deferred.complete(true)
+                            }
+                            .addOnFailureListener{
+                                deferred.complete(false)
+                            }
+                    }
+                    .addOnFailureListener{
+                        deferred.complete(false)
+                    }
+
+                deferred.await()
+            }
+
+        }
+    }
+
+    override suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(Dispatchers.IO){
+                val deferred = CompletableDeferred<Boolean>()
+
+                cloudDB.collection("Usuarios")
+                    .document(firebaseAuth.currentUser!!.uid).update("tokenDeFCM", "")
+                    .addOnSuccessListener {
+                        deferred.complete(true)
+                    }
+                    .addOnFailureListener {
+                        deferred.complete(false)
+                    }
+>>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
                 deferred.await()
             }
         }

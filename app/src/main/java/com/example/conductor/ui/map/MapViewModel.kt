@@ -3,14 +3,8 @@ package com.example.conductor.ui.map
 import android.app.Application
 import android.util.Log
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.conductor.ui.estadoactual.base.BaseViewModel
+import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
-import com.example.conductor.data.data_objects.dbo.UsuarioDBO
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 enum class CloudDownloadComplete{LOADING, ERROR, DONE}

@@ -18,9 +18,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
-import com.example.conductor.BuildConfig
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants
 import com.example.conductor.databinding.FragmentDetalleVolanteroBinding
@@ -34,7 +33,6 @@ import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
-import com.google.maps.GeoApiContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

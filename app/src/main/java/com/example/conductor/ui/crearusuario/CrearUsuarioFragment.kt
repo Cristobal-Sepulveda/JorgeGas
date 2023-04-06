@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
-import com.example.conductor.ui.estadoactual.base.BaseFragment
+import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentCrearUsuarioBinding
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
