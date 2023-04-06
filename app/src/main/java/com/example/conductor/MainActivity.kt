@@ -141,11 +141,11 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.modoClaro -> {
-/*                lifecycleScope.launch{
+                lifecycleScope.launch{
                     withContext(Dispatchers.IO){
                         validarToken()
                     }
-                }*/
+                }
                 Toast.makeText(
                     this,
                     R.string.proxima_funcionalidad,

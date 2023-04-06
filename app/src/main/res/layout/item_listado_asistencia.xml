@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name ="asistenciaItem"
+            type ="com.example.conductor.data.data_objects.domainObjects.Asistencia"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/textView_itemListadoAsistencia_fecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="05-04-2023" />
+
+        <TextView
+            android:id="@+id/textView_itemListadoAsistencia_entrada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/entrada"
+            android:layout_margin="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_fecha"
+            />
+
+        <TextView
+            android:id="@+id/textView_itemListadoAsistencia_salida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/salida"
+            android:layout_margin="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_entrada"
+            />
+
+        <TextView
+            android:id="@+id/textView_itemListadoAsistencia_horaEntrada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/space_small"
+            app:layout_constraintStart_toEndOf="@id/textView_itemListadoAsistencia_entrada"
+            app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_fecha"
+            tools:text="10:26:03"
+            />
+
+        <TextView
+            android:id="@+id/textView_itemListadoAsistencia_horaSalida"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="@id/textView_itemListadoAsistencia_horaEntrada"
+            app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_entrada"
+            tools:text="10:26:03"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

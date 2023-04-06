@@ -169,6 +169,12 @@
 
         Si no lo aceptas, no podrás trabajar.</string>
     <string name="proxima_funcionalidad">Esta funcionalidad se implementará en un futuro.</string>
+    <string name="asistencia">Asistencia</string>
+    <string name="control_de_asistencia">Control de asistencia</string>
+    <string name="tomar_selfie">Tomar Selfie</string>
+    <string name="pedir_selfie">Envia una selfie para poder\n\n marcar entrada o salida</string>
+    <string name="entrada">Entrada</string>
+    <string name="salida">Salida</string>
 
     <!--String arrays-->
     <string-array name="roles">

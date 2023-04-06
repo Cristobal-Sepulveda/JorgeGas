@@ -12,7 +12,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
     suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero>
-
     suspend fun obtenerRegistroTrayectoVolanterosColRef(): List<DocumentSnapshot>
     suspend fun ingresarUsuarioAFirestore(usuario:Usuario):Boolean
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
@@ -32,4 +31,8 @@ interface AppDataSource {
     suspend fun solicitarTokenDeSesion(context: Context): String
     suspend fun eliminarTokenDeSesion()
     suspend fun validarTokenDeSesion(): Boolean
+    suspend fun registrarIngresoDeJornada(context: Context): Boolean
+    suspend fun registrarSalidaDeJornada(context: Context): Boolean
+    suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean
+    suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean
 }

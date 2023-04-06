@@ -491,4 +491,44 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+    override suspend fun registrarIngresoDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                deferred.complete(true)
+                deferred.await()
+            }
+        }
+    }
+
+    override suspend fun registrarSalidaDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                deferred.complete(true)
+                deferred.await()
+            }
+        }
+    }
+
+    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                deferred.complete(true)
+                deferred.await()
+            }
+        }
+    }
+
+    override suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                deferred.complete(true)
+                deferred.await()
+            }
+        }
+    }
 }
