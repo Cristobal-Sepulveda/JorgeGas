@@ -169,20 +169,14 @@
 
         Si no lo aceptas, no podrás trabajar.</string>
     <string name="proxima_funcionalidad">Esta funcionalidad se implementará en un futuro.</string>
-<<<<<<< HEAD
-    <string name="asistencia">Asistencia</string>
-    <string name="control_de_asistencia">Control de asistencia</string>
     <string name="tomar_selfie">Tomar Selfie</string>
     <string name="pedir_selfie">Envia una selfie para poder\n\n marcar entrada o salida</string>
-=======
     <string name="login_error_falla_en_fcm">Error en obtener token de sesión de FCM, intentelo nuevamente.</string>
     <string name="asistencia">Asistencia</string>
     <string name="control_de_asistencia">Control de asistencia</string>
     <string name="tomar_foto">Tomar foto</string>
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
     <string name="entrada">Entrada</string>
     <string name="salida">Salida</string>
-
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

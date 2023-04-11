@@ -1,6 +1,8 @@
 package com.example.conductor.data
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.example.conductor.R
@@ -20,7 +22,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
+import com.example.conductor.utils.JornadaRequest
 import com.example.conductor.utils.JwtApi
+import com.example.conductor.utils.RegistroJornadaApi
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
@@ -483,27 +487,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-<<<<<<< HEAD
-    override suspend fun registrarIngresoDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                val deferred = CompletableDeferred<Boolean>()
-                deferred.complete(true)
-                deferred.await()
-            }
-        }
-    }
-
-    override suspend fun registrarSalidaDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                val deferred = CompletableDeferred<Boolean>()
-                deferred.complete(true)
-                deferred.await()
-            }
-        }
-    }
-
     override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -516,15 +499,17 @@ class AppRepository(private val usuarioDao: UsuarioDao,
 
     override suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
+            withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<Boolean>()
                 deferred.complete(true)
-=======
+                deferred.await()
+            }
+        }
+    }
     override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
                 val deferred = CompletableDeferred<Boolean>()
-
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { token ->
                         Log.i("MyFirebaseMsgService", "token: $token")
@@ -565,7 +550,71 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     .addOnFailureListener {
                         deferred.complete(false)
                     }
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
+                deferred.await()
+            }
+        }
+    }
+
+    override suspend fun registrarIngresoDeJornada(context: Context,
+                                                   latitude: Double,
+                                                   longitude: Double, ): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val deferred = CompletableDeferred<Boolean>()
+                try{
+                    val nombreCompleto = usuarioDao.obtenerUsuarios().first().nombre + " " + usuarioDao.obtenerUsuarios().first().apellidos
+                    val jornadaRequest = JornadaRequest(
+                        firebaseAuth.currentUser!!.uid,
+                        nombreCompleto,
+                        latitude,
+                        longitude
+                    )
+                    val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.ingresoJornada(jornadaRequest).await()
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            request.msg,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    deferred.complete(true)
+                } catch(e: HttpException){
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            e.response()?.errorBody()?.string(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                deferred.await()
+            }
+        }
+    }
+
+    override suspend fun registrarSalidaDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                try{
+                    val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            request.msg,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    deferred.complete(true)
+                } catch(e: HttpException){
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            e.response()?.errorBody()?.string(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
                 deferred.await()
             }
         }

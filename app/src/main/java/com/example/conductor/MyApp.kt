@@ -12,7 +12,6 @@ import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
 import com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
@@ -74,20 +73,12 @@ class MyApp : Application() {
                     get() as AppDataSource
                 )
             }
-<<<<<<< HEAD
-
-=======
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
             single{
                 AsistenciaViewModel(
                     get(),
                     get() as AppDataSource
                 )
             }
-<<<<<<< HEAD
-
-=======
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
             //LOCAL_DATABASE, here im creating the local database in the first start and
             // after that, the db instance persist on the User phone, even if he close the app
             single { getDatabase(this@MyApp).usuarioDao }

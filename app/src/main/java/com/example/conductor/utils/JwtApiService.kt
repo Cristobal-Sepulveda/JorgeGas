@@ -1,7 +1,6 @@
 package com.example.conductor.utils
 
-import com.example.conductor.utils.Constants.JWTAPI_URL
-import org.json.JSONObject
+import com.example.conductor.utils.Constants.backend_url
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -25,7 +24,7 @@ interface JwtApiService {
 object JwtApi{
     private val retrofitJwt = Retrofit.Builder()
         .addConverterFactory(ScalarsConverterFactory.create())
-        .baseUrl(JWTAPI_URL)
+        .baseUrl(backend_url)
         .build()
 
     val RETROFIT_SERVICE_TOKEN: JwtApiService by lazy{

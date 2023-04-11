@@ -1,73 +1,13 @@
 {
   "project_info": {
-<<<<<<< HEAD
     "project_number": "595873838532",
     "project_id": "jorgegas-management-desa-a0dc2",
     "storage_bucket": "jorgegas-management-desa-a0dc2.appspot.com"
-=======
-<<<<<<< HEAD
-    "project_number": "595873838532",
-    "project_id": "jorgegas-management-desa-a0dc2",
-    "storage_bucket": "jorgegas-management-desa-a0dc2.appspot.com"
-=======
-    "project_number": "563767894373",
-    "project_id": "jorge-gas-management",
-    "storage_bucket": "jorge-gas-management.appspot.com"
->>>>>>> cc3ca3de41c81b00f6af158ac27e6917cb0e7dc5
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
   },
   "client": [
     {
       "client_info": {
-<<<<<<< HEAD
         "mobilesdk_app_id": "1:595873838532:android:49a132023f1ce5208ee091",
-=======
-<<<<<<< HEAD
-        "mobilesdk_app_id": "1:595873838532:android:49a132023f1ce5208ee091",
-=======
-        "mobilesdk_app_id": "1:563767894373:android:11e713e0a3ac8d4d77818c",
->>>>>>> cc3ca3de41c81b00f6af158ac27e6917cb0e7dc5
-        "android_client_info": {
-          "package_name": "com.example.conductor"
-        }
-      },
-      "oauth_client": [
-        {
-<<<<<<< HEAD
-          "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
-=======
-          "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
->>>>>>> cc3ca3de41c81b00f6af158ac27e6917cb0e7dc5
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-<<<<<<< HEAD
-          "current_key": "AIzaSyDZ7blJDPgE5sDkSCj_Ial6u5JsnmEh1hc"
-=======
-          "current_key": "AIzaSyCxAGSq_hcAZ8W9dEf-Oq6t28Itrig5glg"
->>>>>>> cc3ca3de41c81b00f6af158ac27e6917cb0e7dc5
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-<<<<<<< HEAD
-              "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
-=======
-              "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:563767894373:android:235f25aaf299065477818c",
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
         "android_client_info": {
           "package_name": "com.jorgegas.jorgegasmanagement"
         }
@@ -87,12 +27,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-<<<<<<< HEAD
               "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
-=======
-              "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
->>>>>>> cc3ca3de41c81b00f6af158ac27e6917cb0e7dc5
->>>>>>> 21085a007f3eef35aa54bb51323cfc1fe349ef31
               "client_type": 3
             }
           ]
