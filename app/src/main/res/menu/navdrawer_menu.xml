@@ -15,6 +15,12 @@
         />
 
     <item
+        android:title="@string/registro_de_asistencia"
+        android:id="@+id/navigation_registro_de_asistencia"
+        android:icon="@drawable/baseline_fingerprint_24"
+        />
+
+    <item
         android:title="@string/registro_trayecto_volanteros"
         android:id="@+id/navigation_registro_trayecto_volanteros"
         android:icon="@drawable/outline_auto_stories_24"

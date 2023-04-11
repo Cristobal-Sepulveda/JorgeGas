@@ -177,6 +177,7 @@
     <string name="tomar_foto">Tomar foto</string>
     <string name="entrada">Entrada</string>
     <string name="salida">Salida</string>
+    <string name="registro_de_asistencia">Registro de Asistencia</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

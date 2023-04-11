@@ -220,11 +220,12 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                 ponerElNombreRolYFotoEnElDrawableMenu(user)
 
                 if (user.first().rol.isNotEmpty() && user.first().rol == "Administrador"){
-                    binding.navView.menu.findItem(R.id.navigation_asistencia).isVisible = false
+                    //binding.navView.menu.findItem(R.id.navigation_asistencia).isVisible = false
                 }
                 if (user.first().rol.isNotEmpty() && user.first().rol != "Administrador") {
                     binding.navView.menu.findItem(R.id.navigation_gestion_de_volanteros).isVisible = false
                     binding.navView.menu.findItem(R.id.navigation_registro_trayecto_volanteros).isVisible = false
+                    binding.navView.menu.findItem(R.id.navigation_registro_de_asistencia).isVisible = false
                 }
 
                 if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {

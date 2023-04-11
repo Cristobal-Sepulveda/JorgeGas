@@ -126,6 +126,10 @@
         android:id="@+id/navigation_asistencia"
         android:name="com.example.conductor.ui.asistencia.AsistenciaFragment"
         android:label="AsistenciaFragment" />
+    <fragment
+        android:id="@+id/navigation_registro_de_asistencia"
+        android:name="com.example.conductor.ui.registrodeasistencia.RegistroDeAsistenciaFragment"
+        android:label="RegistroDeAsistenciaFragment" />
 
 
 </navigation>

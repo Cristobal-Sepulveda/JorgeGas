@@ -50,21 +50,27 @@ class AsistenciaFragment: BaseFragment() {
     private val LOCATION_PERMISSION_INDEX = 0
     private val BACKGROUND_LOCATION_PERMISSION_INDEX = 1
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
         _binding = FragmentAsistenciaBinding.inflate(inflater, container, false)
-        val adapter = AsistenciaAdapter(
-            _viewModel,
-            _appDataSource,
-            AsistenciaAdapter.OnClickListener { _ -> })
+        _binding!!.lifecycleOwner = this
+        _binding!!.viewModel = _viewModel
+
+        val adapter = AsistenciaAdapter(_viewModel, _appDataSource, AsistenciaAdapter.OnClickListener { _ -> })
+
         _binding!!.recyclerviewAsistenciaListadoDeAsistencia.adapter = adapter
 
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         checkPermissionsAndGetDeviceLocation()
+        _viewModel.desplegarAsistenciaEnRecyclerView(requireContext())
+
+
+        _viewModel.domainAsistenciaEnScreen.observe(requireActivity()){
+            it?.let {
+                adapter.submitList(it)
+            }
+        }
 
         _binding!!.buttonAsistenciaEntrada.setOnClickListener {
             lifecycleScope.launch {

@@ -12,6 +12,7 @@ import com.example.conductor.data.daos.UsuarioDao
 import com.example.conductor.data.data_objects.dbo.JwtDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
+import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants.firebaseAuth
@@ -496,16 +497,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
-    override suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean = withContext(ioDispatcher) {
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher) {
-                val deferred = CompletableDeferred<Boolean>()
-                deferred.complete(true)
-                deferred.await()
-            }
-        }
-    }
     override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
@@ -619,4 +610,43 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+    override suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Asistencia> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val registroTrayectoVolantero = mutableListOf<Asistencia>()
+                val deferred = CompletableDeferred<MutableList<Asistencia>>()
+
+                cloudDB.collection("RegistroDeAsistencia")
+                    .document(firebaseAuth.currentUser!!.uid).get()
+                    .addOnFailureListener{
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "Error al obtener el registro de asistencia",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        deferred.complete(registroTrayectoVolantero)
+                    }
+                    .addOnSuccessListener{
+                        val listado = it.get("registroAsistencia") as MutableList<*>
+                        listado.forEach{ registro ->
+                            val asistencia = registro as HashMap<*, *>
+                            registroTrayectoVolantero.add(
+                                Asistencia(
+                                    asistencia["fecha"] as String,
+                                    asistencia["ingresoJornada"] as String,
+                                    asistencia["salidaJornada"] as String
+                                )
+                            )
+                        }
+                        deferred.complete(registroTrayectoVolantero)
+                    }
+                deferred.await()
+            }
+        }
+    }
+
+
 }

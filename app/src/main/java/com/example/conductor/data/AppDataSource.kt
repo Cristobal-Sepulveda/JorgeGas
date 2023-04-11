@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
+import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.data.network.DistanceMatrixResponse
@@ -32,7 +33,7 @@ interface AppDataSource {
     suspend fun eliminarTokenDeSesion()
     suspend fun validarTokenDeSesion(): Boolean
     suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean
-    suspend fun obtenerRegistroDeAsistencia(context: Context): Boolean
+    suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Asistencia>
     suspend fun guardandoTokenDeFCMEnFirestore(): Boolean
     suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean
 

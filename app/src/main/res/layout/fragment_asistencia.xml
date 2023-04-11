@@ -1,113 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f5f5f5">
+    >
 
-    <TextView
-        android:id="@+id/textView_asistencia_titulo"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/space_big"
-        android:text="@string/control_de_asistencia"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        android:textSize="@dimen/text_medium_24"
-        />
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.asistencia.AsistenciaViewModel" />
+    </data>
 
-    <ImageView
-        android:id="@+id/imageView_asistencia_tomarFoto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_asistencia_titulo"
-        android:src="@drawable/baseline_camera_alt_24_3c"
-        android:layout_marginTop="@dimen/space_medium"
-        android:contentDescription="@string/tomar_selfie"
-        />
-
-    <TextView
-        android:id="@+id/textView_asistencia_pedirFoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView_asistencia_tomarFoto"
-        android:text="@string/pedir_selfie"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        android:textSize="@dimen/text_medium"
-        android:layout_marginTop="@dimen/space_big"
-        android:src="@drawable/baseline_camera_alt_24_3c"
-        android:contentDescription="@string/tomar_foto"
-        />
-
-    <Button
-        android:id="@+id/button_asistencia_entrada"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:text="@string/entrada"
-        android:textColor="@color/white"
-        android:layout_marginTop="@dimen/space_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_asistencia_salida"
-        app:layout_constraintTop_toBottomOf="@id/textView_asistencia_pedirFoto"
-        android:background="@drawable/shape_button_entrada" />
-
-    <Button
-        android:id="@+id/button_asistencia_salida"
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:text="@string/salida"
-        android:textColor="@color/white"
-        android:layout_marginTop="@dimen/space_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/button_asistencia_entrada"
-        app:layout_constraintTop_toBottomOf="@id/textView_asistencia_pedirFoto"
-        android:background="@drawable/shape_button_salida"
-        />
-
-    <LinearLayout
-        android:id="@+id/linearLayout_asistencia_filtro"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_marginTop="@dimen/space_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_asistencia_entrada"
-        android:orientation="vertical">
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/baseline_calendar_today_24_orange"
-            android:layout_marginStart="@dimen/space_medium"
-            android:layout_marginTop="@dimen/space_small"
-            android:contentDescription="@string/calendario"
+        android:layout_height="match_parent"
+        android:background="#f5f5f5">
+
+        <TextView
+            android:id="@+id/textView_asistencia_titulo"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/space_big"
+            android:text="@string/control_de_asistencia"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textSize="@dimen/text_medium_24"
             />
 
-        <com.google.android.material.divider.MaterialDivider
+        <Button
+            android:id="@+id/button_asistencia_entrada"
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:text="@string/entrada"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/space_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_asistencia_salida"
+            app:layout_constraintTop_toBottomOf="@id/textView_asistencia_titulo"
+            android:background="@drawable/shape_button_entrada" />
+
+        <Button
+            android:id="@+id/button_asistencia_salida"
+            android:layout_width="144dp"
+            android:layout_height="wrap_content"
+            android:text="@string/salida"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/space_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_asistencia_entrada"
+            app:layout_constraintTop_toBottomOf="@id/textView_asistencia_titulo"
+            android:background="@drawable/shape_button_salida"
+            />
+
+        <LinearLayout
+            android:id="@+id/linearLayout_asistencia_filtro"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="@dimen/space_small"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginTop="@dimen/space_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_asistencia_entrada"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/baseline_calendar_today_24_orange"
+                android:layout_marginStart="@dimen/space_medium"
+                android:layout_marginTop="@dimen/space_small"
+                android:contentDescription="@string/calendario"
+                />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/space_small"
+                />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_asistencia_listadoDeAsistencia"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <ProgressBar
+            android:id="@+id/circularProgressIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:contentDescription="@string/loading"
+            app:cloudRequestStatusCircularProgress="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_asistencia_listadoDeAsistencia"
             />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView_administrarCuentas_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_connection_error_100"
+            app:cloudRequestStatusImage="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintEnd_toEndOf="@id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintTop_toTopOf="@id/recyclerview_asistencia_listadoDeAsistencia"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerview_asistencia_listadoDeAsistencia"
+            android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_asistencia_listadoDeAsistencia"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

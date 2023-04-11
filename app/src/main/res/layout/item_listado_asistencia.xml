@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/space_small"
+            android:text="@{asistenciaItem.fecha}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="05-04-2023" />
@@ -48,6 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/space_small"
+            android:text="@{asistenciaItem.ingresoJornada}"
             app:layout_constraintStart_toEndOf="@id/textView_itemListadoAsistencia_entrada"
             app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_fecha"
             tools:text="10:26:03"
@@ -58,6 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_small"
+            android:text="@{asistenciaItem.salidaJornada}"
             app:layout_constraintStart_toStartOf="@id/textView_itemListadoAsistencia_horaEntrada"
             app:layout_constraintTop_toBottomOf="@id/textView_itemListadoAsistencia_entrada"
             tools:text="10:26:03"

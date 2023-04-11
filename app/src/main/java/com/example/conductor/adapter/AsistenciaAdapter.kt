@@ -42,19 +42,13 @@ class AsistenciaAdapter(viewModel: AsistenciaViewModel,
         }
 
         override fun areContentsTheSame(oldItem: Asistencia, newItem: Asistencia): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.fecha == newItem.fecha
         }
     }
 
     override fun onBindViewHolder(holder: AsistenciaViewHolder, position: Int) {
 
         val asistencia = getItem(position)
-        /*holder.itemView.setOnClickListener(){
-            onClickListener.onClick(usuario)
-        }*/
-        holder.itemView.findViewById<ImageView>(R.id.imageView_usuarioItem_edit).setOnClickListener{ view ->
-
-        }
         holder.bind(asistencia)
     }
 

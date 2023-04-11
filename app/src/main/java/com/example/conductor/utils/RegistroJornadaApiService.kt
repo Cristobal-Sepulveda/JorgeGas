@@ -19,9 +19,11 @@ data class JornadaRequest(
 data class ApiResponse(
     val msg: String
 )
+
 val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
+
 val moshiConverterFactory = MoshiConverterFactory.create(moshi)
 
 

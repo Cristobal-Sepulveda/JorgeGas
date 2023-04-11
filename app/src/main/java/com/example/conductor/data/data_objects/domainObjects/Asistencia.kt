@@ -7,10 +7,9 @@ import java.util.*
 
 @Parcelize
 data class Asistencia(
-    val id: String,
     val fecha: String,
-    val horaEntrada: String?,
-    val horaSalida: String?,
+    val ingresoJornada: String?,
+    val salidaJornada: String?,
 ) : Parcelable {
     fun longConverterToString(id: Long): String{
         return id.toString()
