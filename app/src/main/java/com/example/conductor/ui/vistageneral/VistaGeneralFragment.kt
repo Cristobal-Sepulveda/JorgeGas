@@ -274,7 +274,11 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
 
         _binding!!.fabVistaGeneralSinMaterial.setOnClickListener{
-
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    _viewModel.avisarQueQuedeSinMaterial(requireActivity())
+                }
+            }
         }
 
         _binding!!.imageViewVistaGeneralVolanterosFlechaBaja.setOnClickListener{

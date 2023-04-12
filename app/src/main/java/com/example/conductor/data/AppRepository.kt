@@ -648,5 +648,21 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-
+    override suspend fun avisarQueQuedeSinMaterial(context: Context){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                cloudDB.collection("RegistroTrayectoVolanteros").document(firebaseAuth.currentUser!!.uid)
+                    .update("conMaterial", false)
+                    .addOnFailureListener{
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "No se pudo procesar su requerimiento. Intentelo mas tarde",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+            }
+        }
+    }
 }

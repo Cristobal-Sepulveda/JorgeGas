@@ -103,4 +103,10 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         dataSource.guardarLatLngYHoraActualEnFirestore(context)
     }
 
+    suspend fun avisarQueQuedeSinMaterial(context:Context){
+        dataSource.avisarQueQuedeSinMaterial(context)
+    }
+
+
+
 }

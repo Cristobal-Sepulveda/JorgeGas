@@ -41,4 +41,6 @@ interface AppDataSource {
                                           latitude: Double,
                                           longitude: Double): Boolean
     suspend fun registrarSalidaDeJornada(context: Context):Boolean
+
+    suspend fun avisarQueQuedeSinMaterial(context: Context)
 }

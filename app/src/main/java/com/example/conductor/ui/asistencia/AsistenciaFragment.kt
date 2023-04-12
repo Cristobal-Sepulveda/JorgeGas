@@ -1,6 +1,7 @@
 package com.example.conductor.ui.asistencia
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Intent
@@ -62,11 +63,9 @@ class AsistenciaFragment: BaseFragment() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        checkPermissionsAndGetDeviceLocation()
         _viewModel.desplegarAsistenciaEnRecyclerView(requireContext())
 
-
-        _viewModel.domainAsistenciaEnScreen.observe(requireActivity()){
+        _viewModel.domainAsistenciaEnScreen.observe(requireActivity()) {
             it?.let {
                 adapter.submitList(it)
             }
@@ -90,109 +89,33 @@ class AsistenciaFragment: BaseFragment() {
 
         return _binding!!.root
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (
-            grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
-            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
-                    PackageManager.PERMISSION_DENIED)
-        ) {
-            Snackbar.make(
-                _binding!!.root,
-                R.string.permission_denied_explanation,
-                Snackbar.LENGTH_LONG
-            ).setAction(R.string.settings) {
-                startActivityForResult(Intent().apply {
-                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    data = Uri.fromParts(
-                        "package",
-                        "com.example.android.onematchproject",
-                        null
-                    )
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                }, 1001)
-            }.show()
-        } else {
-            val ft: FragmentTransaction = requireFragmentManager().beginTransaction()
-            if (Build.VERSION.SDK_INT >= 26) {
-                ft.setReorderingAllowed(false)
-            }
-            ft.detach(this).attach(this).commit()
-        }
-    }
-
-    private fun checkPermissionsAndGetDeviceLocation() {
-        if (foregroundAndBackgroundLocationPermissionApproved()) {
-            locationPermissionGranted = true
-        } else {
-            requestForegroundAndBackgroundLocationPermissions()
-        }
-    }
-
-    @TargetApi(29)
-    fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
-        val foregroundLocationApproved = (
-                PackageManager.PERMISSION_GRANTED ==
-                        ActivityCompat.checkSelfPermission(
-                            requireActivity(),
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        ))
-        val backgroundPermissionApproved =
-            if (runningQOrLater) {
-                PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(
-                    requireActivity(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                )
-            } else {
-                true
-            }
-        return foregroundLocationApproved && backgroundPermissionApproved
-    }
-
-    @TargetApi(29)
-    private fun requestForegroundAndBackgroundLocationPermissions() {
-        if (foregroundAndBackgroundLocationPermissionApproved())
-            return
-        var permissionsArray = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        val resultCode = when {
-            runningQOrLater -> {
-                permissionsArray += Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
-            }
-            else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
-        }
-        requestPermissions(
-            permissionsArray,
-            resultCode
-        )
-    }
-
+    @SuppressLint("MissingPermission")
     private fun getDeviceLocation() {
         try {
-            if (locationPermissionGranted) {
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(requireActivity()) { task ->
-                    if (task.isSuccessful) {
-                        lastKnownLocation = task.result
-                        if (lastKnownLocation != null) {
-                            lifecycleScope.launch{
-                                withContext(Dispatchers.IO){
-                                    _viewModel.registrarIngresoDeJornada(requireContext(), lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
-                                }
+            val locationResult = fusedLocationProviderClient.lastLocation
+            locationResult.addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    lastKnownLocation = task.result
+                    if (lastKnownLocation != null) {
+                        lifecycleScope.launch {
+                            withContext(Dispatchers.IO) {
+                                _viewModel.registrarIngresoDeJornada(
+                                    requireContext(),
+                                    lastKnownLocation!!.latitude,
+                                    lastKnownLocation!!.longitude
+                                )
                             }
-                        }else{
-                            Toast.makeText(requireContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "No se pudo obtener la ubicación",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                } else {
+                    Log.i("getDeviceLocation", "locationPermissionGranted is false")
                 }
-            } else {
-                Log.i("getDeviceLocation", "locationPermissionGranted is false")
             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
