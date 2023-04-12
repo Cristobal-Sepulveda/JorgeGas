@@ -630,6 +630,10 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         deferred.complete(registroTrayectoVolantero)
                     }
                     .addOnSuccessListener{
+                        if(it.get("registroAsistencia") == null){
+                            deferred.complete(registroTrayectoVolantero)
+                            return@addOnSuccessListener
+                        }
                         val listado = it.get("registroAsistencia") as MutableList<*>
                         listado.forEach{ registro ->
                             val asistencia = registro as HashMap<*, *>

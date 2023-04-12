@@ -1,33 +1,70 @@
 {
   "project_info": {
-    "project_number": "595873838532",
-    "project_id": "jorgegas-management-desa-a0dc2",
-    "storage_bucket": "jorgegas-management-desa-a0dc2.appspot.com"
+    "project_number": "563767894373",
+    "project_id": "jorge-gas-management",
+    "storage_bucket": "jorge-gas-management.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:595873838532:android:49a132023f1ce5208ee091",
+        "mobilesdk_app_id": "1:563767894373:android:11e713e0a3ac8d4d77818c",
         "android_client_info": {
-          "package_name": "com.jorgegas.jorgegasmanagement"
+          "package_name": "com.example.conductor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
+          "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDZ7blJDPgE5sDkSCj_Ial6u5JsnmEh1hc"
+          "current_key": "AIzaSyCxAGSq_hcAZ8W9dEf-Oq6t28Itrig5glg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "595873838532-oghp93rrmgs94p5tfb87ad7r3v6ai9n0.apps.googleusercontent.com",
+              "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563767894373:android:235f25aaf299065477818c",
+        "android_client_info": {
+          "package_name": "com.jorgegas.jorgegasmanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "563767894373-m2u68itieqk1ra216n0lrk8g9qlait8h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jorgegas.jorgegasmanagement",
+            "certificate_hash": "86e8a928600d100e6f7d986a5d063a99b440a72a"
+          }
+        },
+        {
+          "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxAGSq_hcAZ8W9dEf-Oq6t28Itrig5glg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "563767894373-r8ctrn5a0dp3umsbji06p3v8ldckmke2.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

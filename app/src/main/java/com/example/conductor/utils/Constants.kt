@@ -16,9 +16,8 @@ object Constants {
     const val ACTION_MAP_LOCATION_BROADCAST = "$PACKAGE_NAME.action.MAP_LOCATION_BROADCAST"
     internal const val EXTRA_LOCATION = "$PACKAGE_NAME.extra.LOCATION"
     const val NOTIFICATION_CHANNEL_ID = "jorge_gas_empresa"
-    const val backend_url = "http://192.168.0.147:8080"
-    //const val backend_url = "https://ahora-si-dkc7p57skq-tl.a.run.app/"
-
+    //const val backend_url = "http://192.168.0.147:8080"
+    const val backend_url = "https://ahora-si-2-dkc7p57skq-tl.a.run.app"
 }
 
 
