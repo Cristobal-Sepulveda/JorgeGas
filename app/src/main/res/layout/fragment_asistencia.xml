@@ -37,7 +37,7 @@
             android:textColor="@color/white"
             android:layout_marginTop="@dimen/space_medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/button_asistencia_salida"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView_asistencia_titulo"
             android:background="@drawable/shape_button_entrada" />
 
@@ -48,39 +48,75 @@
             android:text="@string/salida"
             android:textColor="@color/white"
             android:layout_marginTop="@dimen/space_medium"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/button_asistencia_entrada"
-            app:layout_constraintTop_toBottomOf="@id/textView_asistencia_titulo"
+            app:layout_constraintTop_toBottomOf="@id/button_asistencia_entrada"
             android:background="@drawable/shape_button_salida"
             />
+
 
         <LinearLayout
             android:id="@+id/linearLayout_asistencia_filtro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:background="@color/white"
-            android:layout_marginTop="@dimen/space_medium"
+            android:layout_marginTop="@dimen/space_big"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_asistencia_entrada"
-            android:orientation="vertical">
+            app:layout_constraintTop_toBottomOf="@id/button_asistencia_salida"
+            android:orientation="horizontal"
+            >
+
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/baseline_calendar_today_24_orange"
+                android:src="@drawable/baseline_arrow_left_24"
                 android:layout_marginStart="@dimen/space_medium"
                 android:layout_marginTop="@dimen/space_small"
-                android:contentDescription="@string/calendario"
-                />
+                android:contentDescription="@string/calendario" />
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/baseline_calendar_today_24_orange"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:contentDescription="@string/calendario" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    tools:text="Abril" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/baseline_arrow_right_24"
+                android:layout_marginEnd="@dimen/space_medium"
                 android:layout_marginTop="@dimen/space_small"
-                />
+                android:contentDescription="@string/calendario" />
 
         </LinearLayout>
 
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_asistencia_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_asistencia_listadoDeAsistencia"
             android:layout_width="0dp"
@@ -89,7 +125,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
+            app:layout_constraintTop_toBottomOf="@id/divider_asistencia_divider"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         <ProgressBar

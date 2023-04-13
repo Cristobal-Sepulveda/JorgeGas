@@ -62,7 +62,7 @@
                     android:layout_gravity="center"
                     android:text="@string/ver_aquí"
                     android:textColor="@color/hiperlink"
-                    android:layout_marginBottom="100dp"
+                    android:layout_marginBottom="@dimen/text_medium"
                     />
 
                 <androidx.constraintlayout.widget.ConstraintLayout

@@ -157,12 +157,13 @@ class AuthenticationActivity : AppCompatActivity() {
             return
         }
 
-/*        if(solicitarTokenDeSesion(this) == "error"){
+        if(solicitarTokenDeSesion(this) == "error"){
             runOnUiThread {
                 aparecerYDesaparecerElementosTrasNoLogin()
             }
             return
-        }*/
+        }
+
         if(!dataSource.guardandoTokenDeFCMEnFirestore()) {
             controlDeError(message = R.string.login_error_falla_en_fcm)
             return

@@ -11,6 +11,7 @@ import com.example.conductor.ui.estadoactual.EstadoActualViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
 import com.example.conductor.ui.gestiondevolanteros.GestionDeVolanterosViewModel
+import com.example.conductor.ui.registrodeasistencia.RegistroDeAsistenciaViewModel
 import com.example.conductor.ui.registrovolanteros.RegistroVolanterosViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,6 +76,12 @@ class MyApp : Application() {
             }
             single{
                 AsistenciaViewModel(
+                    get(),
+                    get() as AppDataSource
+                )
+            }
+            single{
+                RegistroDeAsistenciaViewModel(
                     get(),
                     get() as AppDataSource
                 )

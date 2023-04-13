@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,43 +19,112 @@
         android:textSize="@dimen/text_medium_24"
         />
 
-
-
-    <LinearLayout
-        android:id="@+id/linearLayout_registroDeAsistencia_filtro"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textField_registroDeAsistencia_textInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layout_marginTop="@dimen/space_medium"
+        android:layout_marginStart="@dimen/space_big"
+        android:layout_marginEnd="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_big"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
+        app:expandedHintEnabled="false"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/editText_registroDeAsistencia_volantero"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:inputType="none"
+            android:hint="@string/elija_volantero" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_registroDeAsistencia_dividerTop"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
-        android:orientation="vertical">
+        app:layout_constraintBottom_toTopOf="@id/linearLayout_asistencia_filtro"
+        />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_asistencia_filtro"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:background="@color/white"
+        android:layout_marginTop="@dimen/space_big"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
+        android:orientation="horizontal"
+        >
+
         <ImageView
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/baseline_calendar_today_24_orange"
+            android:src="@drawable/baseline_arrow_left_24"
             android:layout_marginStart="@dimen/space_medium"
             android:layout_marginTop="@dimen/space_small"
-            android:contentDescription="@string/calendario"
-            />
+            android:contentDescription="@string/calendario" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/baseline_calendar_today_24_orange"
+                android:layout_marginTop="@dimen/space_small"
+                android:contentDescription="@string/calendario" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="4dp"
+                tools:text="Abril" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_arrow_right_24"
+            android:layout_marginEnd="@dimen/space_medium"
             android:layout_marginTop="@dimen/space_small"
-            />
+            android:contentDescription="@string/calendario" />
 
     </LinearLayout>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_registroDeAsistencia_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
+        />
+
+
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_registroDeAsistencia_listadoDeAsistencia"
+        android:id="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout_registroDeAsistencia_filtro"
+        app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_divider"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

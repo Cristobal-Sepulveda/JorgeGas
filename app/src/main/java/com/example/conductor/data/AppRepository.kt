@@ -488,15 +488,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean = withContext(ioDispatcher){
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                val deferred = CompletableDeferred<Boolean>()
-                deferred.complete(true)
-                deferred.await()
-            }
-        }
-    }
+
     override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
@@ -518,7 +510,8 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                                 deferred.complete(false)
                             }
                     }
-                    .addOnFailureListener{
+                    .addOnFailureListener { e ->
+                        Log.e("MyFirebaseMsgService", "Error getting FCM token or updating document", e)
                         deferred.complete(false)
                     }
 
@@ -577,6 +570,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    deferred.complete(false)
                 }
                 deferred.await()
             }
@@ -605,13 +599,14 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    deferred.complete(false)
                 }
                 deferred.await()
             }
         }
     }
 
-    override suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Asistencia> = withContext(ioDispatcher) {
+    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<Asistencia> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val registroTrayectoVolantero = mutableListOf<Asistencia>()
@@ -619,6 +614,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
 
                 cloudDB.collection("RegistroDeAsistencia")
                     .document(firebaseAuth.currentUser!!.uid).get()
+
                     .addOnFailureListener{
                         Handler(Looper.getMainLooper()).post {
                             Toast.makeText(
@@ -629,8 +625,16 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         }
                         deferred.complete(registroTrayectoVolantero)
                     }
+
                     .addOnSuccessListener{
                         if(it.get("registroAsistencia") == null){
+                            registroTrayectoVolantero.add(
+                                Asistencia(
+                                    "error",
+                                    "error",
+                                    "error"
+                                )
+                            )
                             deferred.complete(registroTrayectoVolantero)
                             return@addOnSuccessListener
                         }
@@ -646,6 +650,36 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             )
                         }
                         deferred.complete(registroTrayectoVolantero)
+                    }
+                deferred.await()
+            }
+        }
+    }
+    override suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Map<*,*>> = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<MutableList<Map<*,*>>>()
+                cloudDB.collection("RegistroDeAsistencia").get()
+                    .addOnFailureListener{
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "Error al obtener el registro de asistencia",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        deferred.complete(mutableListOf())
+                    }
+
+                    .addOnSuccessListener {
+                        if(it.documents.isEmpty()){
+                            deferred.complete(mutableListOf())
+                        }else{
+                            val listadoDeRegistros = it.documents.map{ document->
+                                document.data as Map<String,*>
+                            }
+                            deferred.complete(listadoDeRegistros.toMutableList())
+                        }
                     }
                 deferred.await()
             }

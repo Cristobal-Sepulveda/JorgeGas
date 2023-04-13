@@ -178,6 +178,8 @@
     <string name="entrada">Entrada</string>
     <string name="salida">Salida</string>
     <string name="registro_de_asistencia">Registro de Asistencia</string>
+    <string name="huella">Huella</string>
+    <string name="elija_volantero">Elija volantero</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

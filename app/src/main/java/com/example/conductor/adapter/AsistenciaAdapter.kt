@@ -21,12 +21,7 @@ import com.example.conductor.databinding.ItemListadoAsistenciaBinding
 import com.example.conductor.ui.asistencia.AsistenciaViewModel
 
 
-class AsistenciaAdapter(viewModel: AsistenciaViewModel,
-                        dataSource: AppDataSource,
-                        val onClickListener: OnClickListener) : ListAdapter<Asistencia, AsistenciaAdapter.AsistenciaViewHolder>(DiffCallBack) {
-
-    val dataSourcee = dataSource
-    val viewModell = viewModel
+class AsistenciaAdapter(val onClickListener: OnClickListener) : ListAdapter<Asistencia, AsistenciaAdapter.AsistenciaViewHolder>(DiffCallBack) {
 
     class AsistenciaViewHolder(private var binding: ItemListadoAsistenciaBinding): RecyclerView.ViewHolder(binding.root) {
 

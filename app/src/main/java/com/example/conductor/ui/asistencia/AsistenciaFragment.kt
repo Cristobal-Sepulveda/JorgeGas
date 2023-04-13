@@ -57,7 +57,7 @@ class AsistenciaFragment: BaseFragment() {
         _binding!!.lifecycleOwner = this
         _binding!!.viewModel = _viewModel
 
-        val adapter = AsistenciaAdapter(_viewModel, _appDataSource, AsistenciaAdapter.OnClickListener { _ -> })
+        val adapter = AsistenciaAdapter(AsistenciaAdapter.OnClickListener { _ -> })
 
         _binding!!.recyclerviewAsistenciaListadoDeAsistencia.adapter = adapter
 

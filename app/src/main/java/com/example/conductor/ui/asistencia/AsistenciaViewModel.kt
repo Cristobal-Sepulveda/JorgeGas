@@ -11,7 +11,9 @@ import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.base.BaseViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) : BaseViewModel(app) {
 
@@ -28,10 +30,14 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
         Log.d("bindingAdapter", "${status.value}")
 
         viewModelScope.launch {
-            val colRef = dataSource.obtenerRegistroDeAsistencia(context)
+            val colRef = dataSource.obtenerRegistroDeAsistenciaDeUsuario(context)
             if (colRef.isEmpty()) {
                 _status.value = CloudRequestStatus.ERROR
                 Log.d("bindingAdapter", "${status.value}")
+                return@launch
+            }
+            if(colRef.first().fecha == "error"){
+                _status.value = CloudRequestStatus.DONE
             } else {
                 _domainAsistenciaEnScreen.value = colRef
                 _status.value = CloudRequestStatus.DONE
@@ -40,11 +46,31 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
         }
     }
 
-    suspend fun registrarIngresoDeJornada(context: Context, latitude: Double, longitude: Double): Boolean {
-        return dataSource.registrarIngresoDeJornada(context,latitude, longitude)
+    suspend fun registrarIngresoDeJornada(context: Context, latitude: Double, longitude: Double) {
+        _status.postValue(CloudRequestStatus.LOADING)
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                if(dataSource.registrarIngresoDeJornada(context,latitude, longitude)){
+                    _status.postValue(CloudRequestStatus.DONE)
+                }else{
+                    _status.postValue(CloudRequestStatus.ERROR)
+                }
+            }
+        }
+        return
     }
 
-    suspend fun registrarSalidaDeJornada(context: Context): Boolean {
-        return dataSource.registrarSalidaDeJornada(context)
+    suspend fun registrarSalidaDeJornada(context: Context) {
+        _status.postValue(CloudRequestStatus.LOADING)
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                if(dataSource.registrarSalidaDeJornada(context)){
+                    _status.postValue(CloudRequestStatus.DONE)
+                }else{
+                    _status.postValue(CloudRequestStatus.ERROR)
+                }
+            }
+        }
+        return
     }
 }

@@ -32,8 +32,8 @@ interface AppDataSource {
     suspend fun solicitarTokenDeSesion(context: Context): String
     suspend fun eliminarTokenDeSesion()
     suspend fun validarTokenDeSesion(): Boolean
-    suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context, id: String): Boolean
-    suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Asistencia>
+
+
     suspend fun guardandoTokenDeFCMEnFirestore(): Boolean
     suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean
 
@@ -41,6 +41,10 @@ interface AppDataSource {
                                           latitude: Double,
                                           longitude: Double): Boolean
     suspend fun registrarSalidaDeJornada(context: Context):Boolean
+
+    suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<Asistencia>
+
+    suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Map<*,*>>
 
     suspend fun avisarQueQuedeSinMaterial(context: Context)
 }
