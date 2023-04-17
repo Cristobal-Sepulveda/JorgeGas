@@ -112,7 +112,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
-
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 
@@ -120,7 +119,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         private const val TAG = "MyFirebaseMsgService"
     }
 
-    internal class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
+            internal class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
         override fun doWork(): Result {
             // TODO(developer): add long running task here.
             return Result.success()

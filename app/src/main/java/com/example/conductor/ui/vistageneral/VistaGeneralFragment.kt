@@ -230,10 +230,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireActivity())
         //Obteniendo sharedPreferences y poniendo un listener a cualquier cambio en esta key
-        sharedPreferences = requireActivity().getSharedPreferences(
-            getString(R.string.preference_file_key),
-            Context.MODE_PRIVATE
-        )
+        sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
@@ -324,6 +321,14 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 NavigationCommand.To(
                     VistaGeneralFragmentDirections
                         .actionNavigationVistaGeneralToNavigationRegistroTrayectoVolanteros()
+                )
+        }
+
+        _binding!!.textViewVistaGeneralGestionDeMaterial.setOnClickListener{
+            _viewModel.navigationCommand.value =
+                NavigationCommand.To(
+                    VistaGeneralFragmentDirections
+                        .actionNavigationVistaGeneralToNavigationGestionDeMaterial()
                 )
         }
 

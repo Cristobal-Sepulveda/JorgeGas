@@ -180,6 +180,8 @@
     <string name="registro_de_asistencia">Registro de Asistencia</string>
     <string name="huella">Huella</string>
     <string name="elija_volantero">Elija volantero</string>
+    <string name="gestion_de_material">Gestion de material</string>
+    <string name="sueldo_por_pagar">Sueldo por pagar:</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

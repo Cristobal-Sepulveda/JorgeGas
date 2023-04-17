@@ -12,10 +12,13 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/volanteroItemCard"
+        android:id="@+id/usuarioItemCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="4dp"
         android:elevation="10dp"
+        app:strokeColor="#c0c0c0"
+        app:strokeWidth="1dp"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,13 +31,12 @@
                 android:layout_width="54dp"
                 android:layout_height="54dp"
                 android:layout_marginHorizontal="@dimen/space_small"
-                android:layout_marginStart="4dp"
-                android:src="@drawable/ic_baseline_person_24"
                 app:civ_border_color="#c0c0c0"
                 app:civ_border_width="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
 
             <TextView
                 android:id="@+id/textview_usuarioNombre"
@@ -42,8 +44,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:maxLength="22"
-                android:minWidth="200dp"
+                android:maxLength="25"
+                android:minWidth="230dp"
                 android:text="@{usuarioItem.nombre+' '+usuarioItem.apellidos}"
                 android:textAppearance="?attr/textAppearanceHeadline5"
                 android:textSize="@dimen/text_small"
@@ -65,39 +67,15 @@
                 tools:text="Chofer" />
 
             <ImageView
-                android:id="@+id/imageView_volanteroItem_parar"
+                android:id="@+id/imageView_volanteroSinMaterial_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_small"
-                android:contentDescription="@string/llamar_boton"
-                android:src="@drawable/baseline_stop_24_blue"
+                android:contentDescription="@string/editar_boton"
+                android:src="@drawable/baseline_notifications_active_24_orange"
+                android:layout_marginEnd="@dimen/space_big"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/imageView_volanteroItem_llamar"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <ImageView
-                android:id="@+id/imageView_volanteroItem_llamar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_small"
-                android:contentDescription="@string/llamar_boton"
-                android:src="@drawable/ic_baseline_phone_enabled_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/imageView_volanteroItem_notificar"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView_volanteroItem_notificar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="@string/notificar_boton"
-                android:src="@drawable/ic_baseline_message_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textview_usuarioNombre"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

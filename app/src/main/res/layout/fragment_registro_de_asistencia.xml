@@ -43,13 +43,26 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/textView_registroDeAsistencia_sueldoPorPagar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sueldo_por_pagar"
+        tools:text="Sueldo por pagar: $60.000"
+        android:layout_marginTop="@dimen/space_small"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
+        />
+
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider_registroDeAsistencia_dividerTop"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="@dimen/space_small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/linearLayout_asistencia_filtro"
+        app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_sueldoPorPagar"
         />
 
     <LinearLayout
@@ -57,10 +70,9 @@
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:background="@color/white"
-        android:layout_marginTop="@dimen/space_big"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_dividerTop"
         android:orientation="horizontal"
         >
 

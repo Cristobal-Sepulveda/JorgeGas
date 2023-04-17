@@ -126,6 +126,22 @@
                                     android:layout_marginVertical="@dimen/space_small"
                                     tools:text="@string/gestion_de_volanteros"/>
 
+                                <com.google.android.material.divider.MaterialDivider
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"/>
+
+                                <TextView
+                                    android:id="@+id/textView_vistaGeneral_gestionDeMaterial"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/gestion_de_material"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/text_medium"
+                                    android:textAppearance="?attr/textAppearanceHeadline6"
+                                    android:layout_marginStart="@dimen/space_big"
+                                    android:layout_marginVertical="@dimen/space_small"
+                                    tools:text="@string/gestion_de_volanteros"/>
+
                                 <LinearLayout
                                     android:layout_height="wrap_content"
                                     android:layout_width="match_parent"

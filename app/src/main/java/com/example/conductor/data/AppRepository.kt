@@ -700,6 +700,31 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             ).show()
                         }
                     }
+                    .addOnSuccessListener {
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "Se ha enviado una notificación a los administradores, espere donde guste.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+            }
+        }
+    }
+
+    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                cloudDB.collection("RegistroTrayectoVolanteros")
+                    .document(id)
+                    .update("conMaterial", true)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Se ha notificado al volantero que vuelva a caminar.", Toast.LENGTH_LONG).show()
+                    }
+                    .addOnFailureListener{
+                        Toast.makeText(context, "Error al actualizar el estado del volantero. Intentalo nuevamente.", Toast.LENGTH_LONG).show()
+                    }
             }
         }
     }

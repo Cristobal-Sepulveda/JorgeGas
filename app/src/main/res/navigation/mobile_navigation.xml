@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_navigation_vista_general_to_navigation_registro_trayecto_volanteros"
             app:destination="@id/navigation_registro_trayecto_volanteros" />
+        <action
+            android:id="@+id/action_navigation_vista_general_to_navigation_gestion_de_material"
+            app:destination="@id/navigation_gestion_de_material" />
     </fragment>
 
 
@@ -130,6 +133,10 @@
         android:id="@+id/navigation_registro_de_asistencia"
         android:name="com.example.conductor.ui.registrodeasistencia.RegistroDeAsistenciaFragment"
         android:label="RegistroDeAsistenciaFragment" />
+    <fragment
+        android:id="@+id/navigation_gestion_de_material"
+        android:name="com.example.conductor.ui.gestiondematerial.GestionDeMaterialFragment"
+        android:label="GestionDeMaterialFragment" />
 
 
 </navigation>

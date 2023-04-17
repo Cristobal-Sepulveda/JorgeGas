@@ -47,4 +47,6 @@ interface AppDataSource {
     suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Map<*,*>>
 
     suspend fun avisarQueQuedeSinMaterial(context: Context)
+
+    suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String)
 }

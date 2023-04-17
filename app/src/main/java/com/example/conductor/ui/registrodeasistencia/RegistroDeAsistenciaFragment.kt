@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.text.NumberFormat
+import java.util.*
 
 class RegistroDeAsistenciaFragment: BaseFragment() {
 
@@ -42,10 +44,6 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
 
         _binding!!.recyclerViewRegistroDeAsistenciaListadoDeAsistencia.adapter = recyclerViewAdapter
 
-        _binding!!.textViewRegistroDeAsistenciaTitulo.setOnClickListener{
-            Log.e("RegistroDeAsistenciaFragment", _viewModel.registroDeAsistencia.value.toString())
-        }
-
         _binding!!.editTextRegistroDeAsistenciaVolantero.setOnItemClickListener { parent, view, position, id ->
             val volanteroSeleccionado = parent.adapter.getItem(position) as String
             // Llama a tu función aquí, pasando el volantero seleccionado como parámetro
@@ -58,9 +56,11 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
                     it["salidaJornada"].toString(),
                 )
             }
+            val sueldo = registrosProcesados.size * 10000
+            val formatter = NumberFormat.getNumberInstance(Locale("es", "ES"))
+            formatter.maximumFractionDigits = 0
+            _binding!!.textViewRegistroDeAsistenciaSueldoPorPagar.text = "Sueldo por pagar: $${formatter.format(sueldo)}"
             recyclerViewAdapter.submitList(registrosProcesados)
-            Log.e("volantero elejido", registroAsistenciaFiltrado.toString())
-            Log.e("volantero elejido", volanteroSeleccionado)
         }
 
         return _binding!!.root

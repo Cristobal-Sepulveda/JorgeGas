@@ -57,6 +57,29 @@ class AdministrarCuentasViewModel(val app: Application, val dataSource: AppDataS
         }
     }
 
+    fun displayVolanterosInRecyclerView() {
+        _status.value = CloudRequestStatus.LOADING
+        Log.d("bindingAdapter", "${status.value}")
+        viewModelScope.launch {
+            val colRef = dataSource.obtenerUsuariosDesdeFirestore()
+            if (colRef.isEmpty()) {
+                _status.value = CloudRequestStatus.ERROR
+                Log.d("bindingAdapter", "${status.value}")
+            } else {
+                val iterator = colRef.iterator()
+                while (iterator.hasNext()) {
+                    val usuario = iterator.next()
+                    if (usuario.rol != "Volantero") {
+                        iterator.remove()
+                    }
+                }
+                _domainUsuariosInScreen.value = colRef.sortedWith(compareBy { it.nombre })
+                _status.value = CloudRequestStatus.DONE
+            }
+        }
+    }
+
+
     fun removeUsuariosInRecyclerView(){
         _domainUsuariosInScreen.value = mutableListOf()
     }
