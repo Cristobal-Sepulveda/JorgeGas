@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import com.example.conductor.R
+import com.example.conductor.data.apiservices.*
 import com.example.conductor.data.daos.JwtDao
 import com.example.conductor.data.daos.LatLngYHoraActualDao
 import com.example.conductor.data.daos.UsuarioDao
@@ -23,9 +24,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
-import com.example.conductor.utils.JornadaRequest
-import com.example.conductor.utils.JwtApi
-import com.example.conductor.utils.RegistroJornadaApi
+import com.example.conductor.data.data_objects.dto.JornadaRequest
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
@@ -689,26 +688,15 @@ class AppRepository(private val usuarioDao: UsuarioDao,
     override suspend fun avisarQueQuedeSinMaterial(context: Context){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                cloudDB.collection("RegistroTrayectoVolanteros").document(firebaseAuth.currentUser!!.uid)
-                    .update("conMaterial", false)
-                    .addOnFailureListener{
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(
-                                context,
-                                "No se pudo procesar su requerimiento. Intentelo mas tarde",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                    .addOnSuccessListener {
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(
-                                context,
-                                "Se ha enviado una notificación a los administradores, espere donde guste.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
+                //val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
+                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        request.msg,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }
@@ -716,15 +704,14 @@ class AppRepository(private val usuarioDao: UsuarioDao,
     override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
-                cloudDB.collection("RegistroTrayectoVolanteros")
-                    .document(id)
-                    .update("conMaterial", true)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Se ha notificado al volantero que vuelva a caminar.", Toast.LENGTH_LONG).show()
-                    }
-                    .addOnFailureListener{
-                        Toast.makeText(context, "Error al actualizar el estado del volantero. Intentalo nuevamente.", Toast.LENGTH_LONG).show()
-                    }
+                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        request.msg,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }

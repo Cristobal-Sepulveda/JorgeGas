@@ -35,5 +35,10 @@ class GestionDeMaterialFragment: BaseFragment() {
 
         return _binding!!.root
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _viewModel.vaciarRecyclerView()
+    }
 }
 

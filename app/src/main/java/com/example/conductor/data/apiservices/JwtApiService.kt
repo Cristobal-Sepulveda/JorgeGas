@@ -1,4 +1,4 @@
-package com.example.conductor.utils
+package com.example.conductor.data.apiservices
 
 import com.example.conductor.utils.Constants.backend_url
 import retrofit2.Call

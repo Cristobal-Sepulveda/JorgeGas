@@ -70,4 +70,8 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String){
         dataSource.notificarQueSeAbastecioAlVolanteroDeMaterial(context, id)
     }
+
+    fun vaciarRecyclerView(){
+        _domainUsuariosInScreen.value = mutableListOf()
+    }
 }

@@ -1,31 +1,12 @@
-package com.example.conductor.utils
+package com.example.conductor.data.apiservices
 
+import com.example.conductor.data.apiservices.MoshiProvider.moshiConverterFactory
+import com.example.conductor.data.data_objects.dto.ApiResponse
+import com.example.conductor.data.data_objects.dto.JornadaRequest
 import com.example.conductor.utils.Constants.backend_url
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Call
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.*
-
-data class JornadaRequest(
-    val id: String,
-    val nombreCompleto: String,
-    val latitude: Double,
-    val longitude: Double
-)
-
-data class ApiResponse(
-    val msg: String
-)
-
-val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-val moshiConverterFactory = MoshiConverterFactory.create(moshi)
-
 
 interface RegistroJornadaApiService {
     @POST("ingresoJornada")
