@@ -182,6 +182,9 @@
     <string name="elija_volantero">Elija volantero</string>
     <string name="gestion_de_material">Gestion de material</string>
     <string name="sueldo_por_pagar">Sueldo por pagar:</string>
+    <string name="exportar_a_excel">Exportar a excel</string>
+    <string name="desde">desde</string>
+    <string name="hasta">Hasta</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

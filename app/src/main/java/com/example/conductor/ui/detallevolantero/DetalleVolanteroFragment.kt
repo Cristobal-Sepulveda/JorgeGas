@@ -56,13 +56,12 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     private lateinit var bundle: Usuario
     private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
         _binding = FragmentDetalleVolanteroBinding.inflate(inflater, container, false)
+
         bundle = DetalleVolanteroFragmentArgs.fromBundle(requireArguments()).usuarioDetails
+
         (childFragmentManager.findFragmentById(R.id.fragmentContainerView_detalleVolantero_googleMaps)
                 as? SupportMapFragment)?.getMapAsync(this)
 
@@ -70,7 +69,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDiariosDelVolantero(bundle.id)
+                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDiariosDelVolantero(bundle.id,requireActivity())
             }
         }
 
@@ -139,14 +138,21 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
     @Suppress("UNCHECKED_CAST")
     private fun validarFechaYActivarSlider(selectedDate: String) {
 
-        if(registroDelVolanteroDocRef == null){
+        if(registroDelVolanteroDocRef == "Error"){
+            Toast.makeText(requireContext(), "Hubo un error al obtener el Registro Diario del volantero. Cierre la ventana y vuelva a abrirla."
+                , Toast.LENGTH_LONG).show()
             _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
-            _binding!!.textViewDetalleVolanteroFechaSeleccionadaAlerta.visibility = View.VISIBLE
             return
         }
+        if(registroDelVolanteroDocRef == "Sin Registro"){
+            Toast.makeText(requireContext(), "El volantero no tiene Registro Diario.", Toast.LENGTH_LONG).show()
+            _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
+            return
+        }
+        val aux = registroDelVolanteroDocRef as DocumentSnapshot
+        Log.e("DetalleVolanteroFragment", aux.data.toString())
         val registroDelVolanteroParseado = registroDelVolanteroDocRef as DocumentSnapshot
-        val registroJornada =
-            registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
+        val registroJornada = registroDelVolanteroParseado.data!!["registroJornada"] as ArrayList<Map<String, Map<*, *>>>
         Log.i("DetalleVolanteroFragment", selectedDate)
 
         registroJornada.forEach {
@@ -189,8 +195,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                 R.color.lightGrey
             )
         )
-            Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -222,7 +227,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             _binding!!.imageViewDetalleVolanteroFotoPerfil.setImageBitmap(decodedByte)
         }
     }
-
     private fun customizarSliderLabel(value: Float): String {
         Log.i("customizarSliderLabel", value.toString())
         val startHour = 8
@@ -254,7 +258,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         datePickerDialog?.show()
     }
-
     private fun sumarORestarValueDelSlider(num: Float) {
         if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return
         val adjustedNum = if (num == -1f) -1f else 1f // adjust the value of num to be either -1 or 1
@@ -265,8 +268,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             else -> _binding!!.sliderDetalleVolanteroTrayecto.value = valorActualDelSlider + adjustedNum
         }
     }
-
-
     @Suppress("UNCHECKED_CAST")
     private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
         /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
@@ -322,7 +323,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
         return false
     }
-
     private fun pintarPolyline() {
         lifecycleScope.launch{
             withContext(Dispatchers.Main) {
@@ -414,7 +414,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
     }
-
     private fun cambiarTipoDeMapa() {
         if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
@@ -422,7 +421,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
         }
     }
-
     private fun convertSecondsToHMS(seconds: Float): String {
         val hours = (seconds / 3600).toInt()
         val minutes = ((seconds % 3600) / 60).toInt()

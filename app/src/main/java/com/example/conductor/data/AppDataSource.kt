@@ -18,7 +18,7 @@ interface AppDataSource {
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String
     suspend fun obtenerTodoElRegistroTrayectoVolanteros(context:Context): MutableList<Any>
-    suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any
+    suspend fun obtenerRegistroDiariosDelVolantero(id: String, context: Context): Any
     suspend fun editarEstadoVolantero(estaActivo: Boolean): Boolean
     suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO)
     suspend fun eliminarUsuariosEnSqlite()
@@ -49,4 +49,6 @@ interface AppDataSource {
     suspend fun avisarQueQuedeSinMaterial(context: Context)
 
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String)
+
+    suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String)
 }

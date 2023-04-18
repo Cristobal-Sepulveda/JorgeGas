@@ -34,6 +34,7 @@ class GestionDeVolanterosViewModel(val app: Application, val dataSource: AppData
                 val listaDeUsuariosVolanteros = mutableListOf<Usuario>()
                 val listaDeUsuariosVolanterosActivos = mutableListOf<Usuario>()
                 val listaDeUsuariosVolanterosInactivos = mutableListOf<Usuario>()
+
                 val listaDeUsuarios = dataSource.obtenerUsuariosDesdeFirestore()
                 val registroTrayectoVolanteros = dataSource.obtenerRegistroTrayectoVolanteros()
 

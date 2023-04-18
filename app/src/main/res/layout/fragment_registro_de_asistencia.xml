@@ -1,142 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/textView_registroDeAsistencia_titulo"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/space_big"
-        android:text="@string/registro_de_asistencia"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        android:textSize="@dimen/text_medium_24"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textField_registroDeAsistencia_textInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.registrodeasistencia.RegistroDeAsistenciaViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_big"
-        android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
-        app:expandedHintEnabled="false"
-        >
+        android:layout_height="match_parent">
 
-        <AutoCompleteTextView
-            android:id="@+id/editText_registroDeAsistencia_volantero"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:inputType="none"
-            android:hint="@string/elija_volantero" />
+        <TextView
+            android:id="@+id/textView_registroDeAsistencia_titulo"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/space_big"
+            android:text="@string/registro_de_asistencia"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textSize="@dimen/text_medium_24"
+            />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:id="@+id/textView_registroDeAsistencia_sueldoPorPagar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sueldo_por_pagar"
-        tools:text="Sueldo por pagar: $60.000"
-        android:layout_marginTop="@dimen/space_small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
-        />
-
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider_registroDeAsistencia_dividerTop"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/space_small"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_sueldoPorPagar"
-        />
-
-    <LinearLayout
-        android:id="@+id/linearLayout_asistencia_filtro"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:background="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_dividerTop"
-        android:orientation="horizontal"
-        >
-
-        <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/baseline_arrow_left_24"
-            android:layout_marginStart="@dimen/space_medium"
+        <Button
+            android:id="@+id/button_registroDeAsistencia_obtenerDesde"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/button_registroDeAsistencia_obtenerHasta"
+            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_small"
-            android:contentDescription="@string/calendario" />
+            android:text="@string/desde"
+            />
+
+        <Button
+            android:id="@+id/button_registroDeAsistencia_obtenerHasta"
+            app:layout_constraintStart_toEndOf="@id/button_registroDeAsistencia_obtenerDesde"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:text="@string/hasta"
+            />
+        <Button
+            android:id="@+id/button_registroDeAsistencia_obtenerExcel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_obtenerDesde"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_small"
+            android:text="@string/exportar_a_excel"
+            />
+
+<!--        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField_registroDeAsistencia_textInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginEnd="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_obtenerExcel"
+            app:expandedHintEnabled="false"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/editText_registroDeAsistencia_volantero"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:inputType="none"
+                android:hint="@string/elija_volantero" />
+
+        </com.google.android.material.textfield.TextInputLayout>-->
+
+
+<!--
+        <TextView
+            android:id="@+id/textView_registroDeAsistencia_sueldoPorPagar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sueldo_por_pagar"
+            tools:text="Sueldo por pagar: $60.000"
+            android:layout_marginTop="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
+            />
+-->
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_registroDeAsistencia_dividerTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/space_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_obtenerExcel"
+            />
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:id="@+id/linearLayout_asistencia_filtro"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_dividerTop"
+            android:orientation="horizontal"
+            >
 
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:src="@drawable/baseline_calendar_today_24_orange"
+                android:src="@drawable/baseline_arrow_left_24"
+                android:layout_marginStart="@dimen/space_medium"
                 android:layout_marginTop="@dimen/space_small"
                 android:contentDescription="@string/calendario" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="4dp"
-                tools:text="Abril" />
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/baseline_calendar_today_24_orange"
+                    android:layout_marginTop="@dimen/space_small"
+                    android:contentDescription="@string/calendario" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
+                    tools:text="Abril" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/baseline_arrow_right_24"
+                android:layout_marginEnd="@dimen/space_medium"
+                android:layout_marginTop="@dimen/space_small"
+                android:contentDescription="@string/calendario" />
 
         </LinearLayout>
 
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_registroDeAsistencia_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_divider"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar_registroDeAsistencia_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:contentDescription="@string/loading"
+            app:cloudRequestStatusCircularProgress="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintEnd_toEndOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintTop_toTopOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            />
+
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/baseline_arrow_right_24"
-            android:layout_marginEnd="@dimen/space_medium"
-            android:layout_marginTop="@dimen/space_small"
-            android:contentDescription="@string/calendario" />
-
-    </LinearLayout>
-
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider_registroDeAsistencia_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout_asistencia_filtro"
-        />
+            android:id="@+id/imageView_registroDeAsistencia_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_connection_error_100"
+            app:cloudRequestStatusImage="@{viewModel.status}"
+            app:layout_constraintStart_toStartOf="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintEnd_toEndOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintTop_toTopOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            app:layout_constraintBottom_toBottomOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
+            android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
 
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_divider"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

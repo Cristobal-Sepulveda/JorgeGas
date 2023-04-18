@@ -1,6 +1,8 @@
 package com.example.conductor.data
 
 import android.content.Context
+import android.media.MediaScannerConnection
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -29,6 +31,8 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
 import retrofit2.await
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDate
 
 @Suppress("LABEL_NAME_CLASH")
@@ -196,15 +200,28 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             return@withContext deferred.await()
         }
     }
-    override suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any = withContext(ioDispatcher){
+    override suspend fun obtenerRegistroDiariosDelVolantero(id: String,context: Context): Any = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
-                try{
-                    return@withContext cloudDB.collection("RegistroDiariosDeVolanteros")
-                        .document(id).get().await()
-                }catch(e:Exception){
-                    return@withContext "Error"
-                }
+                val deferred = CompletableDeferred<Any>()
+                cloudDB.collection("RegistroDiariosDeVolanteros")
+                    .document(id).get()
+                    .addOnCompleteListener{
+                        if(it.isSuccessful) {
+                            Log.i("obtenerRegistroDiariosDelVolantero", it.result.data.toString())
+                            if(!it.result.data.isNullOrEmpty()){
+                                deferred.complete(it.result!!)
+                            }else{
+                                Toast.makeText(context, "El volantero no tiene registro diario.", Toast.LENGTH_LONG).show()
+                                deferred.complete("Sin Registro")
+                            }
+                        }else{
+                            Log.i("obtenerRegistroDiariosDelVolantero", "it.isNotSuccessfull")
+                            Toast.makeText(context, "Error al obtener los datos.", Toast.LENGTH_LONG).show()
+                            deferred.complete("Error")
+                        }
+                    }
+                return@withContext deferred.await()
             }
         }
     }
@@ -715,4 +732,71 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+    override suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val response = RegistroDeAsistenciaApi.RETROFIT_SERVICE_REGISTRODEASISTENCIA.exportarRegistroDeAsistenciaAExcel(desde, hasta).execute()
+
+                if (response.isSuccessful) {
+                    val bytes = response.body()?.bytes()
+
+                    if (bytes != null) {
+                        // Save the Excel file to Downloads folder
+                        val filename = "RegistroDeAsistenciaVolanteros.xlsx"
+                        val mimeType = "application/vnd.ms-excel"
+                        val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+                        // Create a file object for the Excel file
+                        val file = File(downloadsFolder, filename)
+
+                        // Write the bytes to the file
+                        FileOutputStream(file).use { output ->
+                            output.write(bytes)
+                        }
+
+                        // Notify the media scanner to add the file to the Downloads folder
+                        MediaScannerConnection.scanFile(
+                            context,
+                            arrayOf(file.absolutePath),
+                            arrayOf(mimeType),
+                            null
+                        )
+
+                        // Display a toast to indicate that the file was saved
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "El excel ya se encuentra en tu carpeta de descargas.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } else {
+                        // Display a toast to indicate that the file was not downloaded
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "El backend no respondio nada. Intentelo nuevamente.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                } else {
+                    // Display a toast to indicate that the file was not downloaded
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(
+                            context,
+                            "El servidor no recibio el requerimiento. Intentelo nuevamente.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
 }

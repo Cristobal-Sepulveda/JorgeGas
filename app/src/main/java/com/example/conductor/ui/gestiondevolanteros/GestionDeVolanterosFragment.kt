@@ -99,7 +99,7 @@ class GestionDeVolanterosFragment : BaseFragment() {
 
         _viewModel.domainUsuariosInScreen.observe(requireActivity()) {
             it.let {
-                adapter.submitList(it as MutableList<Usuario>)
+                adapter.submitList(it)
             }
         }
 
