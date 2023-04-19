@@ -9,11 +9,11 @@ import java.util.*
 data class Asistencia(
     val idUsuario: String,
     val nombreCompleto: String,
-    val sueldoDiario: Int,
-    val diasTrabajados: Int,
-    val sueldo: Int,
-    val bono: Int,
-    val total: Int
+    val sueldoDiario: String,
+    val diasTrabajados: String,
+    val sueldo: String,
+    val bono: String,
+    val total: String
 ) : Parcelable {
     fun longConverterToString(id: Long): String{
         return id.toString()

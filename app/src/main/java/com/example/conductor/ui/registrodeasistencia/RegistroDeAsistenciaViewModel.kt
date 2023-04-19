@@ -23,7 +23,6 @@ class RegistroDeAsistenciaViewModel(val app: Application, val dataSource: AppDat
     private val _status =MutableLiveData<CloudRequestStatus>()
     val status: LiveData<CloudRequestStatus>
         get() = _status
-
     suspend fun exportarRegistroDeAsistenciaAExcel(context: Context,desde:String, hasta:String){
 
         viewModelScope.launch{
@@ -44,7 +43,11 @@ class RegistroDeAsistenciaViewModel(val app: Application, val dataSource: AppDat
         context: Context,desde:String, hasta:String){
         val lista = dataSource.obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(context, desde, hasta)
         if(lista.isNotEmpty()){
-            _registroDeAsistencia.value = lista
+            _registroDeAsistencia.postValue(lista)
         }
+    }
+
+    init{
+        _status.value = CloudRequestStatus.DONE
     }
 }

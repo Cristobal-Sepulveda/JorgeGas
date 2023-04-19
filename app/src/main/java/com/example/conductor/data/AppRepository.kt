@@ -35,6 +35,7 @@ import retrofit2.await
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 
@@ -557,7 +558,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
     override suspend fun registrarIngresoDeJornada(context: Context,
                                                    latitude: Double,
                                                    longitude: Double, ): Boolean = withContext(ioDispatcher) {
@@ -595,7 +595,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
     override suspend fun registrarSalidaDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -624,7 +623,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
     override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<AsistenciaIndividual> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -705,7 +703,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
     override suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -776,6 +773,11 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<MutableList<Asistencia>>()
                 val listaDeUsuariosYSuAsistencia = mutableListOf<Asistencia>()
+                val format = SimpleDateFormat("dd-MM-yyyy")
+                // Parse the string dates into Date objects
+                val startDate = format.parse(desde)
+                val endDate = format.parse(hasta)
+                var diasTrabajados = 0
 
                 cloudDB.collection("RegistroDeAsistencia").get()
                     .addOnFailureListener {
@@ -790,10 +792,34 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     }
                     .addOnSuccessListener{
                         it.documents.forEach{ documento ->
+                            val uid = documento.id
                             val nombreCompleto = documento.data?.get("nombreCompleto") as String
-                            Log.e("obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista", "nombre: $nombreCompleto")
+                            val sueldoDiario = 10000
+                            val registroAsistencia = documento.data?.get("registroAsistencia") as List<Map<*,*>>
+                            val bono = 0
+
+                            registroAsistencia.forEach {
+                                val date = format.parse(it["fecha"] as String)
+                                if (startDate <= date && date <= endDate) {
+                                    diasTrabajados++
+                                }
+                            }
+
+                            val sueldo = sueldoDiario * diasTrabajados
+                            listaDeUsuariosYSuAsistencia.add(
+                                Asistencia(
+                                    uid,
+                                    nombreCompleto,
+                                    sueldoDiario.toString(),
+                                    diasTrabajados.toString(),
+                                    sueldo.toString(),
+                                    bono.toString(),
+                                    (sueldo + bono).toString()
+                                )
+                            )
                         }
-                        deferred.complete(mutableListOf())
+                        Log.e("obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista", listaDeUsuariosYSuAsistencia.toString())
+                        deferred.complete(listaDeUsuariosYSuAsistencia)
                     }
                 return@withContext deferred.await()
             }

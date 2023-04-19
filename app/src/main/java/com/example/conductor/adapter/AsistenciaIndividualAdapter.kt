@@ -19,41 +19,41 @@ import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.databinding.ItemListadoAsistenciaBinding
+import com.example.conductor.databinding.ItemListadoAsistenciaIndividualBinding
 import com.example.conductor.ui.asistencia.AsistenciaViewModel
 
 
-class AsistenciaIndividualAdapter(val onClickListener: OnClickListener) : ListAdapter<AsistenciaIndividual, AsistenciaAdapter.AsistenciaViewHolder>(DiffCallBack) {
+class AsistenciaIndividualAdapter(val onClickListener: OnClickListener) : ListAdapter<AsistenciaIndividual, AsistenciaIndividualAdapter.AsistenciaIndividualViewHolder>(DiffCallBack) {
 
-    class AsistenciaViewHolder(private var binding: ItemListadoAsistenciaBinding): RecyclerView.ViewHolder(binding.root) {
+    class AsistenciaIndividualViewHolder(private var binding: ItemListadoAsistenciaIndividualBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(asistencia: Asistencia){
-            binding.asistenciaItem = asistencia
+        fun bind(asistenciaIndividual: AsistenciaIndividual){
+            binding.asistenciaIndividualItem = asistenciaIndividual
             binding.executePendingBindings()
         }
     }
 
-    object DiffCallBack: DiffUtil.ItemCallback<Asistencia>(){
-        override fun areItemsTheSame(oldItem: Asistencia, newItem: Asistencia): Boolean {
+    object DiffCallBack: DiffUtil.ItemCallback<AsistenciaIndividual>(){
+        override fun areItemsTheSame(oldItem: AsistenciaIndividual, newItem: AsistenciaIndividual): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: Asistencia, newItem: Asistencia): Boolean {
+        override fun areContentsTheSame(oldItem: AsistenciaIndividual, newItem: AsistenciaIndividual): Boolean {
             return oldItem.fecha == newItem.fecha
         }
     }
 
-    override fun onBindViewHolder(holder: AsistenciaViewHolder, position: Int) {
-
-        val asistencia = getItem(position)
-        holder.bind(asistencia)
+    override fun onBindViewHolder(holder: AsistenciaIndividualViewHolder, position: Int) {
+        val asistenciaIndividual = getItem(position)
+        holder.bind(asistenciaIndividual)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsistenciaViewHolder {
-        return AsistenciaViewHolder(ItemListadoAsistenciaBinding.inflate(LayoutInflater.from(parent.context)))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsistenciaIndividualViewHolder {
+        return AsistenciaIndividualViewHolder(ItemListadoAsistenciaIndividualBinding.inflate(LayoutInflater.from(parent.context)))
     }
 
-    class OnClickListener(val clickListener: (asistencia: Asistencia) -> Unit) {
-        fun onClick(asistencia: Asistencia) = clickListener(asistencia)
+    class OnClickListener(val clickListener: (asistenciaIndividual: AsistenciaIndividual) -> Unit) {
+        fun onClick(asistenciaIndividual: AsistenciaIndividual) = clickListener(asistenciaIndividual)
     }
 
 }
