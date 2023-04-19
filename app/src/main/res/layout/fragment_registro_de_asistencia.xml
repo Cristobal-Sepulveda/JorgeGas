@@ -122,55 +122,60 @@
         <LinearLayout
             android:id="@+id/linearLayout_asistencia_filtro"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider_registroDeAsistencia_dividerTop"
             android:orientation="horizontal"
-            >
+            android:gravity="center_vertical">
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/baseline_arrow_left_24"
-                android:layout_marginStart="@dimen/space_medium"
-                android:layout_marginTop="@dimen/space_small"
-                android:contentDescription="@string/calendario" />
-
-            <LinearLayout
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:text="@string/nombre"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textAlignment="center"
+                android:layout_weight="1.5" />
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/baseline_calendar_today_24_orange"
-                    android:layout_marginTop="@dimen/space_small"
-                    android:contentDescription="@string/calendario" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/sueldo_diario"
+                android:textAlignment="center"
+                android:layout_weight="1" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="4dp"
-                    tools:text="Abril" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/dias_trabajados"
+                android:textAlignment="center"
+                android:layout_weight="1.1" />
 
-            </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/sueldo"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_weight="1.1" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/baseline_arrow_right_24"
-                android:layout_marginEnd="@dimen/space_medium"
-                android:layout_marginTop="@dimen/space_small"
-                android:contentDescription="@string/calendario" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/bono"
+                android:layout_gravity="center"
+                android:layout_weight="0.5" />
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/total"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_weight="0.7" />
         </LinearLayout>
+
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_registroDeAsistencia_divider"
@@ -183,7 +188,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/white"
             app:layout_constraintStart_toStartOf="parent"

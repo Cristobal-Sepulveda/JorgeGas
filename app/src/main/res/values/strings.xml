@@ -186,6 +186,11 @@
     <string name="desde">desde</string>
     <string name="hasta">Hasta</string>
     <string name="generar_reporte">Generar Reporte</string>
+    <string name="sueldo_diario">Sueldo\ndiario</string>
+    <string name="dias_trabajados">Días\ntrabajados</string>
+    <string name="sueldo">Sueldo</string>
+    <string name="bono">Bono</string>
+    <string name="total">Total</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

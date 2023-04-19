@@ -713,7 +713,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
 
                     if (bytes != null) {
                         // Save the Excel file to Downloads folder
-                        val filename = "RegistroDeAsistenciaVolanteros.xlsx"
+                        val filename = "$desde--$hasta.xlsx"
                         val mimeType = "application/vnd.ms-excel"
                         val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
@@ -806,17 +806,29 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             }
 
                             val sueldo = sueldoDiario * diasTrabajados
-                            listaDeUsuariosYSuAsistencia.add(
-                                Asistencia(
-                                    uid,
-                                    nombreCompleto,
-                                    sueldoDiario.toString(),
-                                    diasTrabajados.toString(),
-                                    sueldo.toString(),
-                                    bono.toString(),
-                                    (sueldo + bono).toString()
+                            if(diasTrabajados > 0){
+                                listaDeUsuariosYSuAsistencia.add(
+                                    Asistencia(
+                                        uid,
+                                        nombreCompleto,
+                                        sueldoDiario.toString(),
+                                        diasTrabajados.toString(),
+                                        sueldo.toString(),
+                                        bono.toString(),
+                                        (sueldo + bono).toString()
+                                    )
                                 )
-                            )
+                            }
+
+                        }
+                        if(listaDeUsuariosYSuAsistencia.isEmpty()){
+                            Handler(Looper.getMainLooper()).post {
+                                Toast.makeText(
+                                    context,
+                                    "No hay registros de asistencia en el rango de fechas seleccionado.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                         Log.e("obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista", listaDeUsuariosYSuAsistencia.toString())
                         deferred.complete(listaDeUsuariosYSuAsistencia)

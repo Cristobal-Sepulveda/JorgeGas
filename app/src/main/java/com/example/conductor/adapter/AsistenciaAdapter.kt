@@ -2,9 +2,11 @@ package com.example.conductor.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.conductor.R
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.databinding.ItemListadoAsistenciaBinding
 
@@ -36,7 +38,10 @@ class AsistenciaAdapter(val onClickListener: OnClickListener) : ListAdapter<Asis
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsistenciaViewHolder {
-        return AsistenciaViewHolder(ItemListadoAsistenciaBinding.inflate(LayoutInflater.from(parent.context)))
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = DataBindingUtil.inflate<ItemListadoAsistenciaBinding>(inflater, R.layout.item_listado_asistencia, parent, false)
+        binding.root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        return AsistenciaViewHolder(binding)
     }
 
     class OnClickListener(val clickListener: (asistencia: Asistencia) -> Unit) {
