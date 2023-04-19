@@ -12,9 +12,9 @@
 
         <ImageView
             android:id="@+id/imageview_logoAbastible"
-            android:layout_width="201dp"
+            android:layout_width="170dp"
             android:layout_height="70dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="@dimen/space_big"
             android:contentDescription="@string/logo_abastible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,18 +42,6 @@
             android:layout_marginTop="@dimen/space_big"
             app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
             android:src="@drawable/icono_app_login_border" />
-        <TextView
-            android:id="@+id/textview_login_iniciarSesion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_big"
-            android:text="@string/login_iniciarSesion"
-            android:textSize="26dp"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas_border"
-            />
 
         <EditText
             android:id="@+id/edittext_email"
@@ -68,7 +56,7 @@
             android:background="@drawable/edittext_border_login"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textview_login_iniciarSesion"/>
+            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas_border"/>
 
         <EditText
             android:id="@+id/edittext_password"
