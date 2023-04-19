@@ -34,9 +34,7 @@ class AdministrarCuentasFragment : BaseFragment() {
         _binding!!.viewModel = _viewModel
 
         val adapter = UsuarioAdapter(_viewModel,_appDataSource ,UsuarioAdapter.OnClickListener{ usuario -> })
-
         _binding!!.recyclerviewListaUsuarios.adapter = adapter
-
         _viewModel.displayUsuariosInRecyclerView()
 
         _binding!!.textInputEditTextBuscarUsuario.addTextChangedListener(object: TextWatcher{

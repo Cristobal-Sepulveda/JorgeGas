@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
+import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.data.network.DistanceMatrixResponse
@@ -42,13 +43,15 @@ interface AppDataSource {
                                           longitude: Double): Boolean
     suspend fun registrarSalidaDeJornada(context: Context):Boolean
 
-    suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<Asistencia>
-
     suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Map<*,*>>
+
+    suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<AsistenciaIndividual>
 
     suspend fun avisarQueQuedeSinMaterial(context: Context)
 
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String)
 
     suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String)
+
+    suspend fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(context:Context, desde: String, hasta: String): MutableList<Asistencia>
 }

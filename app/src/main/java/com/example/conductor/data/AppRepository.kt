@@ -16,6 +16,7 @@ import com.example.conductor.data.data_objects.dbo.JwtDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
+import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.data.data_objects.domainObjects.RegistroTrayectoVolantero
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.utils.Constants.firebaseAuth
@@ -31,9 +32,11 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
 import retrofit2.await
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.time.LocalDate
+
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val usuarioDao: UsuarioDao,
@@ -622,11 +625,11 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<Asistencia> = withContext(ioDispatcher) {
+    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<AsistenciaIndividual> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                val registroTrayectoVolantero = mutableListOf<Asistencia>()
-                val deferred = CompletableDeferred<MutableList<Asistencia>>()
+                val registroTrayectoVolantero = mutableListOf<AsistenciaIndividual>()
+                val deferred = CompletableDeferred<MutableList<AsistenciaIndividual>>()
 
                 cloudDB.collection("RegistroDeAsistencia")
                     .document(firebaseAuth.currentUser!!.uid).get()
@@ -645,7 +648,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     .addOnSuccessListener{
                         if(it.get("registroAsistencia") == null){
                             registroTrayectoVolantero.add(
-                                Asistencia(
+                                AsistenciaIndividual(
                                     "error",
                                     "error",
                                     "error"
@@ -658,7 +661,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         listado.forEach{ registro ->
                             val asistencia = registro as HashMap<*, *>
                             registroTrayectoVolantero.add(
-                                Asistencia(
+                                AsistenciaIndividual(
                                     asistencia["fecha"] as String,
                                     asistencia["ingresoJornada"] as String,
                                     asistencia["salidaJornada"] as String
@@ -675,6 +678,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<MutableList<Map<*,*>>>()
+
                 cloudDB.collection("RegistroDeAsistencia").get()
                     .addOnFailureListener{
                         Handler(Looper.getMainLooper()).post {
@@ -698,37 +702,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         }
                     }
                 deferred.await()
-            }
-        }
-    }
-
-    override suspend fun avisarQueQuedeSinMaterial(context: Context){
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher) {
-                //val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
-                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        context,
-                        request.msg,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
-
-    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String){
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        context,
-                        request.msg,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
             }
         }
     }
@@ -767,7 +740,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         Handler(Looper.getMainLooper()).post {
                             Toast.makeText(
                                 context,
-                                "El excel ya se encuentra en tu carpeta de descargas.",
+                                "El archivo excel ya ha sido descargado.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -794,9 +767,66 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+    override suspend fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(
+        context: Context,
+        desde:String,
+        hasta: String
+    ): MutableList<Asistencia> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                val deferred = CompletableDeferred<MutableList<Asistencia>>()
+                val listaDeUsuariosYSuAsistencia = mutableListOf<Asistencia>()
 
-
-
-
+                cloudDB.collection("RegistroDeAsistencia").get()
+                    .addOnFailureListener {
+                        Handler(Looper.getMainLooper()).post {
+                            Toast.makeText(
+                                context,
+                                "Error al obtener el registro de asistencia. Intentelo nuevamente.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        deferred.complete(mutableListOf())
+                    }
+                    .addOnSuccessListener{
+                        it.documents.forEach{ documento ->
+                            val nombreCompleto = documento.data?.get("nombreCompleto") as String
+                            Log.e("obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista", "nombre: $nombreCompleto")
+                        }
+                        deferred.complete(mutableListOf())
+                    }
+                return@withContext deferred.await()
+            }
+        }
+    }
+    override suspend fun avisarQueQuedeSinMaterial(context: Context){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher) {
+                //val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
+                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        request.msg,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
+    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        request.msg,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+    }
 
 }

@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.adapter.AsistenciaAdapter
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
+import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.databinding.FragmentRegistroDeAsistenciaBinding
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.base.BaseFragment
@@ -30,40 +31,23 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
     private var datePickerDialog: DatePickerDialog? = null
     private var desde: String? = null
     private var hasta: String? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         _binding = FragmentRegistroDeAsistenciaBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
         _binding!!.viewModel = _viewModel
 
-        lifecycleScope.launch{
-            withContext(Dispatchers.IO){
-                _viewModel.obtenerRegistroDeAsistencia(requireActivity())
-            }
-            val volanteros = _viewModel.obtenerListaDeVolanterosEnElRegistroDeAsistencia()
-            val autoCompleteTextViewAdapter = ArrayAdapter(requireActivity(), R.layout.simple_spinner_dropdown_item, volanteros)
-            autoCompleteTextViewAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-            withContext(Dispatchers.Main){
-                _binding!!.editTextRegistroDeAsistenciaVolantero.setAdapter(autoCompleteTextViewAdapter)
-            }
-        }
-
         val recyclerViewAdapter = AsistenciaAdapter(AsistenciaAdapter.OnClickListener { _ -> })
+
         val today = Calendar.getInstance()
 
         _binding!!.recyclerViewRegistroDeAsistenciaListadoDeAsistencia.adapter = recyclerViewAdapter
 
-        _binding!!.buttonRegistroDeAsistenciaObtenerExcel.setOnClickListener{
-            if(desde == null || hasta == null){
-                Toast.makeText(requireActivity(), "Por favor, seleccione un rango de fechas", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
 
-            lifecycleScope.launch{
-                withContext(Dispatchers.IO){
-                    _viewModel.exportarRegistroDeAsistenciaAExcel(requireActivity(), desde!!, hasta!!)
-                }
+
+        _viewModel.registroDeAsistencia.observe(viewLifecycleOwner){
+            it.let {
+                recyclerViewAdapter.submitList(it as MutableList<Asistencia>)
             }
         }
 
@@ -79,26 +63,22 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
             abrirCalendario(today, "hasta")
         }
 
-/*        _binding!!.editTextRegistroDeAsistenciaVolantero.setOnItemClickListener { parent, view, position, id ->
-            val volanteroSeleccionado = parent.adapter.getItem(position) as String
-            // Llama a tu función aquí, pasando el volantero seleccionado como parámetro
-            val filteredList = _viewModel.registroDeAsistencia.value?.filter { it["nombreCompleto"] == volanteroSeleccionado }
-            val registroAsistenciaFiltrado = filteredList?.get(0)?.get("registroAsistencia") as MutableList<Map<String, Any>>
-            val registrosProcesados = registroAsistenciaFiltrado.map{
-                Asistencia(
-                    it["fecha"].toString(),
-                    it["ingresoJornada"].toString(),
-                    it["salidaJornada"].toString(),
-                )
+        _binding!!.buttonRegistroDeAsistenciaGenerarReporte.setOnClickListener{
+            obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista()
+        }
+
+        _binding!!.buttonRegistroDeAsistenciaObtenerExcel.setOnClickListener{
+            if(desde == null || hasta == null){
+                Toast.makeText(requireActivity(), "Por favor, seleccione un rango de fechas", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
             }
-            val sueldo = registrosProcesados.size * 10000
-            val formatter = NumberFormat.getNumberInstance(Locale("es", "ES"))
-            formatter.maximumFractionDigits = 0
-            _binding!!.textViewRegistroDeAsistenciaSueldoPorPagar.text = "Sueldo por pagar: $${formatter.format(sueldo)}"
-            recyclerViewAdapter.submitList(registrosProcesados)
-        }*/
 
-
+            lifecycleScope.launch{
+                withContext(Dispatchers.IO){
+                    _viewModel.exportarRegistroDeAsistenciaAExcel(requireActivity(), desde!!, hasta!!)
+                }
+            }
+        }
 
         return _binding!!.root
     }
@@ -155,5 +135,18 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
             }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         }
         datePickerDialog?.show()
+    }
+
+    private fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(){
+        if(desde == null || hasta == null){
+            Toast.makeText(requireActivity(), "Por favor, seleccione un rango de fechas", Toast.LENGTH_LONG).show()
+            return
+        }
+        lifecycleScope.launch{
+            withContext(Dispatchers.IO){
+                _viewModel.obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(
+                        requireActivity(), desde!!, hasta!!)
+            }
+        }
     }
 }

@@ -119,6 +119,10 @@ dependencies {
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.3'
     androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
 
+
+    //apache POI : esto sirve pa parsear filas de excel a objetos
+    implementation 'org.apache.poi:poi:5.2.0'
+
     //CardView
     implementation("androidx.cardview:cardview:1.0.0")
 

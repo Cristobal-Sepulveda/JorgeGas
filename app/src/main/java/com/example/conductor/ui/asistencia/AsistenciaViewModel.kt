@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
+import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.base.BaseViewModel
@@ -21,8 +22,8 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
     val status: LiveData<CloudRequestStatus>
         get() = _status
 
-    private val _domainAsistenciaEnScreen = MutableLiveData<MutableList<Asistencia>>()
-    val domainAsistenciaEnScreen: LiveData<MutableList<Asistencia>>
+    private val _domainAsistenciaEnScreen = MutableLiveData<MutableList<AsistenciaIndividual>>()
+    val domainAsistenciaEnScreen: LiveData<MutableList<AsistenciaIndividual>>
         get() = _domainAsistenciaEnScreen
 
     fun desplegarAsistenciaEnRecyclerView(context: Context){

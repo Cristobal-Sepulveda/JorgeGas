@@ -185,6 +185,7 @@
     <string name="exportar_a_excel">Exportar a excel</string>
     <string name="desde">desde</string>
     <string name="hasta">Hasta</string>
+    <string name="generar_reporte">Generar Reporte</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>
