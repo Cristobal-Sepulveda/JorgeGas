@@ -16,10 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:elevation="10dp"
-        app:strokeColor="#c0c0c0"
-        app:strokeWidth="1dp"
-        >
+        android:elevation="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

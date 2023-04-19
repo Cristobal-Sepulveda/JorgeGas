@@ -191,6 +191,8 @@
     <string name="sueldo">Sueldo</string>
     <string name="bono">Bono</string>
     <string name="total">Total</string>
+    <string name="login_iniciarSesion">Iniciar sesión</string>
+    <string name="ver_clave">ver clave</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

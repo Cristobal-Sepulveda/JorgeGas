@@ -99,6 +99,8 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         _binding!!.floatingActionButtonDetalleVolanteroCambiarTipoDeMapa.setOnClickListener{
             cambiarTipoDeMapa()
         }
+
+
         return _binding!!.root
     }
 
@@ -237,7 +239,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         val minuteValue = (value * totalMinutes / 72).toInt() % 60
         return String.format("%02d:%02d", hourValue, minuteValue)
     }
-
     private fun abrirCalendario(today: Calendar) {
         datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
             if (month < 9) {
@@ -258,6 +259,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }, today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
         datePickerDialog?.show()
     }
+
     private fun sumarORestarValueDelSlider(num: Float) {
         if(!_binding!!.sliderDetalleVolanteroTrayecto.isEnabled) return
         val adjustedNum = if (num == -1f) -1f else 1f // adjust the value of num to be either -1 or 1
@@ -308,8 +310,10 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                 listadoDeHorasDeRegistrodeNuevosGeopoints.forEachIndexed { i, horaRegistrada ->
                     val horaRegistradaHoursEnCiclo = horaRegistrada.substring(0, 2).toFloat()
                     val horaRegistradaMinutesEnCiclo = horaRegistrada.substring(3, 5).toFloat()
+                    val horaRegistradaTotalMinutes = horaRegistradaHoursEnCiclo * 60 + horaRegistradaMinutesEnCiclo
+                    val selectedTotalMinutes = hourInSlide.toFloat() * 60 + minutesInSlide.toFloat()
 
-                    if(horaRegistradaHoursEnCiclo >= hourInSlide.toFloat() && horaRegistradaMinutesEnCiclo >= minutesInSlide.toFloat()){
+                    if (horaRegistradaTotalMinutes >= selectedTotalMinutes) {
                         for(aux in 0..i){
                             val geopoint = listadoDeGeoPointsDelDiaSeleccionado[aux]
                             val latLng = LatLng(geopoint.latitude, geopoint.longitude)
@@ -364,7 +368,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
                         tiempoEnRecorrerTramo += timeBetweenLatLngs
                         topeParaDibujar++
                         listAux.add(latLng)
-                        if (topeParaDibujar == 23) {
+                        if (topeParaDibujar == 23 || i == latLngsDeInteres.size - 2) {
                             val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
                             val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.30).toInt()
                             val rangoMaximoHumano = rangoMayor*4

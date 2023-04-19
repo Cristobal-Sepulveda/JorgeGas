@@ -110,8 +110,6 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         _binding = null
     }
 
-
-
     private fun limpiarDataNecesaria(){
         listOfPolylines.clear()
         listOfHours.clear()
@@ -288,7 +286,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                             topeParaDibujar++
                             listAux.add(LatLng(geopoint.latitude, geopoint.longitude))
 
-                            if (topeParaDibujar == 23 || i == listOfGeopoints.size - 1) {
+                            if (topeParaDibujar == 23 || i == listOfGeopoints.size - 2) {
                                 val rangoMayor = (tiempoEnRecorrerTramo / 1000 * 0.75).toInt()
                                 val rangoMenor = (tiempoEnRecorrerTramo / 1000 * 0.30).toInt()
                                 val rangoMaximoHumano = rangoMayor * 4

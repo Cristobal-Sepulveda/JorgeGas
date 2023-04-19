@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +52,15 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
-
+        binding.imageViewLoginVerClave.setOnClickListener{
+            if(binding.edittextPassword.transformationMethod.equals(PasswordTransformationMethod.getInstance())){
+                binding.edittextPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                binding.imageViewLoginVerClave.setImageResource(R.drawable.outline_visibility_off_24)
+            }else{
+                binding.imageViewLoginVerClave.setImageResource(R.drawable.outline_remove_red_eye_24)
+                binding.edittextPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            }
+        }
     }
 
     fun hayUsuarioLogeado(user: FirebaseUser?) : Boolean {
@@ -262,6 +273,8 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.GONE
         binding.imageviewLogoAbastible.visibility = View.VISIBLE
         binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
+        binding.imageviewLogoJorgeGasBorder.visibility = View.VISIBLE
+        binding.textviewLoginIniciarSesion.visibility = View.VISIBLE
         binding.edittextEmail.visibility = View.VISIBLE
         binding.edittextPassword.visibility = View.VISIBLE
         binding.loginButton.visibility = View.VISIBLE
@@ -271,6 +284,8 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
         binding.imageviewLogoAbastible.visibility = View.GONE
         binding.imageviewLogoJorgeGas.visibility = View.GONE
+        binding.imageviewLogoJorgeGasBorder.visibility = View.GONE
+        binding.textviewLoginIniciarSesion.visibility = View.GONE
         binding.edittextEmail.visibility = View.GONE
         binding.edittextPassword.visibility = View.GONE
         binding.loginButton.visibility = View.GONE

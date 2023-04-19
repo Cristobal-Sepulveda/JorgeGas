@@ -7,13 +7,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#f5f5f5">
 
         <ImageView
             android:id="@+id/imageview_logoAbastible"
             android:layout_width="201dp"
             android:layout_height="70dp"
-            android:layout_marginTop="@dimen/space_bigger"
+            android:layout_marginTop="70dp"
             android:contentDescription="@string/logo_abastible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -27,44 +28,73 @@
             android:contentDescription="@string/logo_abastible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/space_big"
+            android:layout_marginTop="43dp"
             app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
             android:src="@drawable/icono_app_sin_fondo" />
+
+        <ImageView
+            android:id="@+id/imageview_logoJorgeGas_border"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:contentDescription="@string/logo_abastible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="@dimen/space_big"
+            app:layout_constraintTop_toBottomOf="@id/imageview_logoAbastible"
+            android:src="@drawable/icono_app_login_border" />
+        <TextView
+            android:id="@+id/textview_login_iniciarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_big"
+            android:text="@string/login_iniciarSesion"
+            android:textSize="26dp"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas_border"
+            />
 
         <EditText
             android:id="@+id/edittext_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_bigger"
-            android:layout_marginEnd="@dimen/space_bigger"
+            android:layout_marginHorizontal="@dimen/space_big"
             android:layout_marginTop="@dimen/space_big"
-            android:background="@drawable/edittext_border"
             android:autofillHints="email"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
-            app:drawableStartCompat="@drawable/ic_baseline_person_24"
+            android:background="@drawable/edittext_border_login"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageview_logoJorgeGas"/>
+            app:layout_constraintTop_toBottomOf="@id/textview_login_iniciarSesion"/>
 
         <EditText
             android:id="@+id/edittext_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_bigger"
-            android:layout_marginEnd="@dimen/space_bigger"
+            android:layout_marginHorizontal="@dimen/space_big"
             android:layout_marginTop="@dimen/space_small"
             android:padding="10dp"
-            android:background="@drawable/edittext_border"
+            android:background="@drawable/edittext_border_login"
             android:autofillHints="contraseña"
             android:hint="@string/password"
             android:inputType="textPassword"
-            app:drawableStartCompat="@drawable/ic_baseline_lock_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edittext_email"
             />
+        <ImageView
+            android:id="@+id/imageView_login_verClave"
+            android:src="@drawable/outline_remove_red_eye_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/edittext_password"
+            app:layout_constraintTop_toTopOf="@id/edittext_password"
+            android:layout_marginEnd="@dimen/space_medium"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/ver_clave" />
 
         <Button
             android:id="@+id/login_button"
@@ -77,9 +107,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edittext_password"
-            android:layout_marginStart="45dp"
-            android:layout_marginEnd="45dp"
-            android:layout_marginTop="@dimen/space_small"
+            android:layout_marginHorizontal="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_medium"
             />
 
         <ProgressBar
