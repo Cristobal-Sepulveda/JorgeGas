@@ -6,8 +6,6 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +20,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -150,13 +147,13 @@ class AuthenticationActivity : AppCompatActivity() {
                     }
 
                     operation.addOnFailureListener {
-                        controlDeError(it)
+                        controlDeError(message = R.string.login_error_nube)
                     }
 
                 }
 
                 chequeoDeCredenciales.addOnFailureListener{
-                    controlDeError(it)
+                    controlDeError(message = R.string.usuario_o_clave_equivocados)
                 }
             }
         }
@@ -209,7 +206,7 @@ class AuthenticationActivity : AppCompatActivity() {
                             dataSource.eliminarTokenDeSesion()
                         }
                     }
-                    controlDeError(exception = it)
+                    controlDeError(message = R.string.login_error_nube)
                 }
             }
         }
