@@ -126,12 +126,12 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<List<DocumentSnapshot>>()
                 cloudDB.collection("RegistroDiariosDeVolanteros").get()
-                    .addOnSuccessListener{
-                        deferred.complete(it.documents)
-                    }
                     .addOnFailureListener {
                         Toast.makeText(context, "Error al obtener los datos.", Toast.LENGTH_LONG).show()
                         deferred.complete(emptyList())
+                    }
+                    .addOnSuccessListener{
+                        deferred.complete(it.documents)
                     }
                 return@withContext deferred.await()
             }

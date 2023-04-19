@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.conductor.R
 import com.example.conductor.ui.base.BaseFragment
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.GeoPoint
@@ -69,7 +71,6 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             val filtroRegistroVolanterosFragment = FiltroRegistroVolanterosFragment()
             filtroRegistroVolanterosFragment.show(childFragmentManager, "FiltroRegistroVolanterosFragment")
         }
-
 
         _viewModel.selectedDate.observe(viewLifecycleOwner) {
             _binding!!.editTextRegistroVolanterosFecha.text = Editable.Factory.getInstance().newEditable(it)
@@ -182,21 +183,24 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             withContext(Dispatchers.Main) {
                 map.clear()
                 limpiarDataNecesaria()
+                _binding!!.editTextRegistroVolanterosFecha.setTextColor(Color.BLACK)
             }
         }
 
         _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
+
         val registroDiariosVolanteros = _viewModel.obtenerRegistroDiariosRoomDesdeFirestore(requireActivity())
 
         if (registroDiariosVolanteros.isNotEmpty()) {
-
+            var hayRegistrosEnEsaFecha = false
             registroDiariosVolanteros.forEach { documentSnapshot ->
                 val id = documentSnapshot.id
                 val docParseado = documentSnapshot.data as Map<*, *>
                 val registroJornada = docParseado["registroJornada"] as List<Map<*,*>>
-
                 registroJornada.forEach { mapa ->
+                    Log.e("RegistroVolanteros", "${mapa["fecha"]}")
                     if (mapa["fecha"] == selectedDate) {
+                        hayRegistrosEnEsaFecha = true
                         val latLngs = mapa["latLngs"] as List<Map<*, *>>
                         val geoPoints: MutableList<GeoPoint> = mutableListOf()
                         val horasConRegistro: MutableList<String> = mutableListOf()
@@ -228,6 +232,15 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                     }
                 }
             }
+            if(!hayRegistrosEnEsaFecha){
+                withContext(Dispatchers.Main) {
+                    _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
+                    _binding!!.editTextRegistroVolanterosFecha.setTextColor(Color.RED)
+                    Toast.makeText(requireContext(), "No hay registros en esa fecha", Toast.LENGTH_LONG).show()
+                }
+                return
+            }
+            _binding!!.editTextRegistroVolanterosFecha.setTextColor(Color.BLACK)
             _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
             pintarPolylines()
         }
@@ -237,13 +250,9 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         lifecycleScope.launch{
             withContext(Dispatchers.Main) {
                 try {
+                    Log.e("RegistroVolanteros", "pintarPolylines: ${listOfIds}")
                     _viewModel.setearSelectedVolanteros(listOfIds)
-                    polylineOptions = PolylineOptions().width(10f)
                     var totalDistanciaRecorrida = 0
-                    var distanceRecorrida = 0
-                    var topeParaDibujar = 0
-                    var tiempoEnRecorrerTramo = 0f
-                    val listAux = mutableListOf<LatLng?>()
                     var tiempoEnRojo = 0f
                     var tiempoEnAmarillo = 0f
                     var tiempoEnVerde = 0f
@@ -251,34 +260,38 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                     val tiempoEnRosado = 0f
 
                     listOfPolylines.forEachIndexed{pivote, listOfGeopoints ->
-                        Log.i("DetalleVolanteroFragment","${listOfPolylines.size}")
-                        Log.i("DetalleVolanteroFragment","$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote$pivote")
+                        var distanceRecorrida = 0
+                        var tiempoEnRecorrerTramo = 0f
+                        var topeParaDibujar = 0
+                        val listAux = mutableListOf<LatLng?>()
+                        // Reset the polyline options to a new instance
+                        polylineOptions = PolylineOptions().width(10f)
                         listOfGeopoints.forEachIndexed loop@{i , geopoint ->
                             if (i == listOfGeopoints.size - 1) {
                                 return@loop
                             }
                             val latLng1 = Location("")
-                            latLng1.latitude = geopoint.latitude ?: 0.0
-                            latLng1.longitude = geopoint.longitude ?: 0.0
+                            latLng1.latitude = geopoint.latitude
+                            latLng1.longitude = geopoint.longitude
                             val latLng2 = Location("")
                             latLng2.latitude = listOfGeopoints[i + 1].latitude
                             latLng2.longitude = listOfGeopoints[i + 1].longitude
+
                             val tiempoLatLng1 = LocalTime.parse(listOfHours[pivote][i])
                             val tiempoLatLng2 = LocalTime.parse(listOfHours[pivote][i+1])
-
                             val distanceBetweenLatLngs = latLng1.distanceTo(latLng2).toInt()
                             val timeBetweenLatLngs = Duration.between(tiempoLatLng1, tiempoLatLng2).toMillis()
 
-                            Log.i("DetalleVolanteroFragment","$tiempoLatLng1 $tiempoLatLng2 $timeBetweenLatLngs $distanceBetweenLatLngs")
                             distanceRecorrida += distanceBetweenLatLngs
                             totalDistanciaRecorrida += distanceBetweenLatLngs
                             tiempoEnRecorrerTramo += timeBetweenLatLngs
                             topeParaDibujar++
                             listAux.add(LatLng(geopoint.latitude, geopoint.longitude))
-                            if (topeParaDibujar == 23) {
-                                val rangoMayor = (tiempoEnRecorrerTramo/1000 * 0.75).toInt()
-                                val rangoMenor = (tiempoEnRecorrerTramo/1000 * 0.30).toInt()
-                                val rangoMaximoHumano = rangoMayor*4
+
+                            if (topeParaDibujar == 23 || i == listOfGeopoints.size - 1) {
+                                val rangoMayor = (tiempoEnRecorrerTramo / 1000 * 0.75).toInt()
+                                val rangoMenor = (tiempoEnRecorrerTramo / 1000 * 0.30).toInt()
+                                val rangoMaximoHumano = rangoMayor * 4
                                 Log.i("DetalleVolanteroFragment","distanceRecorrida: $distanceRecorrida")
                                 Log.i("DetalleVolanteroFragment","tiempoEnRecorrerTramo: $tiempoEnRecorrerTramo")
                                 // Set the color based on the distance
@@ -288,7 +301,8 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                                     in rangoMayor..rangoMaximoHumano -> Color.GREEN
                                     else -> Color.BLUE
                                 }
-                                polylineOptions.addAll(listAux).color(color)
+
+                                val polylineOptions = PolylineOptions().width(10f).addAll(listAux).color(color)
                                 map.addPolyline(polylineOptions)
 
                                 when(color){
@@ -306,7 +320,6 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
                                     }
                                 }
 
-                                polylineOptions = PolylineOptions().width(10f)
                                 distanceRecorrida = 0
                                 tiempoEnRecorrerTramo = 0f
                                 topeParaDibujar = 0
