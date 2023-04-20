@@ -19,6 +19,10 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
     val status: LiveData<CloudRequestStatus>
         get() = _status
 
+    private val _hayVolanterosSinMaterial = MutableLiveData<Boolean>()
+    val hayVolanterosSinMaterial: LiveData<Boolean>
+        get() = _hayVolanterosSinMaterial
+
     private val _domainUsuariosInScreen = MutableLiveData<List<Usuario>>()
     val domainUsuariosInScreen: LiveData<List<Usuario>>
         get() = _domainUsuariosInScreen
@@ -60,10 +64,11 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
                             listaFinal.add(usuario)
                         }
                     }
-                    _domainUsuariosInScreen.value = listaFinal
-                    _status.value = CloudRequestStatus.DONE
                 }
             }
+            _domainUsuariosInScreen.value = listaFinal
+            _hayVolanterosSinMaterial.value = listaFinal.isNotEmpty()
+            _status.value = CloudRequestStatus.DONE
         }
     }
 

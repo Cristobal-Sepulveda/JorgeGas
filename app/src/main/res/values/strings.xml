@@ -195,6 +195,7 @@
     <string name="ver_clave">ver clave</string>
     <string name="usuario_o_clave_equivocados">El usuario o la contraseña no son correctas. Compruebala.</string>
     <string name="login_error_nube">Hay un error al conectarse a la nube. Intentelo nuevamente.</string>
+    <string name="todos_los_volanteros_tienen_material">En estos momentos todos los volanteros tienen material. \nVuelve mas tarde.</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

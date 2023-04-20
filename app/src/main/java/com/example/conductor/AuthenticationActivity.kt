@@ -49,6 +49,7 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             launchSignInFlow()
         }
+
         binding.imageViewLoginVerClave.setOnClickListener{
             if(binding.edittextPassword.transformationMethod.equals(PasswordTransformationMethod.getInstance())){
                 binding.edittextPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()

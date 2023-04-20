@@ -1,5 +1,6 @@
 package com.example.conductor
 
+import androidx.test.core.app.ActivityScenario
 import com.example.conductor.data.AppDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -7,37 +8,42 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
-class AuthenticationActivityTest{
+/*
+@RunWith(AndroidJUnit4::class)
+class AuthenticationActivityTest {
 
-    /*@get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
-
-    @Mock
-    private lateinit var firebaseAuth: FirebaseAuth
-
-    @Mock
-    private lateinit var cloudDB: FirebaseFirestore
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    private lateinit var appDataSource: AppDataSource
+    lateinit var firebaseAuth: FirebaseAuth
+
+    @Mock
+    lateinit var cloudDB: FirebaseFirestore
+
+    @Mock
+    lateinit var appDataSource: AppDataSource
 
     @Before
-    fun setup() {
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
-    }*/
+    }
 
     @Test
-    fun chequearLogin(){
-     /*   val activity = AuthenticationActivity().apply {
-            firebaseAuth = this@AuthenticationActivityTest.firebaseAuth
-            cloudDB = this@AuthenticationActivityTest.cloudDB
-            dataSource = this@AuthenticationActivityTest.appDataSource
-        }*/
+    fun chequearLogin() {
+        ActivityScenario.launch(AuthenticationActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                activity.firebaseAuth = firebaseAuth
+                activity.cloudDB = cloudDB
+                activity.dataSource = appDataSource
 
-        val resultado = AuthenticationActivity().hayUsuarioLogeado(null)
-        assertEquals(false, resultado)
+                val resultado = activity.hayUsuarioLogeado(null)
+                assertEquals(false, resultado)
+            }
+        }
     }
-}
+}*/

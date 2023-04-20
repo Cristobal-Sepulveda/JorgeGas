@@ -21,6 +21,8 @@ class GestionDeMaterialFragment: BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentGestionDeMaterialBinding.inflate(inflater, container, false)
+        _binding!!.viewModel = _viewModel
+        _binding!!.lifecycleOwner = this
 
         val adapter = VolanteroSinMaterialAdapter(_viewModel,_appDataSource , VolanteroSinMaterialAdapter.OnClickListener{ usuario -> })
         _binding!!.recyclerViewGestionDeMaterialVolanterosSinMaterial.adapter = adapter

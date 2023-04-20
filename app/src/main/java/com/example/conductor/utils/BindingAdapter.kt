@@ -130,3 +130,19 @@ fun bindBotonIniciarODetenerRegistroVolantero(fab: FloatingActionButton, status:
     }
 }
 
+@BindingAdapter("hayVolanterosSinMaterial")
+fun bindHayVolanterosSinMaterial(textView: TextView, textVisible: LiveData<Boolean>?) {
+    Log.d("BindingAdapter", "bindHayVolanterosSinMaterial: ${textVisible?.value}")
+    when (textVisible?.value) {
+        true -> {
+            textView.visibility = View.GONE
+        }
+        false -> {
+            textView.visibility = View.VISIBLE
+        }
+        else -> {
+            textView.visibility = View.GONE
+        }
+    }
+}
+
