@@ -79,4 +79,8 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
     fun vaciarRecyclerView(){
         _domainUsuariosInScreen.value = mutableListOf()
     }
+
+    fun resetearHayVolanterosSinMaterial(){
+        _hayVolanterosSinMaterial.value = true
+    }
 }

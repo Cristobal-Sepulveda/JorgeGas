@@ -100,7 +100,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             cambiarTipoDeMapa()
         }
 
-
         return _binding!!.root
     }
 
@@ -200,7 +199,6 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         Toast.makeText(requireActivity(), "No hay registro con esa fecha.", Toast.LENGTH_SHORT).show()
     }
 
-
     @SuppressLint("SetTextI18n")
     private fun cargarDatosDelVolantero(bundle: Usuario) {
         _binding!!.sliderDetalleVolanteroTrayecto.isEnabled = false
@@ -229,6 +227,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             _binding!!.imageViewDetalleVolanteroFotoPerfil.setImageBitmap(decodedByte)
         }
     }
+
     private fun customizarSliderLabel(value: Float): String {
         Log.i("customizarSliderLabel", value.toString())
         val startHour = 8
@@ -239,6 +238,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         val minuteValue = (value * totalMinutes / 72).toInt() % 60
         return String.format("%02d:%02d", hourValue, minuteValue)
     }
+
     private fun abrirCalendario(today: Calendar) {
         datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
             if (month < 9) {
@@ -270,6 +270,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             else -> _binding!!.sliderDetalleVolanteroTrayecto.value = valorActualDelSlider + adjustedNum
         }
     }
+
     @Suppress("UNCHECKED_CAST")
     private fun iniciarValidacionesAntesDePintarPolyline(value: Float): Boolean {
         /** Parto limpiando tudo para pintar, re pintar o borrar segun el caso */
@@ -327,6 +328,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
         return false
     }
+
     private fun pintarPolyline() {
         lifecycleScope.launch{
             withContext(Dispatchers.Main) {
@@ -418,6 +420,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
         }
 
     }
+
     private fun cambiarTipoDeMapa() {
         if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
@@ -425,6 +428,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
             map.mapType = GoogleMap.MAP_TYPE_NORMAL
         }
     }
+
     private fun convertSecondsToHMS(seconds: Float): String {
         val hours = (seconds / 3600).toInt()
         val minutes = ((seconds % 3600) / 60).toInt()

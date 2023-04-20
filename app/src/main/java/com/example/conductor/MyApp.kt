@@ -101,8 +101,10 @@ class MyApp : Application() {
 
             single { getDatabase(this@MyApp).jwtDao }
 
+            single{ getDatabase(this@MyApp).envioRegistroDeTrayectoDao }
+
             //REPOSITORY
-            single { AppRepository(get(),get(),get()) as AppDataSource }
+            single { AppRepository(get(),get(),get(),get()) as AppDataSource }
         }
 
         startKoin {

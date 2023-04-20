@@ -40,6 +40,7 @@ class GestionDeMaterialFragment: BaseFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        _viewModel.resetearHayVolanterosSinMaterial()
         _viewModel.vaciarRecyclerView()
     }
 }

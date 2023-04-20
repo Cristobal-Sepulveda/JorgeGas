@@ -106,7 +106,4 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     suspend fun avisarQueQuedeSinMaterial(context:Context){
         dataSource.avisarQueQuedeSinMaterial(context)
     }
-
-
-
 }

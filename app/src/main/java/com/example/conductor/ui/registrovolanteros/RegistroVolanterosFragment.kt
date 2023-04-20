@@ -63,6 +63,10 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
             abrirCalendario(Calendar.getInstance())
         }
 
+        _binding!!.floatingActionButtonDetalleVolanteroCambiarTipoDeMapa.setOnClickListener{
+            cambiarTipoDeMapa()
+        }
+
         _binding!!.buttonRegistroVolanterosFiltro.setOnClickListener{
             if(listOfIds.isEmpty()){
                 Snackbar.make(_binding!!.root, R.string.mensaje_filtro_volanteros, Snackbar.LENGTH_LONG).show()
@@ -342,6 +346,15 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
         }
 
     }
+
+    private fun cambiarTipoDeMapa() {
+        if (map.mapType == GoogleMap.MAP_TYPE_NORMAL) {
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        } else {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
+        }
+    }
+
 
     private fun convertSecondsToHMS(seconds: Float): String {
         val hours = (seconds / 3600).toInt()

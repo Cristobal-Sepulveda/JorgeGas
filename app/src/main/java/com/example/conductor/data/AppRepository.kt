@@ -9,9 +9,11 @@ import android.util.Log
 import android.widget.Toast
 import com.example.conductor.R
 import com.example.conductor.data.apiservices.*
+import com.example.conductor.data.daos.EnvioRegistroDeTrayectoDao
 import com.example.conductor.data.daos.JwtDao
 import com.example.conductor.data.daos.LatLngYHoraActualDao
 import com.example.conductor.data.daos.UsuarioDao
+import com.example.conductor.data.data_objects.dbo.EnvioRegistroDeTrayectoDBO
 import com.example.conductor.data.data_objects.dbo.JwtDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
@@ -43,6 +45,7 @@ import java.time.LocalDate
 class AppRepository(private val usuarioDao: UsuarioDao,
                     private val latLngYHoraActualDao: LatLngYHoraActualDao,
                     private val jwtDao: JwtDao,
+                    private val envioRegistroDeTrayectoDao: EnvioRegistroDeTrayectoDao,
                     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO): AppDataSource {
 
     private val cloudDB = FirebaseFirestore.getInstance()
@@ -350,22 +353,64 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             withContext(Dispatchers.IO){
                 val deferred = CompletableDeferred<Boolean>()
                 val listOfLatLngsYHoraActualDBO = latLngYHoraActualDao.obtenerLatLngYHoraActuales()
-                val usuarioActual = usuarioDao.obtenerUsuarios().first()
-                val nombreUsuarioActual = "${usuarioActual.nombre} ${usuarioActual.apellidos}"
-                val fechaDeHoy = LocalDate.now().toString()
-                val firstRequest = cloudDB.collection("RegistroDiariosDeVolanteros")
-                    .document(firebaseAuth.currentUser!!.uid).get()
+                var deboContinuar = true
 
-                firstRequest.addOnSuccessListener{
-                    if(it.data != null){
-                        val registroJornada = it.data!!["registroJornada"] as ArrayList<Map<String, *>>
-                        var aux = 0
-                        registroJornada.forEach{
-                            if(it["fecha"] == fechaDeHoy){
-                                aux = 1
-                                var registroLatLngs = it["latLngs"] as MutableList<LatLngYHoraActualDBO>
-                                registroLatLngs.clear()
-                                registroLatLngs.addAll(listOfLatLngsYHoraActualDBO)
+                if(listOfLatLngsYHoraActualDBO.isEmpty()){
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(context, R.string.no_tienes_trayecto, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                    deboContinuar = false
+                    deferred.complete(false)
+                }
+                if(deboContinuar){
+                    Log.e("asistencia", deboContinuar.toString())
+                    val usuarioActual = usuarioDao.obtenerUsuarios().first()
+                    val nombreUsuarioActual = "${usuarioActual.nombre} ${usuarioActual.apellidos}"
+                    val fechaDeHoy = LocalDate.now().toString()
+                    val firstRequest = cloudDB.collection("RegistroDiariosDeVolanteros")
+                        .document(firebaseAuth.currentUser!!.uid).get()
+
+                    firstRequest.addOnSuccessListener{
+                        if(it.data != null){
+                            val registroJornada = it.data!!["registroJornada"] as ArrayList<Map<String, *>>
+                            var aux = 0
+                            registroJornada.forEach{
+                                if(it["fecha"] == fechaDeHoy){
+                                    aux = 1
+                                    var registroLatLngs = it["latLngs"] as MutableList<LatLngYHoraActualDBO>
+                                    registroLatLngs.clear()
+                                    registroLatLngs.addAll(listOfLatLngsYHoraActualDBO)
+                                    val documentActualizado = mapOf(
+                                        "nombreCompleto" to nombreUsuarioActual,
+                                        "registroJornada" to registroJornada,
+                                    )
+
+                                    cloudDB.collection("RegistroDiariosDeVolanteros")
+                                        .document(firebaseAuth.currentUser!!.uid)
+                                        .update(documentActualizado)
+                                        .addOnSuccessListener{
+                                            Toast.makeText(context, R.string.el_registro_diario_se_guardo, Toast.LENGTH_LONG).show()
+                                            CoroutineScope(ioDispatcher).launch {
+                                                latLngYHoraActualDao.eliminarLatLngYHoraActuales()
+                                                Log.i("hola", "addOnSuccessListener")
+                                                deferred.complete(true)
+                                            }
+                                        }
+                                        .addOnFailureListener{
+                                            Toast.makeText(context, R.string.el_registro_diario_no_se_guardo, Toast.LENGTH_LONG).show()
+                                            deferred.complete(false)
+                                        }
+                                }
+                            }
+                            if(aux==0){
+                                Log.i("hola","hola")
+                                registroJornada.add(
+                                    mapOf(
+                                        "fecha" to fechaDeHoy,
+                                        "latLngs" to listOfLatLngsYHoraActualDBO
+                                    )
+                                )
                                 val documentActualizado = mapOf(
                                     "nombreCompleto" to nombreUsuarioActual,
                                     "registroJornada" to registroJornada,
@@ -378,7 +423,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                                         Toast.makeText(context, R.string.el_registro_diario_se_guardo, Toast.LENGTH_LONG).show()
                                         CoroutineScope(ioDispatcher).launch {
                                             latLngYHoraActualDao.eliminarLatLngYHoraActuales()
-                                            Log.i("hola", "addOnSuccessListener")
                                             deferred.complete(true)
                                         }
                                     }
@@ -387,23 +431,22 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                                         deferred.complete(false)
                                     }
                             }
-                        }
-                        if(aux==0){
-                            Log.i("hola","hola")
-                            registroJornada.add(
-                                mapOf(
-                                    "fecha" to fechaDeHoy,
-                                    "latLngs" to listOfLatLngsYHoraActualDBO
-                                )
-                            )
-                            val documentActualizado = mapOf(
-                                "nombreCompleto" to nombreUsuarioActual,
-                                "registroJornada" to registroJornada,
-                            )
 
+                        }
+                        else{
                             cloudDB.collection("RegistroDiariosDeVolanteros")
                                 .document(firebaseAuth.currentUser!!.uid)
-                                .update(documentActualizado)
+                                .set(
+                                    mapOf(
+                                        "nombreCompleto" to nombreUsuarioActual,
+                                        "registroJornada" to arrayListOf(
+                                            mapOf(
+                                                "fecha" to fechaDeHoy,
+                                                "latLngs" to listOfLatLngsYHoraActualDBO
+                                            )
+                                        )
+                                    ),
+                                )
                                 .addOnSuccessListener{
                                     Toast.makeText(context, R.string.el_registro_diario_se_guardo, Toast.LENGTH_LONG).show()
                                     CoroutineScope(ioDispatcher).launch {
@@ -418,37 +461,11 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         }
 
                     }
-                    else{
-                        cloudDB.collection("RegistroDiariosDeVolanteros")
-                            .document(firebaseAuth.currentUser!!.uid)
-                            .set(
-                                mapOf(
-                                    "nombreCompleto" to nombreUsuarioActual,
-                                    "registroJornada" to arrayListOf(
-                                        mapOf(
-                                            "fecha" to fechaDeHoy,
-                                            "latLngs" to listOfLatLngsYHoraActualDBO
-                                        )
-                                    )
-                                ),
-                            )
-                            .addOnSuccessListener{
-                                Toast.makeText(context, R.string.el_registro_diario_se_guardo, Toast.LENGTH_LONG).show()
-                                CoroutineScope(ioDispatcher).launch {
-                                    latLngYHoraActualDao.eliminarLatLngYHoraActuales()
-                                    deferred.complete(true)
-                                }
-                            }
-                            .addOnFailureListener{
-                                Toast.makeText(context, R.string.el_registro_diario_no_se_guardo, Toast.LENGTH_LONG).show()
-                                deferred.complete(false)
-                            }
+                    firstRequest.addOnFailureListener{
+                        deferred.complete(false)
                     }
+                }
 
-                }
-                firstRequest.addOnFailureListener{
-                    deferred.complete(false)
-                }
                 return@withContext deferred.await()
             }
         }
@@ -508,7 +525,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
         }
     }
 
-
     override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
@@ -566,13 +582,13 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                 val deferred = CompletableDeferred<Boolean>()
                 try{
                     val nombreCompleto = usuarioDao.obtenerUsuarios().first().nombre + " " + usuarioDao.obtenerUsuarios().first().apellidos
-                    val jornadaRequest = JornadaRequest(
-                        firebaseAuth.currentUser!!.uid,
-                        nombreCompleto,
-                        latitude,
-                        longitude
-                    )
+                    val jornadaRequest = JornadaRequest(firebaseAuth.currentUser!!.uid, nombreCompleto, latitude, longitude)
+
                     val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.ingresoJornada(jornadaRequest).await()
+
+                    if(envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto().isEmpty()){
+                        envioRegistroDeTrayectoDao.guardarEnvioRegistroDeTrayecto(EnvioRegistroDeTrayectoDBO(false))
+                    }
                     Handler(Looper.getMainLooper()).post {
                         Toast.makeText(
                             context,
@@ -580,18 +596,32 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             Toast.LENGTH_LONG
                         ).show()
                     }
+
                     deferred.complete(true)
                 } catch(e: HttpException){
                     Handler(Looper.getMainLooper()).post {
                         Toast.makeText(
                             context,
-                            e.response()?.errorBody()?.string(),
+                            "Usted ya inicio la jornada hoy.",
                             Toast.LENGTH_LONG
                         ).show()
                     }
-                    deferred.complete(false)
+                    if(e.response()?.errorBody()?.string().toString().contains("Usted ya inicio jornada")){
+                        deferred.complete(true)
+                    }else{
+                        deferred.complete(false)
+                    }
                 }
                 deferred.await()
+            }
+        }
+    }
+    override suspend fun obtenerEnvioRegistroDeTrayecto(): List<EnvioRegistroDeTrayectoDBO> = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<List<EnvioRegistroDeTrayectoDBO>>()
+                deferred.complete(envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto())
+                return@withContext deferred.await()
             }
         }
     }
@@ -608,6 +638,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                    envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
                     deferred.complete(true)
                 } catch(e: HttpException){
                     Handler(Looper.getMainLooper()).post {
@@ -866,5 +897,39 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+    override suspend fun generarInstanciaDeEnvioRegistroDeTrayecto() {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val hayInstancia = envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto()
+                if(hayInstancia.isEmpty()){
+                    envioRegistroDeTrayectoDao.guardarEnvioRegistroDeTrayecto(
+                        EnvioRegistroDeTrayectoDBO(
+                        false)
+                    )
+                }
+            }
+        }
+    }
+    override suspend fun cambiarValorDeEnvioRegistroDeTrayecto(boolean: Boolean){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                envioRegistroDeTrayectoDao.actualizarBooleano(boolean)
+            }
+        }
+    }
+    override suspend fun eliminarInstanciaDeEnvioRegistroDeTrayecto() {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
+            }
+        }
+    }
 
+    override suspend fun obtenerLatLngYHoraActualesDeRoom(): List<LatLngYHoraActualDBO> = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                return@withContext latLngYHoraActualDao.obtenerLatLngYHoraActuales()
+            }
+        }
+    }
 }

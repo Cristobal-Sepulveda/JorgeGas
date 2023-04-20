@@ -274,6 +274,7 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.imageviewLogoJorgeGasBorder.visibility = View.VISIBLE
         binding.edittextEmail.visibility = View.VISIBLE
         binding.edittextPassword.visibility = View.VISIBLE
+        binding.imageViewLoginVerClave.visibility = View.VISIBLE
         binding.loginButton.visibility = View.VISIBLE
     }
 
@@ -284,6 +285,7 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.imageviewLogoJorgeGasBorder.visibility = View.GONE
         binding.edittextEmail.visibility = View.GONE
         binding.edittextPassword.visibility = View.GONE
+        binding.imageViewLoginVerClave.visibility = View.GONE
         binding.loginButton.visibility = View.GONE
     }
 

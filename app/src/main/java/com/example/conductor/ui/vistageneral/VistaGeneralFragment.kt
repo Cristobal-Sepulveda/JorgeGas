@@ -248,23 +248,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             iniciarODetenerLocationService()
         }
 
-        _binding!!.fabVistaGeneralEnviarRegistroDiario.setOnClickListener{
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle("Atención")
-            builder.setMessage("¿Estas seguro que deseas reportar tu trayecto? Si lo haces el trayecto se borrara.")
-            builder.setPositiveButton("OK") { dialog, which ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        _viewModel.guardarLatLngYHoraActualEnFirestore(requireContext())
-                    }
-                }
-            }
-            builder.setNegativeButton("Cancelar") { dialog, which ->
-                // Do something when Cancel button is clicked
-            }
-            builder.show()
-        }
-
         _binding!!.fabVistaGeneralSinMaterial.setOnClickListener{
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
@@ -350,7 +333,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _viewModel.tiempoTotalRecorridoRosado.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralRosado.text = it
         }
-
 
         return _binding!!.root
     }

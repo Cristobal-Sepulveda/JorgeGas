@@ -2,6 +2,7 @@ package com.example.conductor.data
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.example.conductor.data.data_objects.dbo.EnvioRegistroDeTrayectoDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
@@ -28,6 +29,8 @@ interface AppDataSource {
     suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context)
     suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context): Boolean
     suspend fun guardarLatLngYHoraActualEnRoom(latLngYHoraActualEnRoom: LatLngYHoraActualDBO):Boolean
+
+    suspend fun obtenerLatLngYHoraActualesDeRoom(): List<LatLngYHoraActualDBO>
     suspend fun guardarLatLngYHoraActualEnFirestore(context: Context): Boolean
     suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context): List<DocumentSnapshot>
     suspend fun solicitarTokenDeSesion(context: Context): String
@@ -54,4 +57,10 @@ interface AppDataSource {
     suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String)
 
     suspend fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(context:Context, desde: String, hasta: String): MutableList<Asistencia>
+
+    suspend fun generarInstanciaDeEnvioRegistroDeTrayecto()
+
+    suspend fun obtenerEnvioRegistroDeTrayecto(): List<EnvioRegistroDeTrayectoDBO>
+    suspend fun cambiarValorDeEnvioRegistroDeTrayecto(boolean:Boolean)
+    suspend fun eliminarInstanciaDeEnvioRegistroDeTrayecto()
 }

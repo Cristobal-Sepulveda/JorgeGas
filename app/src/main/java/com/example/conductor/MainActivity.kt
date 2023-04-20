@@ -113,11 +113,18 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         binding.navView.menu.findItem(R.id.logout_item).setOnMenuItemClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    launchLogoutFlow()
+                    if(dataSource.obtenerEnvioRegistroDeTrayecto().isNotEmpty()){
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@MainActivity, "Antes de cerrar sesión debes de finalizar tu jornada", Toast.LENGTH_LONG).show()
+                        }
+                    }else{
+                        launchLogoutFlow()
+                    }
                 }
             }
             true
         }
+
         binding.navView.getHeaderView(0).findViewById<CircleImageView>(R.id.circleImageView_drawerNavHeader_iconoTomarFoto).setOnClickListener {
             dispatchTakePictureIntent()
         }
@@ -404,9 +411,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 var continueLogout = true
-
                 val user = dataSource.obtenerUsuariosDesdeSqlite()
-
                 if(user.isEmpty()){
                     withContext(Dispatchers.IO) {
                         dataSource.eliminarUsuariosEnSqlite()
@@ -474,6 +479,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
                                         lifecycleScope.launch {
                                             withContext(Dispatchers.IO) {
                                                 if(dataSource.eliminandoTokenDeFCMEnFirestore()){
+                                                    dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
                                                     dataSource.eliminarUsuariosEnSqlite()
                                                     FirebaseAuth.getInstance().signOut()
                                                     this@MainActivity.finish()

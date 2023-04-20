@@ -1,8 +1,11 @@
 package com.example.conductor.ui.asistencia
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +59,7 @@ class AsistenciaFragment: BaseFragment() {
         _binding!!.buttonAsistenciaSalida.setOnClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    _viewModel.registrarSalidaDeJornada(requireContext())
+                    lanzarAlerta()
                 }
             }
         }
@@ -93,6 +96,25 @@ class AsistenciaFragment: BaseFragment() {
             }
         } catch (e: SecurityException) {
             Log.e("Exception: %s", e.message, e)
+        }
+    }
+
+    private fun lanzarAlerta(){
+        Handler(Looper.getMainLooper()).post {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Atención")
+            builder.setMessage("¿Estas seguro que deseas finalizar tu jornada? Si lo haces, tu trayecto del día será borrado del celular y será enviado a la nube.")
+            builder.setPositiveButton("OK") { dialog, which ->
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        _viewModel.registrarSalidaDeJornada(requireContext())
+                    }
+                }
+            }
+            builder.setNegativeButton("Cancelar") { dialog, which ->
+                // Do something when Cancel button is clicked
+            }
+            builder.show()
         }
     }
 }

@@ -52,6 +52,7 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
         viewModelScope.launch{
             withContext(Dispatchers.IO){
                 if(dataSource.registrarIngresoDeJornada(context,latitude, longitude)){
+                    dataSource.generarInstanciaDeEnvioRegistroDeTrayecto()
                     _status.postValue(CloudRequestStatus.DONE)
                 }else{
                     _status.postValue(CloudRequestStatus.ERROR)
@@ -65,10 +66,17 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
         _status.postValue(CloudRequestStatus.LOADING)
         viewModelScope.launch{
             withContext(Dispatchers.IO){
-                if(dataSource.registrarSalidaDeJornada(context)){
-                    _status.postValue(CloudRequestStatus.DONE)
+                if(dataSource.guardarLatLngYHoraActualEnFirestore(context)){
+                    if(dataSource.registrarSalidaDeJornada(context)){
+                        dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
+                        _status.postValue(CloudRequestStatus.DONE)
+                    }
                 }else{
-                    _status.postValue(CloudRequestStatus.ERROR)
+                    if(dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()){
+                        _status.postValue(CloudRequestStatus.DONE)
+                    }else{
+                        _status.postValue(CloudRequestStatus.ERROR)
+                    }
                 }
             }
         }
