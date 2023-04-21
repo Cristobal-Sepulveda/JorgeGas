@@ -883,18 +883,30 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String){
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
+    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String):Boolean = withContext(ioDispatcher){
+        withContext(ioDispatcher){
+            val deferred = CompletableDeferred<Boolean>()
+            try {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
+                deferred.complete(true)
                 Handler(Looper.getMainLooper()).post {
                     Toast.makeText(
                         context,
-                        request.msg,
+                        request.msg+"\n"+"Espere mientras se actualiza la lista.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }catch(e:Exception){
+                deferred.complete(false)
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(
+                        context,
+                        "Error al notificar al volantero que se le abastecio de material.",
                         Toast.LENGTH_LONG
                     ).show()
                 }
             }
+            return@withContext deferred.await()
         }
     }
     override suspend fun generarInstanciaDeEnvioRegistroDeTrayecto() {

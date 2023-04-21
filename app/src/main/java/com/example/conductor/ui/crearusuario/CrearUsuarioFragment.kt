@@ -45,7 +45,7 @@ class CrearUsuarioFragment : BaseFragment() {
         _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        val roles = listOf("Administrador","Conductor","Peoneta","Secretaria", "Supervisor Volantero", "Volantero" )
+        val roles = listOf("Administrador","Conductor","Peoneta","Call Center", "Supervisor Volantero", "Volantero" )
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 

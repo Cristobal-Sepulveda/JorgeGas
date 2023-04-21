@@ -3,6 +3,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://maven.google.com' }
     }
 
     dependencies {
@@ -26,3 +27,4 @@ plugins {
     // Add the Performance Monitoring Gradle plugin
     id 'com.google.firebase.firebase-perf' version '1.4.2' apply false
 }
+

@@ -1,25 +1,33 @@
 package com.example.conductor.ui.vistageneral
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.*
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.conductor.BuildConfig
 import com.example.conductor.R
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
@@ -36,16 +44,18 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.IOException
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
@@ -220,12 +230,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
         _binding!!.lifecycleOwner = this
         _binding!!.viewModel = _viewModel
-        (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapa) as? SupportMapFragment)
-            ?.getMapAsync(this)
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireActivity())
+
         //Obteniendo sharedPreferences y poniendo un listener a cualquier cambio en esta key
         sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
@@ -248,7 +256,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             iniciarODetenerLocationService()
         }
 
-        _binding!!.fabVistaGeneralSinMaterial.setOnClickListener{
+        _binding!!.fabVistaGeneralSinMaterial.setOnClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     _viewModel.avisarQueQuedeSinMaterial(requireActivity())
@@ -256,33 +264,39 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
 
-        _binding!!.imageViewVistaGeneralVolanterosFlechaBaja.setOnClickListener{
+        _binding!!.imageViewVistaGeneralVolanterosFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility = View.GONE
-            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility =
+                View.VISIBLE
         }
 
-        _binding!!.imageViewVistaGeneralVolanterosFlechaArriba.setOnClickListener{
-            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility = View.VISIBLE
+        _binding!!.imageViewVistaGeneralVolanterosFlechaArriba.setOnClickListener {
+            _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility =
+                View.VISIBLE
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility = View.GONE
         }
 
-        _binding!!.imageViewVistaGeneralChoferesFlechaBaja.setOnClickListener{
+        _binding!!.imageViewVistaGeneralChoferesFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility = View.GONE
-            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility =
+                View.VISIBLE
         }
 
-        _binding!!.imageViewVistaGeneralChoferesFlechaArriba.setOnClickListener{
-            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility = View.VISIBLE
+        _binding!!.imageViewVistaGeneralChoferesFlechaArriba.setOnClickListener {
+            _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility =
+                View.VISIBLE
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility = View.GONE
         }
 
-        _binding!!.imageViewVistaGeneralCallCenterFlechaBaja.setOnClickListener{
+        _binding!!.imageViewVistaGeneralCallCenterFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.GONE
-            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.VISIBLE
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility =
+                View.VISIBLE
         }
 
-        _binding!!.imageViewVistaGeneralCallCenterFlechaArriba.setOnClickListener{
-            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.VISIBLE
+        _binding!!.imageViewVistaGeneralCallCenterFlechaArriba.setOnClickListener {
+            _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility =
+                View.VISIBLE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
         }
 
@@ -302,13 +316,22 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 )
         }
 
-        _binding!!.textViewVistaGeneralGestionDeMaterial.setOnClickListener{
+        _binding!!.textViewVistaGeneralGestionDeMaterial.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
                     VistaGeneralFragmentDirections
                         .actionNavigationVistaGeneralToNavigationGestionDeMaterial()
                 )
         }
+
+        _binding!!.includeVistaGeneralUiCallCenter
+            .buttonVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.setOnClickListener {
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        convertirTextoAListaDeSugerenciasDeDireccionesAsync()
+                    }
+                }
+            }
 
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
@@ -373,13 +396,17 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         startingPermissionCheck()
-        setMapStyle(map)
-        map.mapType = GoogleMap.MAP_TYPE_SATELLITE
-        /*lifecycleScope.launch{
-            withContext(Dispatchers.IO){
-                iniciarSnapshotListenerDelRegistroTrayectoVolanteros()
+        lifecycleScope.launch {
+            when(_viewModel.obtenerRolDelUsuarioActual()) {
+                "Volantero" -> {
+                    map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+                    setMapStyle(map)
+                }
+                "Call Center"->{
+                    map.mapType = GoogleMap.MAP_TYPE_NORMAL
+                }
             }
-        }*/
+        }
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
@@ -625,6 +652,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         lifecycleScope.launch {
             when (_viewModel.obtenerRolDelUsuarioActual()) {
                 "Volantero" -> {
+                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapa) as? SupportMapFragment)
+                        ?.getMapAsync(this@VistaGeneralFragment)
+                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
                     _binding!!.constraintLayoutVistaGeneralUiVolanteros.visibility = View.VISIBLE
                     val isServiceEnabled = sharedPreferences.getBoolean(
                         SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
@@ -645,6 +675,18 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 "Administrador" -> {
                     _binding!!.nestedScrollViewVistaGeneralUiAdministradores.visibility = View.VISIBLE
                 }
+
+                "Call Center" ->{
+                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapaCallCenter) as? SupportMapFragment)
+                        ?.getMapAsync(this@VistaGeneralFragment)
+                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    _binding!!.includeVistaGeneralUiCallCenter.constraintLayoutVistaGeneralUiCallCenter.visibility = View.VISIBLE
+                    // Initialize Places.
+                    if (!Places.isInitialized()) {
+                        Places.initialize(requireContext(), BuildConfig.PLACES_API_KEY)
+                    }
+                }
+
                 "Error" -> Toast.makeText(
                     requireActivity(),
                     "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"",
@@ -730,4 +772,72 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
     }
+
+    private fun convertirTextoAListaDeSugerenciasDeDireccionesAsync() {
+
+        val editText = _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono
+        val query = editText.text.toString()
+        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
+
+        if (query.isEmpty()) {
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(requireActivity(), R.string.ingrese_direccion_o_telefono_antes_de_buscar, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val placesClient = Places.createClient(requireActivity())
+        val token = AutocompleteSessionToken.newInstance()
+
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setTypeFilter(TypeFilter.ADDRESS)
+            .setSessionToken(token)
+            .setQuery(query)
+            .setCountries(listOf("CL"))
+            .build()
+
+        placesClient.findAutocompletePredictions(request)
+            .addOnSuccessListener { response ->
+                val predictionList = response.autocompletePredictions
+                val listOfDirecctions = mutableListOf<String>()
+                for (prediction in predictionList) {
+                    listOfDirecctions.add(prediction.getFullText(null).toString())
+                }
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOfDirecctions)
+                _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.apply {
+                    setAdapter(adapter)
+                    showDropDown()
+                    setOnItemClickListener { parent, view, position, id ->
+                        val selectedAddress = parent.getItemAtPosition(position).toString()
+                        val latLng = convertirDireccionALatLng(selectedAddress)
+                        latLng?.let {
+                            map.addMarker(MarkerOptions().position(it))
+                            map.moveCamera(CameraUpdateFactory.newLatLng(it))
+                        }
+                    }
+
+                }
+            }
+            .addOnFailureListener { exception ->
+                Handler(Looper.getMainLooper()).post {
+                    Toast.makeText(requireActivity(), exception.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun convertirDireccionALatLng(direccion: String): LatLng? {
+        val geocoder = Geocoder(requireContext())
+        try {
+            val addressList = geocoder.getFromLocationName(direccion, 1)
+            if (addressList != null && addressList.isNotEmpty()) {
+                val latitude = addressList[0].latitude
+                val longitude = addressList[0].longitude
+                return LatLng(latitude, longitude)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
 }

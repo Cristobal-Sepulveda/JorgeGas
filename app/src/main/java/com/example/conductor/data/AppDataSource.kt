@@ -52,7 +52,7 @@ interface AppDataSource {
 
     suspend fun avisarQueQuedeSinMaterial(context: Context)
 
-    suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String)
+    suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String):Boolean
 
     suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String)
 

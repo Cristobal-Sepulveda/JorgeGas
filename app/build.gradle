@@ -15,6 +15,7 @@ localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def googleMapsApiKey = localProperties.getProperty('googleMapsApiKey')
 def directionsApiKey = localProperties.getProperty('directionsApiKey')
 def distanceMatrixApiKey = localProperties.getProperty('distanceMatrixApiKey')
+def placesApiKey = localProperties.getProperty('placesApiKey')
 
 if (googleMapsApiKey == null) {
     googleMapsApiKey = System.getenv("GOOGLE_MAPS_API_KEY_ENVIRONMENT_VARIABLE")
@@ -24,6 +25,10 @@ if (directionsApiKey == null) {
 }
 if (distanceMatrixApiKey == null) {
     distanceMatrixApiKey = System.getenv("DISTANCE_MATRIX_API_KEY_ENVIRONMENT_VARIABLE")
+}
+
+if (placesApiKey == null) {
+    placesApiKey = System.getenv("PLACES_API_KEY_ENVIRONMENT_VARIABLE")
 }
 
 android {
@@ -40,7 +45,8 @@ android {
         manifestPlaceholders = [
                 googleMapsApiKey : googleMapsApiKey,
                 directionsApiKey : directionsApiKey,
-                distanceMatrixApiKey: distanceMatrixApiKey
+                distanceMatrixApiKey: distanceMatrixApiKey,
+                placesApiKey: placesApiKey
         ]
         vectorDrawables {
             useSupportLibrary true
@@ -48,6 +54,7 @@ android {
         buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\""
         buildConfigField "String", "DIRECTIONS_API_KEY", "\"$directionsApiKey\""
         buildConfigField "String", "DISTANCE_MATRIX_API_KEY", "\"$distanceMatrixApiKey\""
+        buildConfigField "String", "PLACES_API_KEY", "\"$placesApiKey\""
     }
 
     buildTypes {
@@ -94,6 +101,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4"
     implementation 'androidx.test.espresso:espresso-idling-resource:3.5.1'
+    implementation 'com.google.android.libraries.places:places:2.5.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -141,11 +149,16 @@ dependencies {
 
     //Flexbox
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
     //Google Maps
     implementation 'com.google.maps:google-maps-services:2.1.2'
+
     //Google Maps Directions API
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.maps.android:android-maps-utils:3.4.0'
+    // Google Places API
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
+
     //Koin Dependency Injection
     // Koin Core features
     implementation 'io.insert-koin:koin-core:3.3.3'

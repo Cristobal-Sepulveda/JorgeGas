@@ -73,7 +73,12 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
     }
 
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String){
-        dataSource.notificarQueSeAbastecioAlVolanteroDeMaterial(context, id)
+        _status.value = CloudRequestStatus.LOADING
+        if(dataSource.notificarQueSeAbastecioAlVolanteroDeMaterial(context, id)) {
+            displayVolanterosInRecyclerView(context)
+        }else{
+            _status.value = CloudRequestStatus.ERROR
+        }
     }
 
     fun vaciarRecyclerView(){
