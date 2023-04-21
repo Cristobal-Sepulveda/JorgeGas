@@ -45,6 +45,10 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     val tiempoTotalRecorridoRosado: LiveData<String>
         get() = _tiempoTotalRecorridoRosado
 
+    private var _callCenterAgregoMarker = MutableLiveData<Boolean>()
+    val callCenterAgregoMarker: LiveData<Boolean>
+        get() = _callCenterAgregoMarker
+
     suspend fun obtenerRolDelUsuarioActual():String{
         return withContext(Dispatchers.IO) {
             return@withContext dataSource.obtenerRolDelUsuarioActual()
@@ -106,4 +110,9 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     suspend fun avisarQueQuedeSinMaterial(context:Context){
         dataSource.avisarQueQuedeSinMaterial(context)
     }
+
+    fun callCenterAgregoMarker(boolean: Boolean){
+        _callCenterAgregoMarker.postValue(boolean)
+    }
 }
+

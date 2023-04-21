@@ -197,11 +197,16 @@
     <string name="login_error_nube">Hay un error al conectarse a la nube. Intentelo nuevamente.</string>
     <string name="todos_los_volanteros_tienen_material">En estos momentos todos los volanteros tienen material. \nVuelve mas tarde.</string>
     <string name="no_tienes_trayecto">Antes de cerrar jornada debes de caminar. </string>
-    <string name="buscar_por_direccion_o_telefono">Buscar por dirección o telefono</string>
+    <string name="buscar_por_direccion">Buscar por dirección</string>
     <string name="ingrese_direccion_o_telefono_antes_de_buscar">Ingrese direccioón o teléfono antes de buscar.</string>
     <string name="ver_en_mapa">Ver en mapa</string>
     <string name="confirmar_pedido">Confirmar pedido</string>
     <string name="confirmar_direccion">Confirmar Dirección</string>
+    <string name="comentarios">Comentarios</string>
+    <string name="titulo_formulario_nuevo_pedido">Formulario de nuevo pedido</string>
+    <string name="depto">Depto</string>
+    <string name="block">Block</string>
+    <string name="medio_de_pago">Medio de pago</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

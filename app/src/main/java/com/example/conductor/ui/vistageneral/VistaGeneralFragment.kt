@@ -2,8 +2,8 @@ package com.example.conductor.ui.vistageneral
 
 import android.Manifest
 import android.content.*
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -23,7 +23,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -333,6 +332,15 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 }
             }
 
+        _binding!!.includeVistaGeneralUiCallCenter
+            .buttonVistaGeneralUiCallCenterConfirmarDireccion.setOnClickListener{
+                _viewModel.navigationCommand.value = NavigationCommand.To(
+                    VistaGeneralFragmentDirections
+                        .actionNavigationVistaGeneralToNavigationFormularioNuevoPedido()
+                )
+        }
+
+
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
         }
@@ -510,19 +518,19 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 when(color){
                     Color.RED -> {
                         tiempoEnRojo += tiempoEnRecorrerTramo/1000
-                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_red)
+                        reDibujarMarker(listAux, R.drawable.ic_marker_volantero_red)
                     }
                     Color.YELLOW -> {
                         tiempoEnAmarillo += tiempoEnRecorrerTramo/1000
-                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_yellow)
+                        reDibujarMarker(listAux, R.drawable.ic_marker_volantero_yellow)
                     }
                     Color.GREEN -> {
                         tiempoEnVerde += tiempoEnRecorrerTramo/1000
-                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_green)
+                        reDibujarMarker(listAux, R.drawable.ic_marker_volantero_green)
                     }
                     Color.BLUE -> {
                         tiempoEnAzul += tiempoEnRecorrerTramo/1000
-                        redibujarMarker(listAux, R.drawable.ic_marker_volantero_blue)
+                        reDibujarMarker(listAux, R.drawable.ic_marker_volantero_blue)
                     }
                 }
 
@@ -541,7 +549,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _viewModel.editarTiempoTotalRecorrido(tiempoEnRosado, "rosado")
     }
 
-    private fun redibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
+    private fun reDibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
         if (::marker.isInitialized) {
             marker.remove()
         }
@@ -798,24 +806,43 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         placesClient.findAutocompletePredictions(request)
             .addOnSuccessListener { response ->
-                val predictionList = response.autocompletePredictions
                 val listOfDirecctions = mutableListOf<String>()
-                for (prediction in predictionList) {
-                    listOfDirecctions.add(prediction.getFullText(null).toString())
-                }
+                val predictionList = response.autocompletePredictions
+                predictionList.forEach{ listOfDirecctions.add(it.getFullText(null).toString()) }
+
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOfDirecctions)
-                _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.apply {
-                    setAdapter(adapter)
-                    showDropDown()
-                    setOnItemClickListener { parent, view, position, id ->
-                        val selectedAddress = parent.getItemAtPosition(position).toString()
-                        val latLng = convertirDireccionALatLng(selectedAddress)
-                        latLng?.let {
-                            map.addMarker(MarkerOptions().position(it))
-                            map.moveCamera(CameraUpdateFactory.newLatLng(it))
+                val listOfMediosDePagos = mutableListOf("Efectivo", "Debito", "Credito", "Vales")
+                val medioDePagoAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOfMediosDePagos)
+
+                _binding!!.includeVistaGeneralUiCallCenter.apply  {
+/*                    this.autoCompleteTextViewVistaGeneralUiCallCenterDepto.isEnabled = true
+                    this.autoCompleteTextViewVistaGeneralUiCallCenterBlock.isEnabled = true
+                    this.autoCompleteTextViewVistaGeneralUiCallCenterTelefono.isEnabled = true
+                    this.autoCompleteTextViewVistaGeneralUiCallCenterMedioDePago.setAdapter(medioDePagoAdapter)
+                    this.autoCompleteTextViewVistaGeneralUiCallCenterMedioDePago.isEnabled = true
+                    this.textInputEditTextVistaGeneralUiCallCenterComentarios.isEnabled = true*/
+                    this.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.apply{
+                        setAdapter(adapter)
+                        showDropDown()
+                        setOnItemClickListener { parent, view, position, id ->
+                            val selectedAddress = parent.getItemAtPosition(position).toString()
+                            val latLng = convertirDireccionALatLng(selectedAddress)
+
+                            latLng?.let {
+                                map.clear()
+                                map.addMarker(MarkerOptions().position(it))
+                                map.moveCamera(CameraUpdateFactory.newLatLng(it))
+
+                                _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterConfirmarDireccion.apply{
+                                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this.context, R.color.orange))
+                                    isEnabled = true
+                                    setTextColor(Color.WHITE)
+                                }
+                                this@apply.
+
+                            }
                         }
                     }
-
                 }
             }
             .addOnFailureListener { exception ->

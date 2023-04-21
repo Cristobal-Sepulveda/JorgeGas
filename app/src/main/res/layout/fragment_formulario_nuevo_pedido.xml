@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView_formularioNuevoPedido_titulo"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/titulo_formulario_nuevo_pedido"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textSize="@dimen/text_medium_24"
+        android:layout_marginTop="@dimen/space_big"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_formularioNuevoPedido_telefono"
+        style="@style/buscador"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_big"
+        android:layout_marginEnd="@dimen/space_small"
+        app:startIconDrawable="@drawable/ic_baseline_search_24"
+        android:hint="@string/telefono"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView_formularioNuevoPedido_titulo">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInput_formularioNuevoPedido_telefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/azulSuave"
+            android:textColor="@color/black"
+            app:boxCornerRadiusBottomEnd="10dp"
+            app:boxCornerRadiusBottomStart="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxCornerRadiusTopEnd="10dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_formularioNuevoPedido_depto"
+        style="@style/buscador"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_big"
+        android:layout_marginTop="@dimen/space_small"
+        android:layout_marginEnd="@dimen/space_small"
+        app:startIconDrawable="@drawable/ic_baseline_search_24"
+        android:hint="@string/depto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout_formularioNuevoPedido_telefono">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInput_formularioNuevoPedido_depto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/azulSuave"
+            android:textColor="@color/black"
+            app:boxCornerRadiusBottomEnd="10dp"
+            app:boxCornerRadiusBottomStart="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxCornerRadiusTopEnd="10dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

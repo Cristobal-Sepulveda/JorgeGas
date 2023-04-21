@@ -1,77 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<layout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout_vistaGeneral_uiCallCenter"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="gone"
-    tools:visibility="visible">
-
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_small"
-        android:layout_marginTop="@dimen/space_big"
-        android:autofillHints="email"
-        android:hint="@string/buscar_por_direccion_o_telefono"
-        android:inputType="textEmailAddress"
-        android:padding="10dp"
-        android:background="@drawable/edittext_border_login"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/button_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <Button
-        android:id="@+id/button_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/buscar"
-        app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/space_big"
-        android:layout_marginEnd="@dimen/space_big"
-        />
-
-    <Button
-        android:id="@+id/button_vistaGeneral_uiCallCenter_confirmarPedido"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/confirmar_direccion"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
-        android:layout_marginTop="@dimen/space_small"
-        android:layout_marginHorizontal="@dimen/space_big"
-        />
-
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView_vistaGeneral_mapaCallCenter"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/space_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_vistaGeneral_uiCallCenter_confirmarPedido"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout="@layout/fragment_gestion_de_material"/>
-
-    <ImageView
-        android:id="@+id/imageView_vistaGeneral_mapaCallCenterSinPermisos"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.conductor.ui.vistageneral.VistaGeneralViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout_vistaGeneral_uiCallCenter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:src="@drawable/mapa_sin_permisos"
         android:visibility="gone"
-        android:contentDescription="@string/mapa_sin_permisos_autorizados" />
+        tools:visibility="visible">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_big"
+            android:layout_marginEnd="@dimen/space_small"
+            android:autofillHints="email"
+            android:background="@drawable/edittext_border_login"
+            android:hint="@string/buscar_por_direccion"
+            android:inputType="text"
+            android:padding="5dp"
+            app:layout_constraintEnd_toStartOf="@id/button_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            android:layout_width="wrap_content"
+            android:layout_height="45.5dp"
+            android:text="@string/buscar"
+            app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="@dimen/space_big"
+            android:layout_marginTop="18dp"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_depto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_small"
+            android:autofillHints="email"
+            android:hint="@string/depto"
+            android:inputType="text"
+            android:padding="5dp"
+            android:enabled="false"
+            android:background="@drawable/edittext_border_login"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_block"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_small"
+            android:hint="@string/block"
+            android:inputType="text"
+            android:padding="5dp"
+            android:enabled="false"
+            android:background="@drawable/edittext_border_login"
+            app:layout_constraintStart_toEndOf="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_depto"
+            app:layout_constraintTop_toBottomOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_telefono"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_small"
+            android:background="@drawable/edittext_border_login"
+            android:hint="@string/telefono"
+            android:inputType="text"
+            android:padding="5dp"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono"
+            app:layout_constraintStart_toEndOf="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_block"
+            app:layout_constraintTop_toBottomOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_medioDePago"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginStart="@dimen/space_small"
+            android:background="@drawable/edittext_border_login"
+            android:hint="@string/medio_de_pago"
+            android:inputType="text"
+            android:padding="5dp"
+            android:textSize="13sp"
+            android:enabled="false"
+            app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_vistaGeneral_uiCallCenter_telefono"
+            app:layout_constraintTop_toBottomOf="@+id/button_vistaGeneral_uiCallCenter_buscarPorDireccionOTelefono" />
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout_vistaGeneral_uiCallCenter_comentarios"
+            style="?attr/textInputOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginEnd="@dimen/space_big"
+            android:layout_marginTop="@dimen/space_small"
+            android:enabled="false"
+            app:endIconMode="clear_text"
+            android:hint="@string/comentarios"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextView_vistaGeneral_uiCallCenter_medioDePago"
+            app:expandedHintEnabled="false"
+            app:layout_constraintHeight_default="wrap"
+            app:layout_constraintHeight_max="wrap"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/textInputEditText_vistaGeneral_uiCallCenter_comentarios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:lines="3"
+                android:maxLines="3"
+                android:minLines="3"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/button_vistaGeneral_uiCallCenter_confirmarDireccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/confirmar_direccion"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayout_vistaGeneral_uiCallCenter_comentarios"
+            android:layout_marginTop="@dimen/space_small"
+            android:layout_marginHorizontal="@dimen/space_big"
+            android:backgroundTint="@color/gris"
+            android:enabled="false"
+            />
+
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView_vistaGeneral_mapaCallCenter"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_vistaGeneral_uiCallCenter_confirmarDireccion"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout="@layout/fragment_gestion_de_material"/>
+
+        <ImageView
+            android:id="@+id/imageView_vistaGeneral_mapaCallCenterSinPermisos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/mapa_sin_permisos"
+            android:visibility="gone"
+            android:contentDescription="@string/mapa_sin_permisos_autorizados" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

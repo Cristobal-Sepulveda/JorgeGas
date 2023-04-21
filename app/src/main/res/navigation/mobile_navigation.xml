@@ -20,8 +20,10 @@
         <action
             android:id="@+id/action_navigation_vista_general_to_navigation_gestion_de_material"
             app:destination="@id/navigation_gestion_de_material" />
+        <action
+            android:id="@+id/action_navigation_vista_general_to_navigation_formulario_nuevo_pedido"
+            app:destination="@id/navigation_formulario_nuevo_pedido" />
     </fragment>
-
 
     <fragment
         android:id="@+id/navigation_map"
@@ -138,5 +140,10 @@
         android:name="com.example.conductor.ui.gestiondematerial.GestionDeMaterialFragment"
         android:label="GestionDeMaterialFragment" />
 
+    <fragment
+        android:id="@+id/navigation_formulario_nuevo_pedido"
+        android:name="com.example.conductor.ui.formularionuevopedido.FormularioNuevoPedidoFragment"
+        android:label="FormularioNuevoPedidoFragment"
+        tools:layout="@layout/fragment_formulario_nuevo_pedido"/>
 
 </navigation>
