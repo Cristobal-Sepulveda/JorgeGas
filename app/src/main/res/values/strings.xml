@@ -220,6 +220,7 @@
     <string name="quince_kilos">15 kilos</string>
     <string name="nombreCompleto">Nombre Completo</string>
     <string name="tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos">El nombre debe contener a lo menos 2 nombres y 2 apellidos</string>
+    <string name="debes_a_lo_menos_pedir_un_balon">Debes de pedir a lo menos un balon</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

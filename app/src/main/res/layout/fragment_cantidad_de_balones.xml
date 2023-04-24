@@ -78,12 +78,12 @@
         android:gravity="center_vertical"
         android:textSize="@dimen/text_medium"
         android:textAppearance="?attr/textAppearanceHeadline6"
-        app:layout_constraintBottom_toBottomOf="@+id/button_dataUsuario_confirmar"
-        app:layout_constraintEnd_toStartOf="@id/button_dataUsuario_confirmar"
-        app:layout_constraintTop_toTopOf="@id/button_dataUsuario_confirmar" />
+        app:layout_constraintBottom_toBottomOf="@+id/button_cantidadDeBalones_confirmar"
+        app:layout_constraintEnd_toStartOf="@id/button_cantidadDeBalones_confirmar"
+        app:layout_constraintTop_toTopOf="@id/button_cantidadDeBalones_confirmar" />
 
     <Button
-        android:id="@+id/button_dataUsuario_confirmar"
+        android:id="@+id/button_cantidadDeBalones_confirmar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_medium"

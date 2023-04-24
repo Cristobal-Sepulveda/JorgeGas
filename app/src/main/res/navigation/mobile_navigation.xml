@@ -150,6 +150,20 @@
             app:destination="@id/navigation_vista_general"
             app:popUpTo="@id/navigation_vista_general"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_navigation_cantidad_de_balones_to_navigation_formulario_nuevo_pedido"
+            app:destination="@id/navigation_formulario_nuevo_pedido" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_formulario_nuevo_pedido"
+        android:name="com.example.conductor.ui.formularionuevopedido.FormularioNuevoPedidoFragment"
+        android:label="FormularioNuevoPedidoFragment" >
+        <action
+            android:id="@+id/action_navigation_formulario_nuevo_pedido_to_navigation_cantidad_de_balones"
+            app:destination="@id/navigation_cantidad_de_balones"
+            app:popUpTo="@id/navigation_cantidad_de_balones"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

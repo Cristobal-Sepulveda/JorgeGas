@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.example.conductor.R
 import com.example.conductor.databinding.FragmentCantidadDeBalonesBinding
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 
 class CantidadDeBalonesFragment: BaseFragment() {
@@ -22,7 +24,21 @@ class CantidadDeBalonesFragment: BaseFragment() {
 
         _binding!!.textViewCantidadDeBalonesVolver.setOnClickListener{
             findNavController().navigate(
-                CantidadDeBalonesFragmentDirections.actionCantidadDeBalonesFragmentToVistaGeneral()
+                CantidadDeBalonesFragmentDirections.actionNavigationCantidadDeBalonesToNavigationVistaGeneral()
+            )
+        }
+
+        _binding!!.buttonCantidadDeBalonesConfirmar.setOnClickListener{
+            var aux = false
+            _viewModel.cantidadDeBalones.forEach{
+               if(it.value > 0) aux = true
+            }
+            if(!aux){
+                Snackbar.make(_binding!!.root, R.string.debes_a_lo_menos_pedir_un_balon, Snackbar.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            findNavController().navigate(
+                CantidadDeBalonesFragmentDirections.actionNavigationCantidadDeBalonesToNavigationFormularioNuevoPedido()
             )
         }
 

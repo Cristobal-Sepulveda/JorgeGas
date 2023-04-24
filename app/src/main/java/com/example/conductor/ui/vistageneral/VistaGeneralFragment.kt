@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -389,7 +390,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             .textInputEditTextVistaGeneralUiCallCenterComentarios.text.toString()
         val cantidadDePalabras = nombreCompleto.split(" ")
 
-        if (nombreCompleto.isEmpty() && direccion.isEmpty() && telefono.isEmpty() && medioDePago == "Medio de pago") {
+        if (nombreCompleto.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || medioDePago == "Medio de pago") {
             Snackbar.make(
                 _binding!!.root,
                 R.string.snackbar_pedido_gas_faltan_datos,
@@ -405,6 +406,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             ).show()
             return
         }
+
+        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(_binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.windowToken, 0)
 
         _viewModel.nombreDelCliente = nombreCompleto
         _viewModel.direccionDelCliente = direccion
