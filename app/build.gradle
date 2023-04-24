@@ -26,7 +26,6 @@ if (directionsApiKey == null) {
 if (distanceMatrixApiKey == null) {
     distanceMatrixApiKey = System.getenv("DISTANCE_MATRIX_API_KEY_ENVIRONMENT_VARIABLE")
 }
-
 if (placesApiKey == null) {
     placesApiKey = System.getenv("PLACES_API_KEY_ENVIRONMENT_VARIABLE")
 }
@@ -101,7 +100,6 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4"
     implementation 'androidx.test.espresso:espresso-idling-resource:3.5.1'
-    implementation 'com.google.android.libraries.places:places:2.5.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -111,8 +109,6 @@ dependencies {
     androidTestImplementation "androidx.test:core-ktx:1.5.0"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
     androidTestImplementation "androidx.test:rules:1.5.0"
-    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
-
     androidTestImplementation "androidx.room:room-testing:2.5.0"
     androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'org.robolectric:annotations:4.9.2'
@@ -128,10 +124,6 @@ dependencies {
     androidTestImplementation 'org.mockito:mockito-core:5.1.1'
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.3'
     androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
-
-
-    //apache POI : esto sirve pa parsear filas de excel a objetos
-    implementation 'org.apache.poi:poi:5.2.0'
 
     //CardView
     implementation("androidx.cardview:cardview:1.0.0")
@@ -149,16 +141,11 @@ dependencies {
 
     //Flexbox
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-
     //Google Maps
     implementation 'com.google.maps:google-maps-services:2.1.2'
-
     //Google Maps Directions API
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.maps.android:android-maps-utils:3.4.0'
-    // Google Places API
-    implementation 'com.google.android.gms:play-services-places:17.0.0'
-
     //Koin Dependency Injection
     // Koin Core features
     implementation 'io.insert-koin:koin-core:3.3.3'
@@ -212,6 +199,9 @@ dependencies {
     implementation 'com.squareup.moshi:moshi-kotlin:1.14.0'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
 
+    //Places API
+    implementation 'com.google.android.libraries.places:places:2.2.0'
+    implementation "com.android.volley:volley:1.2.1"
     //Retrofit dependecies
     /** R */
     // Retrofit

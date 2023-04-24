@@ -8,7 +8,7 @@
     style="@style/Container">
 
     <TextView
-        android:id="@+id/textView_vistaGeneral_uiCallCenter_titulo"
+        android:id="@+id/textView_cantidadDeBalones_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,55 +22,54 @@
 
     <include
         layout="@layout/card_pedido_balon_de_gas_cinco_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonCincoKilos"
+        android:id="@+id/include_cantidadDeBalones_imagenBalonCincoKilos"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/space_big"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/include_formularioNuevoPedido_imagenBalonOnceKilos"
-        app:layout_constraintTop_toBottomOf="@id/textView_vistaGeneral_uiCallCenter_titulo"
+        app:layout_constraintEnd_toStartOf="@id/include_cantidadDeBalones_imagenBalonOnceKilos"
+        app:layout_constraintTop_toBottomOf="@id/textView_cantidadDeBalones_titulo"
         />
 
 
 
     <include
         layout="@layout/card_pedido_balon_de_gas_once_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonOnceKilos"
+        android:id="@+id/include_cantidadDeBalones_imagenBalonOnceKilos"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toEndOf="@id/include_formularioNuevoPedido_imagenBalonCincoKilos"
+        app:layout_constraintStart_toEndOf="@id/include_cantidadDeBalones_imagenBalonCincoKilos"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_vistaGeneral_uiCallCenter_titulo"
+        app:layout_constraintTop_toBottomOf="@id/textView_cantidadDeBalones_titulo"
         />
 
     <include
+        android:id="@+id/include_cantidadDeBalones_imagenBalonQuinceKilos"
         layout="@layout/card_pedido_balon_de_gas_quince_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonQuinceKilos"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_formularioNuevoPedido_imagenBalonCincoKilos"
-        app:layout_constraintEnd_toStartOf="@id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
         android:src="@drawable/imagen_balon_15k"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/include_cantidadDeBalones_imagenBalonCuarentaYCincoKilos"
+        app:layout_constraintTop_toBottomOf="@id/include_cantidadDeBalones_imagenBalonCincoKilos" />
 
     <include
         layout="@layout/card_pedido_balon_de_gas_cuarenta_y_cinco_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
+        android:id="@+id/include_cantidadDeBalones_imagenBalonCuarentaYCincoKilos"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toEndOf="@id/include_formularioNuevoPedido_imagenBalonQuinceKilos"
+        app:layout_constraintStart_toEndOf="@id/include_cantidadDeBalones_imagenBalonQuinceKilos"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_formularioNuevoPedido_imagenBalonOnceKilos"
+        app:layout_constraintTop_toBottomOf="@id/include_cantidadDeBalones_imagenBalonOnceKilos"
         android:src="@drawable/imagen_balon_45k"
         />
 
 
     <TextView
-        android:id="@+id/button_dataUsuario_volver"
+        android:id="@+id/textView_cantidadDeBalones_volver"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
@@ -89,9 +88,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_medium"
         android:text="@string/siguiente"
+        android:textColor="@color/white"
+        android:background="@color/orange"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        app:layout_constraintStart_toStartOf="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        app:layout_constraintTop_toBottomOf="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos" />
+        app:layout_constraintEnd_toEndOf="@id/include_cantidadDeBalones_imagenBalonCuarentaYCincoKilos"
+        app:layout_constraintStart_toStartOf="@+id/include_cantidadDeBalones_imagenBalonCuarentaYCincoKilos"
+        app:layout_constraintTop_toBottomOf="@+id/include_cantidadDeBalones_imagenBalonCuarentaYCincoKilos" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

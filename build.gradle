@@ -4,6 +4,7 @@ buildscript {
         google()
         mavenCentral()
         maven { url 'https://maven.google.com' }
+        maven {url "https://repo.spring.io/libs-release/"}
     }
 
     dependencies {
@@ -26,5 +27,6 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.7.20' apply false
     // Add the Performance Monitoring Gradle plugin
     id 'com.google.firebase.firebase-perf' version '1.4.2' apply false
+    id "androidx.navigation.safeargs.kotlin" version "2.5.3" apply false
 }
 

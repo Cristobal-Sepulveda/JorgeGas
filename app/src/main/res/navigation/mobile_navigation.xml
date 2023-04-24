@@ -21,8 +21,8 @@
             android:id="@+id/action_navigation_vista_general_to_navigation_gestion_de_material"
             app:destination="@id/navigation_gestion_de_material" />
         <action
-            android:id="@+id/action_navigation_vista_general_to_navigation_formulario_nuevo_pedido"
-            app:destination="@id/navigation_formulario_nuevo_pedido" />
+            android:id="@+id/action_navigation_vista_general_to_navigation_cantidad_de_balones"
+            app:destination="@id/navigation_cantidad_de_balones" />
     </fragment>
 
     <fragment
@@ -141,9 +141,15 @@
         android:label="GestionDeMaterialFragment" />
 
     <fragment
-        android:id="@+id/navigation_formulario_nuevo_pedido"
-        android:name="com.example.conductor.ui.formularionuevopedido.FormularioNuevoPedidoFragment"
-        android:label="FormularioNuevoPedidoFragment"
-        tools:layout="@layout/fragment_formulario_nuevo_pedido"/>
+        android:id="@+id/navigation_cantidad_de_balones"
+        android:name="com.example.conductor.ui.cantidaddebalones.CantidadDeBalonesFragment"
+        android:label="CantidadDeBalonesFragment"
+        tools:layout="@layout/fragment_cantidad_de_balones">
+        <action
+            android:id="@+id/action_navigation_cantidad_de_balones_to_navigation_vista_general"
+            app:destination="@id/navigation_vista_general"
+            app:popUpTo="@id/navigation_vista_general"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>

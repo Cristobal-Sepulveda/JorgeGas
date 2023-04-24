@@ -8,7 +8,6 @@ import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
 import com.example.conductor.ui.asistencia.AsistenciaViewModel
 import com.example.conductor.ui.detallevolantero.DetalleVolanteroViewModel
 import com.example.conductor.ui.estadoactual.EstadoActualViewModel
-import com.example.conductor.ui.formularionuevopedido.FormularioNuevoPedidoViewModel
 import com.example.conductor.ui.gestiondematerial.GestionDeMaterialViewModel
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.ui.map.MapViewModel
@@ -90,12 +89,6 @@ class MyApp : Application() {
             }
             single{
                 GestionDeMaterialViewModel(
-                    get(),
-                    get() as AppDataSource
-                )
-            }
-            single{
-                FormularioNuevoPedidoViewModel(
                     get(),
                     get() as AppDataSource
                 )

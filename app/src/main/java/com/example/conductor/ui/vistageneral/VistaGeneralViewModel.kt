@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
@@ -48,6 +49,16 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     private var _callCenterAgregoMarker = MutableLiveData<Boolean>()
     val callCenterAgregoMarker: LiveData<Boolean>
         get() = _callCenterAgregoMarker
+
+    var nombreDelCliente: String = ""
+    var direccionDelCliente: String = ""
+    var deptoDelCliente: String = ""
+    var blockDelCliente: String = ""
+    var telefonoDelCliente: String = ""
+    var medioDePagoDelCliente: String = ""
+    var geoPointPedidoDelCliente: GeoPoint? = null
+    var comentarios: String = ""
+    var cantidadDeBalones: HashMap<String, Int> = hashMapOf("5kilos" to 0, "11kilos" to 0, "15kilos" to 0, "45kilos" to 0)
 
     suspend fun obtenerRolDelUsuarioActual():String{
         return withContext(Dispatchers.IO) {

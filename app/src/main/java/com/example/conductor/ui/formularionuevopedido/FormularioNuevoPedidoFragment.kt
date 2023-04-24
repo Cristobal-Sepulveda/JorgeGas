@@ -6,16 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.conductor.databinding.FragmentFormularioNuevoPedidoBinding
 import com.example.conductor.ui.base.BaseFragment
+import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import org.koin.android.ext.android.inject
 
 class FormularioNuevoPedidoFragment: BaseFragment() {
 
     private var _binding: FragmentFormularioNuevoPedidoBinding? = null
-    override val _viewModel: FormularioNuevoPedidoViewModel by inject()
+    override val _viewModel: VistaGeneralViewModel by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View{
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?): View{
 
         _binding = FragmentFormularioNuevoPedidoBinding.inflate(inflater, container, false)
+
 
         return _binding!!.root
     }

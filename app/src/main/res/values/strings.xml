@@ -206,7 +206,20 @@
     <string name="titulo_formulario_nuevo_pedido">Formulario de nuevo pedido</string>
     <string name="depto">Depto</string>
     <string name="block">Block</string>
-    <string name="medio_de_pago">Medio de pago</string>
+    <string name="medio_de_pago">Medio de\n pago</string>
+    <string name="efectivo">Efectivo</string>
+    <string name="credito">Credito</string>
+    <string name="debito">Debito</string>
+    <string name="vale">Vale</string>
+    <string name="snackbar_pedido_gas_faltan_datos">Debes de a lo menos completar nombre, dirección, teléfono y medio de pago</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="cinco_kilos">5 kilos</string>
+    <string name="once_kilos">11 kilos</string>
+    <string name="zero">0</string>
+    <string name="cuarenta_y_cinco_kilos">45 kilos</string>
+    <string name="quince_kilos">15 kilos</string>
+    <string name="nombreCompleto">Nombre Completo</string>
+    <string name="tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos">El nombre debe contener a lo menos 2 nombres y 2 apellidos</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

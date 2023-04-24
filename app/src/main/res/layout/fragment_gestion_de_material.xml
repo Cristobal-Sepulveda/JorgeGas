@@ -24,7 +24,7 @@
             android:layout_marginTop="@dimen/space_big"
             android:text="@string/gestion_de_material"
             android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textSize="@dimen/text_medium_24"
+            android:textSize="@dimen/text_title"
             />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_gestionDeMaterial_volanterosSinMaterial"

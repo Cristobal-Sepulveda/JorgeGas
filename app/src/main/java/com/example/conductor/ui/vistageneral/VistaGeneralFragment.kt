@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
@@ -26,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.fragment.findNavController
 import com.example.conductor.BuildConfig
 import com.example.conductor.R
 import com.example.conductor.ui.base.BaseFragment
@@ -324,7 +326,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
 
         _binding!!.includeVistaGeneralUiCallCenter
-            .buttonVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.setOnClickListener {
+            .buttonVistaGeneralUiCallCenterBuscarPorDireccion.setOnClickListener {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {
                         convertirTextoAListaDeSugerenciasDeDireccionesAsync()
@@ -334,11 +336,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         _binding!!.includeVistaGeneralUiCallCenter
             .buttonVistaGeneralUiCallCenterConfirmarDireccion.setOnClickListener{
-                _viewModel.navigationCommand.value = NavigationCommand.To(
-                    VistaGeneralFragmentDirections
-                        .actionNavigationVistaGeneralToNavigationFormularioNuevoPedido()
-                )
-        }
+                callCenterValidarYCargarDatosAntesDeNavegar()
+            }
 
 
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
@@ -365,8 +364,62 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _binding!!.textViewVistaGeneralRosado.text = it
         }
 
+
+        _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.setOnClickListener{
+            abrirMenuMedioDePago(it)
+        }
+
         return _binding!!.root
     }
+
+    private fun callCenterValidarYCargarDatosAntesDeNavegar() {
+        val nombreCompleto = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.text.toString()
+        val direccion = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.text.toString()
+        val departamento = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterDepto.text.toString()
+        val block = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterBlock.text.toString()
+        val telefono = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.text.toString()
+        val medioDePago = _binding!!.includeVistaGeneralUiCallCenter
+            .buttonVistaGeneralUiCallCenterMedioDePago.text.toString()
+        val comentarios = _binding!!.includeVistaGeneralUiCallCenter
+            .textInputEditTextVistaGeneralUiCallCenterComentarios.text.toString()
+        val cantidadDePalabras = nombreCompleto.split(" ")
+
+        if (nombreCompleto.isEmpty() && direccion.isEmpty() && telefono.isEmpty() && medioDePago == "Medio de pago") {
+            Snackbar.make(
+                _binding!!.root,
+                R.string.snackbar_pedido_gas_faltan_datos,
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+        if (cantidadDePalabras.size < 4) {
+            Snackbar.make(
+                _binding!!.root,
+                R.string.tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos,
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        _viewModel.nombreDelCliente = nombreCompleto
+        _viewModel.direccionDelCliente = direccion
+        _viewModel.deptoDelCliente = departamento
+        _viewModel.blockDelCliente = block
+        _viewModel.telefonoDelCliente = telefono
+        _viewModel.medioDePagoDelCliente = medioDePago
+        _viewModel.comentarios = comentarios
+        findNavController().navigate(
+            VistaGeneralFragmentDirections
+                .actionNavigationVistaGeneralToNavigationCantidadDeBalones(
+                )
+        )
+    }
+
 
     override fun onDestroy() {
         if (::iniciandoSnapshotListener.isInitialized) {
@@ -783,7 +836,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
     private fun convertirTextoAListaDeSugerenciasDeDireccionesAsync() {
 
-        val editText = _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono
+        val editText = _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion
         val query = editText.text.toString()
         val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
@@ -809,36 +862,35 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 val listOfDirecctions = mutableListOf<String>()
                 val predictionList = response.autocompletePredictions
                 predictionList.forEach{ listOfDirecctions.add(it.getFullText(null).toString()) }
-
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOfDirecctions)
-                val listOfMediosDePagos = mutableListOf("Efectivo", "Debito", "Credito", "Vales")
-                val medioDePagoAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOfMediosDePagos)
 
-                _binding!!.includeVistaGeneralUiCallCenter.apply  {
-/*                    this.autoCompleteTextViewVistaGeneralUiCallCenterDepto.isEnabled = true
-                    this.autoCompleteTextViewVistaGeneralUiCallCenterBlock.isEnabled = true
-                    this.autoCompleteTextViewVistaGeneralUiCallCenterTelefono.isEnabled = true
-                    this.autoCompleteTextViewVistaGeneralUiCallCenterMedioDePago.setAdapter(medioDePagoAdapter)
-                    this.autoCompleteTextViewVistaGeneralUiCallCenterMedioDePago.isEnabled = true
-                    this.textInputEditTextVistaGeneralUiCallCenterComentarios.isEnabled = true*/
-                    this.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccionOTelefono.apply{
+                _binding!!.includeVistaGeneralUiCallCenter.apply {
+                    val aux = this
+                    aux.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.apply{
                         setAdapter(adapter)
                         showDropDown()
                         setOnItemClickListener { parent, view, position, id ->
                             val selectedAddress = parent.getItemAtPosition(position).toString()
                             val latLng = convertirDireccionALatLng(selectedAddress)
-
                             latLng?.let {
+                                _viewModel.geoPointPedidoDelCliente = GeoPoint(latLng.latitude, latLng.longitude)
                                 map.clear()
                                 map.addMarker(MarkerOptions().position(it))
                                 map.moveCamera(CameraUpdateFactory.newLatLng(it))
-
+                                map.animateCamera(CameraUpdateFactory.zoomTo(18f))
+                                aux.apply{
+                                    this.autoCompleteTextViewVistaGeneralUiCallCenterDepto.isEnabled = true
+                                    this.autoCompleteTextViewVistaGeneralUiCallCenterBlock.isEnabled = true
+                                    this.autoCompleteTextViewVistaGeneralUiCallCenterTelefono.isEnabled = true
+                                    this.buttonVistaGeneralUiCallCenterMedioDePago.isEnabled = true
+                                    this.textInputEditTextVistaGeneralUiCallCenterComentarios.isEnabled = true
+                                }
                                 _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterConfirmarDireccion.apply{
                                     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this.context, R.color.orange))
                                     isEnabled = true
                                     setTextColor(Color.WHITE)
                                 }
-                                this@apply.
+
 
                             }
                         }
@@ -866,5 +918,37 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         return null
     }
+
+    private fun abrirMenuMedioDePago(it: View?) {
+        val popupMenu = PopupMenu(requireContext(), it)
+        popupMenu.menuInflater.inflate(R.menu.menu_medio_de_pago, popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.efectivo -> {
+                    _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.text =
+                        menuItem.title
+                    true
+                }
+                R.id.debito -> {
+                    _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.text =
+                        menuItem.title
+                    true
+                }
+                R.id.credito -> {
+                    _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.text =
+                        menuItem.title
+                    true
+                }
+                R.id.vale -> {
+                    _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.text =
+                        menuItem.title
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
+    }
+
 
 }
