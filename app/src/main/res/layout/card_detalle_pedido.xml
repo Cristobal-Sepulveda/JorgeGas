@@ -34,6 +34,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="Jhoskar Toro"
                 />
         </LinearLayout>
@@ -64,6 +65,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="Jhoskar Toro"
                 />
         </LinearLayout>
@@ -94,6 +96,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="Alfonso vial 563"
                 />
         </LinearLayout>
@@ -124,6 +127,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text=""
                 />
         </LinearLayout>
@@ -154,6 +158,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text=""
                 />
         </LinearLayout>
@@ -184,6 +189,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="950722566"
                 />
         </LinearLayout>
@@ -214,6 +220,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="15 kilos (1) 5 kilos(3)"
                 />
         </LinearLayout>
@@ -244,15 +251,16 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:textSize="@dimen/edittext_card_formulario_pedido"
+                android:textColor="@color/black"
                 tools:text="Cerca de la carretera"
                 />
         </LinearLayout>
+
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="3dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
-
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

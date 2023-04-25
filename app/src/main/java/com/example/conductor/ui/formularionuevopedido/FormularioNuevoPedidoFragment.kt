@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.conductor.databinding.FragmentFormularioNuevoPedidoBinding
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
@@ -28,6 +29,16 @@ class FormularioNuevoPedidoFragment: BaseFragment() {
             withContext(Dispatchers.IO){
                 cargarDatosEnFormulario()
             }
+        }
+
+        _binding!!.buttonFormularioNuevoPedidoVolver.setOnClickListener{
+            findNavController().navigate(FormularioNuevoPedidoFragmentDirections
+                .actionNavigationFormularioNuevoPedidoToNavigationCantidadDeBalones()
+            )
+        }
+
+        _binding!!.buttonFormularioNuevoPedidoConfirmar.setOnClickListener{
+
         }
 
         return _binding!!.root

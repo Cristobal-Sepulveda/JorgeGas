@@ -41,7 +41,22 @@ class CantidadDeBalonesFragment: BaseFragment() {
                 .actionNavigationCantidadDeBalonesToNavigationFormularioNuevoPedido()
             )
         }
-
+        _viewModel.cantidadDeBalones.forEach { (s, i) ->
+            when(s){
+                "5kilos" -> {
+                    _binding!!.includeCantidadDeBalonesImagenBalonCincoKilos.editTextCardPedidoBalonCincoKilosCantidad.setText(i.toString())
+                }
+                "11kilos" -> {
+                    _binding!!.includeCantidadDeBalonesImagenBalonOnceKilos.editTextCardPedidoBalonOnceKilosCantidad.setText(i.toString())
+                }
+                "15kilos" -> {
+                    _binding!!.includeCantidadDeBalonesImagenBalonQuinceKilos.editTextCardPedidoBalonQuinceKilosCantidad.setText(i.toString())
+                }
+                "45kilos" -> {
+                    _binding!!.includeCantidadDeBalonesImagenBalonCuarentaYCincoKilos.editTextCardPedidoBalonCuarentaYCincoKilosCantidad.setText(i.toString())
+                }
+            }
+        }
         val cardCincoKilosBinding = _binding!!.includeCantidadDeBalonesImagenBalonCincoKilos
         val cardOnceKilosBinding = _binding!!.includeCantidadDeBalonesImagenBalonOnceKilos
         val cardQuinceKilosBinding = _binding!!.includeCantidadDeBalonesImagenBalonQuinceKilos
