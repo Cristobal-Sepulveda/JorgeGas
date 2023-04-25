@@ -230,6 +230,9 @@
     <string name="productos">Productos:</string>
     <string name="detalle_comentarios">Comentarios:</string>
     <string name="titulo_pedido">Ingreso de pedidos</string>
+    <string name="elige_un_mes">Elige un mes</string>
+    <string name="elija_un_mes">Elija un mes</string>
+    <string name="elija_un_año">Elija un año</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>
