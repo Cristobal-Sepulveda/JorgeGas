@@ -37,8 +37,8 @@ class CantidadDeBalonesFragment: BaseFragment() {
                 Snackbar.make(_binding!!.root, R.string.debes_a_lo_menos_pedir_un_balon, Snackbar.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            findNavController().navigate(
-                CantidadDeBalonesFragmentDirections.actionNavigationCantidadDeBalonesToNavigationFormularioNuevoPedido()
+            findNavController().navigate(CantidadDeBalonesFragmentDirections
+                .actionNavigationCantidadDeBalonesToNavigationFormularioNuevoPedido()
             )
         }
 

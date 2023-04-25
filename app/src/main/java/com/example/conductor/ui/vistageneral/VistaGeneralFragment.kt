@@ -370,7 +370,49 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             abrirMenuMedioDePago(it)
         }
 
+        cargarFormularioSiYaTeniaDatos()
+
         return _binding!!.root
+    }
+
+    private fun cargarFormularioSiYaTeniaDatos(){
+        val nombreCompleto = _viewModel.nombreDelCliente
+        val direccion = _viewModel.direccionDelCliente
+        val departamento = _viewModel.deptoDelCliente
+        val block = _viewModel.blockDelCliente
+        val telefono = _viewModel.telefonoDelCliente
+        val medioDePago = _viewModel.medioDePagoDelCliente
+        val comentarios = _viewModel.comentarios
+
+        if(nombreCompleto != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.setText(nombreCompleto)
+        }
+        if(direccion != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.setText(direccion)
+        }
+        if(departamento != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterDepto.setText(departamento)
+        }
+        if(block != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterBlock.setText(block)
+        }
+        if(telefono != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.setText(telefono)
+        }
+        if(medioDePago != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .buttonVistaGeneralUiCallCenterMedioDePago.text = medioDePago
+        }
+        if(comentarios != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .textInputEditTextVistaGeneralUiCallCenterComentarios.setText(comentarios)
+        }
+
     }
 
     private fun callCenterValidarYCargarDatosAntesDeNavegar() {
@@ -390,6 +432,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             .textInputEditTextVistaGeneralUiCallCenterComentarios.text.toString()
         val cantidadDePalabras = nombreCompleto.split(" ")
 
+        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(_binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.windowToken, 0)
+
         if (nombreCompleto.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || medioDePago == "Medio de pago") {
             Snackbar.make(
                 _binding!!.root,
@@ -407,10 +453,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             return
         }
 
-        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(_binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.windowToken, 0)
-
         _viewModel.nombreDelCliente = nombreCompleto
         _viewModel.direccionDelCliente = direccion
         _viewModel.deptoDelCliente = departamento
@@ -418,11 +460,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _viewModel.telefonoDelCliente = telefono
         _viewModel.medioDePagoDelCliente = medioDePago
         _viewModel.comentarios = comentarios
-        findNavController().navigate(
-            VistaGeneralFragmentDirections
-                .actionNavigationVistaGeneralToNavigationCantidadDeBalones(
-                )
-        )
+        findNavController().navigate(VistaGeneralFragmentDirections.actionNavigationVistaGeneralToNavigationCantidadDeBalones())
     }
 
 

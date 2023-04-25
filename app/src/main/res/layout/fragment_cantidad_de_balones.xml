@@ -84,7 +84,7 @@
 
     <Button
         android:id="@+id/button_cantidadDeBalones_confirmar"
-        android:layout_width="0dp"
+        android:layout_width="127dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_medium"
         android:text="@string/siguiente"

@@ -8,69 +8,32 @@
     style="@style/Container">
 
     <TextView
-        android:id="@+id/textView_vistaGeneral_uiCallCenter_titulo"
+        android:id="@+id/textView_formularioNuevoPedido_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Ingreso de pedidos"
+        android:text="@string/titulo_pedido"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:textSize="@dimen/text_title"
         android:layout_marginTop="@dimen/space_big"
         />
 
     <include
-        layout="@layout/card_pedido_balon_de_gas_cinco_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonCincoKilos"
+        android:id="@+id/include_formularioNuevoPedido_detallePedido"
+        layout="@layout/card_detalle_pedido"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/space_big"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/include_formularioNuevoPedido_imagenBalonOnceKilos"
-        app:layout_constraintTop_toBottomOf="@id/textView_vistaGeneral_uiCallCenter_titulo"
-        />
-
-
-
-    <include
-        layout="@layout/card_pedido_balon_de_gas_once_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonOnceKilos"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toEndOf="@id/include_formularioNuevoPedido_imagenBalonCincoKilos"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView_vistaGeneral_uiCallCenter_titulo"
-        />
-
-    <include
-        layout="@layout/card_pedido_balon_de_gas_quince_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonQuinceKilos"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textView_formularioNuevoPedido_titulo"
         android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_formularioNuevoPedido_imagenBalonCincoKilos"
-        app:layout_constraintEnd_toStartOf="@id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        android:src="@drawable/imagen_balon_15k"
-        />
-
-    <include
-        layout="@layout/card_pedido_balon_de_gas_cuarenta_y_cinco_kilos"
-        android:id="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/space_big"
-        app:layout_constraintStart_toEndOf="@id/include_formularioNuevoPedido_imagenBalonQuinceKilos"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include_formularioNuevoPedido_imagenBalonOnceKilos"
-        android:src="@drawable/imagen_balon_45k"
-        />
-
+        android:layout_marginHorizontal="@dimen/space_big"
+         />
 
     <TextView
-        android:id="@+id/button_dataUsuario_volver"
+        android:id="@+id/button_formularioNuevoPedido_volver"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
@@ -79,19 +42,20 @@
         android:gravity="center_vertical"
         android:textSize="@dimen/text_medium"
         android:textAppearance="?attr/textAppearanceHeadline6"
-        app:layout_constraintBottom_toBottomOf="@+id/button_dataUsuario_confirmar"
-        app:layout_constraintEnd_toStartOf="@id/button_dataUsuario_confirmar"
-        app:layout_constraintTop_toTopOf="@id/button_dataUsuario_confirmar" />
+        app:layout_constraintBottom_toBottomOf="@+id/button_formularioNuevoPedido_confirmar"
+        app:layout_constraintEnd_toStartOf="@id/button_formularioNuevoPedido_confirmar"
+        app:layout_constraintTop_toTopOf="@id/button_formularioNuevoPedido_confirmar" />
 
     <Button
-        android:id="@+id/button_dataUsuario_confirmar"
-        android:layout_width="0dp"
+        android:id="@+id/button_formularioNuevoPedido_confirmar"
+        android:layout_width="127dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_medium"
-        android:text="@string/siguiente"
+        android:layout_marginBottom="@dimen/space_big"
+        android:layout_marginEnd="@dimen/space_big"
+        android:text="@string/confirmar"
+        android:textColor="@color/white"
+        android:background="@color/orange"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        app:layout_constraintStart_toStartOf="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos"
-        app:layout_constraintTop_toBottomOf="@+id/include_formularioNuevoPedido_imagenBalonCuarentaYCincoKilos" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -221,6 +221,15 @@
     <string name="nombreCompleto">Nombre Completo</string>
     <string name="tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos">El nombre debe contener a lo menos 2 nombres y 2 apellidos</string>
     <string name="debes_a_lo_menos_pedir_un_balon">Debes de pedir a lo menos un balon</string>
+    <string name="vendedora">Vendedora:</string>
+    <string name="nombre_del_cliente">Nombre del cliente:</string>
+    <string name="direccion_del_pedido">Dirección del pedido:</string>
+    <string name="detalle_depto">Depto:</string>
+    <string name="detalle_block">Block:</string>
+    <string name="detalle_telefono">Teléfono:</string>
+    <string name="productos">Productos:</string>
+    <string name="detalle_comentarios">Comentarios:</string>
+    <string name="titulo_pedido">Ingreso de pedidos</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>
