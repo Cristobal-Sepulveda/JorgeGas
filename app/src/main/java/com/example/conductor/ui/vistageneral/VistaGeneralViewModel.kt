@@ -5,11 +5,16 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
+import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
+import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
+import com.example.conductor.utils.changeUiStatusInMainThread
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
@@ -17,6 +22,14 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
 
     var usuarioEstaActivo = false
     var usuarioDesdeSqlite = ""
+
+    private val _status = MutableLiveData<CloudRequestStatus>()
+    val status: LiveData<CloudRequestStatus>
+        get() = _status
+
+    private val _domainAsistenciaEnScreen = MutableLiveData<MutableList<AsistenciaIndividual>>()
+    val domainAsistenciaEnScreen: LiveData<MutableList<AsistenciaIndividual>>
+        get() = _domainAsistenciaEnScreen
 
     private var _botonVolantero = MutableLiveData<Boolean>()
     val botonVolantero: LiveData<Boolean>
@@ -120,6 +133,61 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
 
     fun callCenterAgregoMarker(boolean: Boolean){
         _callCenterAgregoMarker.postValue(boolean)
+    }
+
+    fun desplegarAsistenciaEnRecyclerView(){
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        viewModelScope.launch {
+            val colRef = dataSource.obtenerRegistroDeAsistenciaDeUsuario()
+            if (colRef.isEmpty()) {
+                this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+                return@launch
+            }
+            if(colRef.first().fecha == "error"){
+                this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+            } else {
+                _domainAsistenciaEnScreen.value = colRef
+                this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+            }
+        }
+    }
+
+    suspend fun registrarIngresoDeJornada(latitude: Double, longitude: Double) {
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                if(dataSource.registrarIngresoDeJornada(latitude, longitude)){
+                    dataSource.generarInstanciaDeEnvioRegistroDeTrayecto()
+                    desplegarAsistenciaEnRecyclerView()
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+                }else{
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+                }
+            }
+        }
+    }
+    suspend fun registrarSalidaDeJornada() {
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        viewModelScope.launch(Dispatchers.IO){
+            if(dataSource.guardarLatLngYHoraActualEnFirestore()){
+                if(dataSource.registrarSalidaDeJornada(tiempoTotalRecorridoVerde.value.toString(),
+                        tiempoTotalRecorridoAmarillo.value.toString(),
+                        tiempoTotalRecorridoRojo.value.toString(),
+                        tiempoTotalRecorridoAzul.value.toString(),
+                        tiempoTotalRecorridoRosado.value.toString(),)) {
+
+                    dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
+                    desplegarAsistenciaEnRecyclerView()
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+                }
+            }else{
+                if(dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()){
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+                }else{
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+                }
+            }
+        }
     }
 }
 

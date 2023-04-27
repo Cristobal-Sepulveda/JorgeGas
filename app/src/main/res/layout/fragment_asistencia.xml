@@ -8,7 +8,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.conductor.ui.asistencia.AsistenciaViewModel" />
+            type="com.example.conductor.ui.vistageneral.VistaGeneralViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

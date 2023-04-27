@@ -33,12 +33,12 @@ import com.example.conductor.utils.EspressoIdlingResource.wrapEspressoIdlingReso
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.example.conductor.data.data_objects.dto.JornadaRequest
 import com.example.conductor.utils.convertirMesDeTextoStringANumeroString
 import com.example.conductor.utils.mostrarToastEnMainThread
+import com.example.conductor.utils.sumarEntreDosTiemposQueVienenComoString
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import org.json.JSONObject
@@ -575,12 +575,22 @@ class AppRepository(private val context: Context,
             }
         }
     }
-    override suspend fun registrarSalidaDeJornada(): Boolean = withContext(ioDispatcher) {
+    override suspend fun registrarSalidaDeJornada(tiempoEnVerde: String, tiempoEnAmarillo: String,
+        tiempoEnRojo: String,
+        tiempoEnAzul: String,
+        tiempoEnRosado: String): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<Boolean>()
                 try{
-                    val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
+                    val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(
+                        firebaseAuth.currentUser!!.uid,
+                        tiempoEnVerde,
+                        tiempoEnAmarillo,
+                        tiempoEnRojo,
+                        tiempoEnAzul,
+                        tiempoEnRosado).await()
+
                     mostrarToastEnMainThread(context, request.msg)
                     envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
                     deferred.complete(true)
@@ -743,12 +753,22 @@ class AppRepository(private val context: Context,
                     }
                     .addOnSuccessListener{
                         it.documents.forEach{ documento ->
+                            val mapaDeTiempos = hashMapOf(
+                                "tiempoEnVerde" to "00:00",
+                                "tiempoEnAmarillo" to "00:00",
+                                "tiempoEnRojo" to "00:00",
+                                "tiempoEnAzul" to "00:00",
+                                "tiempoEnRosado" to "00:00"
+                            )
+
                             val format = SimpleDateFormat("dd-MM-yyyy")
                             val uid = documento.id
                             val nombreCompleto = documento.data?.get("nombreCompleto") as String
                             val sueldoDiario = 10000
                             val registroAsistencia = documento.data?.get("registroAsistencia") as List<Map<*,*>>
                             var bonop = "0"
+                            val bonor = "0"
+                            val auxMes = convertirMesDeTextoStringANumeroString(mes)
                             val aux = documento["registroDeBonoPersonal"] as? List<Map<*, *>> ?: emptyList()
                             Log.e("aux", aux.toString())
                             if(aux.isNotEmpty()){
@@ -756,15 +776,34 @@ class AppRepository(private val context: Context,
                                     if(it["mes"] == mes && it["anio"] == anio) bonop = it["bono"].toString()
                                 }
                             }
-                            val bonor = 0
-                            val auxMes = convertirMesDeTextoStringANumeroString(mes)
                             registroAsistencia.forEach {
                                 val date = format.parse(it["fecha"] as String)
                                 if (date!!.month+1 == auxMes.toInt() && date!!.year + 1900 == anio.toInt()) {
+                                    val tiempoEnVerde = it["tiempoEnVerde"] as String
+                                    val tiempoEnAmarillo = it["tiempoEnAmarillo"] as String
+                                    val tiempoEnRojo = it["tiempoEnRojo"] as String
+                                    val tiempoEnAzul = it["tiempoEnAzul"] as String
+                                    val tiempoEnRosado = it["tiempoEnRosado"] as String
+                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnVerde"]!!, tiempoEnVerde)
+                                    mapaDeTiempos["tiempoEnAmarillo"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAmarillo"]!!, tiempoEnAmarillo)
+                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRojo"]!!, tiempoEnRojo)
+                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAzul"]!!, tiempoEnAzul)
+                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRosado"]!!, tiempoEnRosado)
                                     diasTrabajados++
                                 }
                             }
                             val sueldo = sueldoDiario * diasTrabajados
+                            if(diasTrabajados >= 26){
+                                val minutosMinimosEnVerde = 360*diasTrabajados*0.8
+                                if(minutosMinimosEnVerde <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
+                                    bonop = (bonop.toInt() + 10000).toString()
+                                }
+                            }else{
+                                if(diasTrabajados >= 20 && diasTrabajados < 26){
+
+                                }
+                            }
+
                             if(diasTrabajados > 0){
                                 listaDeUsuariosYSuAsistencia.add(
                                     Asistencia(
@@ -773,8 +812,8 @@ class AppRepository(private val context: Context,
                                         sueldoDiario.toString(),
                                         diasTrabajados.toString(),
                                         sueldo.toString(),
-                                        bonop.toString(),
-                                        bonor.toString(),
+                                        bonop,
+                                        bonor,
                                         (sueldo + bonop.toInt() + bonor.toInt()).toString()
                                     )
                                 )

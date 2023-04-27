@@ -5,7 +5,6 @@ import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.AppRepository
 import com.example.conductor.data.app_database.getDatabase
 import com.example.conductor.ui.administrarcuentas.AdministrarCuentasViewModel
-import com.example.conductor.ui.asistencia.AsistenciaViewModel
 import com.example.conductor.ui.detallevolantero.DetalleVolanteroViewModel
 import com.example.conductor.ui.estadoactual.EstadoActualViewModel
 import com.example.conductor.ui.gestiondematerial.GestionDeMaterialViewModel
@@ -71,12 +70,6 @@ class MyApp : Application() {
             }
             single{
                 EstadoActualViewModel(
-                    get(),
-                    get() as AppDataSource
-                )
-            }
-            single{
-                AsistenciaViewModel(
                     get(),
                     get() as AppDataSource
                 )

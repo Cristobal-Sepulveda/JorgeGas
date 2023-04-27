@@ -102,9 +102,7 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
             }
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
-                    _viewModel.obtenerRegistroDeAsistenciaYMostrarloComoExcel(
-                        requireActivity(), mes!!, anio!!)
-                }
+                    _viewModel.obtenerRegistroDeAsistenciaYMostrarloComoExcel(mes!!, anio!!) }
             }
         }
 
@@ -134,17 +132,14 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
                 _viewModel.agregarBonoPersonalAlVolantero(bono, hashMapVolanterosQueAsistieronEnElMesSeleccionado[volanteroElegido]!!,mes,anio)
             }
         }
-
         return _binding!!.root
     }
-
     override fun onResume() {
         super.onResume()
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirVolanteroBono.visibility = View.GONE
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBono.visibility = View.GONE
         _binding!!.buttonRegistroDeAsistenciaAgregarBono.visibility = View.GONE
     }
-
     override fun onPause() {
         super.onPause()
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirAnio.setText("")

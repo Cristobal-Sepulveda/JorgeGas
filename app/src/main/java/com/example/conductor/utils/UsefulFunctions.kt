@@ -28,3 +28,16 @@ fun convertirMesDeTextoStringANumeroString(mes: String): String{
         else -> ""
     }
 }
+
+fun sumarEntreDosTiemposQueVienenComoString(tiempo1:String, tiempo2:String): String{
+    val (min1, sec1) = tiempo1.split(":")
+    val (min2, sec2) = tiempo2.split(":")
+    var totalMin = min1.toInt() + min2.toInt()
+    var totalSec = sec1.toInt() + sec2.toInt()
+    if (totalSec >= 60) {
+        val extraMin = totalSec / 60
+        totalMin += extraMin
+        totalSec %= 60
+    }
+    return "$totalMin:${totalSec.toString().padStart(2, '0')}"
+}

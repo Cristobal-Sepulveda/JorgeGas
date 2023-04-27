@@ -38,7 +38,11 @@ interface AppDataSource {
     suspend fun guardandoTokenDeFCMEnFirestore(): Boolean
     suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean
     suspend fun registrarIngresoDeJornada(latitude: Double, longitude: Double): Boolean
-    suspend fun registrarSalidaDeJornada():Boolean
+    suspend fun registrarSalidaDeJornada(tiempoEnVerde: String,
+                                         tiempoEnAmarillo: String,
+                                         tiempoEnRojo: String,
+                                         tiempoEnAzul: String,
+                                         tiempoEnRosado: String):Boolean
     suspend fun obtenerRegistroDeAsistenciaDeUsuario(): MutableList<AsistenciaIndividual>
     suspend fun avisarQueQuedeSinMaterial()
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(id:String):Boolean

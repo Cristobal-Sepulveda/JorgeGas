@@ -13,7 +13,14 @@ interface RegistroJornadaApiService {
     fun ingresoJornada(@Body request: JornadaRequest): Call<ApiResponse>
 
     @POST("salidaJornada")
-    fun salidaJornada(@Header("id") id: String): Call<ApiResponse>
+    fun salidaJornada(
+        @Header("id") id: String,
+        @Header("tiempoEnVerde") tiempoEnVerde: String,
+        @Header("tiempoEnAmarillo") tiempoEnAmarillo: String,
+        @Header("tiempoEnRojo") tiempoEnRojo: String,
+        @Header("tiempoEnAzul") tiempoEnAzul: String,
+        @Header("tiempoEnRosado") tiempoEnRosado: String,
+    ): Call<ApiResponse>
 
 }
 object RegistroJornadaApi{

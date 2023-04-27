@@ -637,6 +637,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 listAux.clear()
             }
         }
+
         _viewModel.editarDistanciaTotalRecorrida(distanceTotalRecorrida)
         _viewModel.editarTiempoTotalRecorrido(tiempoEnRojo, "rojo")
         _viewModel.editarTiempoTotalRecorrido(tiempoEnAmarillo, "amarillo")

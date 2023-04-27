@@ -13,6 +13,7 @@ import com.example.conductor.R
 import com.example.conductor.adapter.AsistenciaIndividualAdapter
 import com.example.conductor.databinding.FragmentAsistenciaBinding
 import com.example.conductor.ui.base.BaseFragment
+import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -23,7 +24,7 @@ import org.koin.android.ext.android.inject
 
 class AsistenciaFragment: BaseFragment() {
     private var _binding: FragmentAsistenciaBinding? = null
-    override val _viewModel: AsistenciaViewModel by inject()
+    override val _viewModel: VistaGeneralViewModel by inject()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var lastKnownLocation: Location? = null
 
