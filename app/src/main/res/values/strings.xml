@@ -233,6 +233,16 @@
     <string name="elige_un_mes">Elige un mes</string>
     <string name="elija_un_mes">Elija un mes</string>
     <string name="elija_un_año">Elija un año</string>
+    <string name="elija_un_volantero">Elija un volantero</string>
+    <string name="ingrese_monto_del_bono">Ingrese bono</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="dt">D.T</string>
+    <string name="bonop">Bono P</string>
+    <string name="bonor">Bono R</string>
+    <string name="mes">Mes</string>
+    <string name="anio">Año</string>
+    <string name="boton_excel">Boton excel</string>
+    <string name="elegir_volantero">Elegir volantero</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

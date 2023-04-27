@@ -13,7 +13,8 @@ data class Asistencia(
     val sueldoDiario: String,
     val diasTrabajados: String,
     val sueldo: String,
-    val bono: String,
+    val bonop: String,
+    val bonor: String,
     val total: String
 ) : Parcelable {
     fun longConverterToString(id: Long): String{

@@ -26,109 +26,124 @@
             android:textSize="@dimen/text_title"
             />
 
-        <EditText
-            android:id="@+id/editText_registroDeAsistencia_elegirMes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/editText_registroDeAsistencia_elegirAño"
-            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_registroDeAsistencia_elegirMes"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/autoCompleteTextView_registroDeAsistencia_elegirAnio"
+            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
             android:background="@drawable/edittext_border"
             android:padding="@dimen/space_small"
             android:layout_marginStart="@dimen/space_big"
             android:layout_marginTop="@dimen/space_big"
-            android:layout_height="wrap_content"
-            android:hint="@string/elija_un_mes"
+            android:hint="@string/mes"
             android:textAlignment="center"
             android:autofillHints="name"
-            android:inputType="text" />
+            android:inputType="none" />
 
-        <EditText
-            android:id="@+id/editText_registroDeAsistencia_elegirAño"
-            app:layout_constraintStart_toEndOf="@id/editText_registroDeAsistencia_elegirMes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_registroDeAsistencia_elegirAnio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="@dimen/space_small"
-            android:background="@drawable/edittext_border"
-            android:hint="@string/elija_un_año"
-            android:textAlignment="center"
-            android:autofillHints="name"
-            android:layout_marginEnd="@dimen/space_big"
             android:layout_marginTop="@dimen/space_big"
-            android:inputType="text" />
+            android:layout_marginHorizontal="@dimen/space_small"
+            android:autofillHints="name"
+            android:background="@drawable/edittext_border"
+            android:hint="@string/anio"
+            android:inputType="none"
+            android:padding="@dimen/space_small"
+            android:textAlignment="center"
+            app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_registroDeAsistencia_elegirMes"
+            app:layout_constraintEnd_toStartOf="@id/button_registroDeAsistencia_generarReporte"
+            app:layout_constraintTop_toBottomOf="@id/textView_registroDeAsistencia_titulo" />
 
         <Button
             android:id="@+id/button_registroDeAsistencia_generarReporte"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/button_registroDeAsistencia_obtenerExcel"
-            app:layout_constraintTop_toBottomOf="@id/editText_registroDeAsistencia_elegirMes"
+            android:layout_width="0dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="@dimen/space_small"
+            android:backgroundTint="@color/green"
+            android:text="@string/generar_reporte"
+            android:textSize="@dimen/text_small"
+            app:layout_constraintEnd_toStartOf="@id/imageView_registroDeAsistencia_botonExcel"
+            app:layout_constraintStart_toEndOf="@+id/autoCompleteTextView_registroDeAsistencia_elegirAnio"
+            app:layout_constraintTop_toBottomOf="@+id/textView_registroDeAsistencia_titulo" />
+
+        <ImageView
+            android:id="@+id/imageView_registroDeAsistencia_botonExcel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_small"
-            android:text="@string/generar_reporte"
-            />
-
-        <Button
-            android:id="@+id/button_registroDeAsistencia_obtenerExcel"
+            android:contentDescription="@string/boton_excel"
+            android:src="@drawable/icono_excel"
+            android:layout_marginEnd="@dimen/space_big"
             app:layout_constraintStart_toEndOf="@id/button_registroDeAsistencia_generarReporte"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editText_registroDeAsistencia_elegirMes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_small"
-            android:layout_marginEnd="@dimen/space_big"
-            android:text="@string/exportar_a_excel"
+            app:layout_constraintTop_toTopOf="@id/button_registroDeAsistencia_generarReporte"
+            app:layout_constraintBottom_toBottomOf="@id/button_registroDeAsistencia_generarReporte"
             />
 
-<!--        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textField_registroDeAsistencia_textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/space_big"
-            android:layout_marginEnd="@dimen/space_big"
-            android:layout_marginTop="@dimen/space_small"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_obtenerExcel"
-            app:expandedHintEnabled="false"
-            >
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_registroDeAsistencia_elegirVolanteroBono"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="@dimen/space_small"
+            android:autofillHints="name"
+            android:background="@drawable/edittext_border"
+            android:hint="@string/elegir_volantero"
+            android:inputType="none"
+            android:padding="@dimen/space_small"
+            android:textAlignment="center"
+            android:textSize="10sp"
+            android:visibility="gone"
+            android:layout_marginTop="13dp"
+            app:layout_constraintEnd_toStartOf="@id/autoCompleteTextView_registroDeAsistencia_ingresarMontoBono"
+            app:layout_constraintStart_toStartOf="@+id/autoCompleteTextView_registroDeAsistencia_elegirMes"
+            app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextView_registroDeAsistencia_elegirMes"
+            tools:visibility="visible" />
 
-            <AutoCompleteTextView
-                android:id="@+id/editText_registroDeAsistencia_volantero"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:inputType="none"
-                android:hint="@string/elija_volantero" />
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_registroDeAsistencia_ingresarMontoBono"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginHorizontal="@dimen/space_small"
+            android:autofillHints="name"
+            android:background="@drawable/edittext_border"
+            android:hint="@string/ingrese_monto_del_bono"
+            android:inputType="number"
+            android:padding="@dimen/space_small"
+            android:textAlignment="center"
+            android:textSize="10sp"
+            android:visibility="gone"
+            android:layout_marginTop="13dp"
+            app:layout_constraintEnd_toStartOf="@id/button_registroDeAsistencia_agregarBono"
+            app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_registroDeAsistencia_elegirVolanteroBono"
+            app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextView_registroDeAsistencia_elegirAnio"
+            tools:visibility="visible" />
 
-        </com.google.android.material.textfield.TextInputLayout>-->
-
-
-<!--
-        <TextView
-            android:id="@+id/textView_registroDeAsistencia_sueldoPorPagar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sueldo_por_pagar"
-            tools:text="Sueldo por pagar: $60.000"
-            android:layout_marginTop="@dimen/space_small"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textField_registroDeAsistencia_textInputLayout"
-            />
--->
+        <Button
+            android:id="@+id/button_registroDeAsistencia_agregarBono"
+            android:layout_width="0dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/ingresar"
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/button_registroDeAsistencia_generarReporte"
+            app:layout_constraintStart_toEndOf="@id/autoCompleteTextView_registroDeAsistencia_ingresarMontoBono"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_generarReporte"
+            tools:visibility="visible" />
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_registroDeAsistencia_dividerTop"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_obtenerExcel"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_agregarBono"
             />
 
         <LinearLayout
@@ -147,6 +162,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/nombre"
                 android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="@dimen/text_medium"
                 android:textAlignment="center"
                 android:layout_weight="1.5" />
 
@@ -160,10 +176,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/dias_trabajados"
+                android:text="@string/dt"
                 android:textAlignment="center"
-                android:layout_weight="1.1" />
-
+                android:layout_weight="0.5" />
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -175,9 +190,18 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/bono"
+                android:text="@string/bonop"
+                android:textSize="@dimen/text_small"
                 android:layout_gravity="center"
-                android:layout_weight="0.5" />
+                android:layout_weight="0.6" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/bonor"
+                android:textSize="@dimen/text_small"
+                android:layout_gravity="center"
+                android:layout_weight="0.6" />
 
             <TextView
                 android:layout_width="0dp"
@@ -233,7 +257,5 @@
             app:layout_constraintTop_toTopOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
             app:layout_constraintBottom_toBottomOf="@id/recyclerView_registroDeAsistencia_listadoDeAsistencia"
             android:contentDescription="@string/error_al_intentar_obtener_la_lista_de_usuarios_desde_la_nube" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

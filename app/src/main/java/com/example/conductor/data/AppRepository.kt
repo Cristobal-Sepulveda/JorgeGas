@@ -1,12 +1,19 @@
 package com.example.conductor.data
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.media.MediaScannerConnection
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.provider.DocumentsContract
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import com.example.conductor.R
 import com.example.conductor.data.apiservices.*
 import com.example.conductor.data.daos.EnvioRegistroDeTrayectoDao
@@ -34,7 +41,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.HttpException
 import retrofit2.await
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -42,7 +48,8 @@ import java.time.LocalDate
 
 
 @Suppress("LABEL_NAME_CLASH")
-class AppRepository(private val usuarioDao: UsuarioDao,
+class AppRepository(private val context: Context,
+                    private val usuarioDao: UsuarioDao,
                     private val latLngYHoraActualDao: LatLngYHoraActualDao,
                     private val jwtDao: JwtDao,
                     private val envioRegistroDeTrayectoDao: EnvioRegistroDeTrayectoDao,
@@ -734,17 +741,37 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-    override suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String) {
+    @SuppressLint("MissingPermission")
+    override suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, mes: String, anio: String) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                val response = RegistroDeAsistenciaApi.RETROFIT_SERVICE_REGISTRODEASISTENCIA.exportarRegistroDeAsistenciaAExcel(desde, hasta).execute()
+                val auxMes: String = when(mes){
+                    "Enero" -> "01"
+                    "Febrero" -> "02"
+                    "Marzo" -> "03"
+                    "Abril" -> "04"
+                    "Mayo" -> "05"
+                    "Junio" -> "06"
+                    "Julio" -> "07"
+                    "Agosto" -> "08"
+                    "Septiembre" -> "09"
+                    "Octubre" -> "10"
+                    "Noviembre" -> "11"
+                    "Diciembre" -> "12"
+                    else -> {""}
+                }
+                val response =
+                    RegistroDeAsistenciaApi.RETROFIT_SERVICE_REGISTRODEASISTENCIA.exportarRegistroDeAsistenciaAExcel(
+                        auxMes,
+                        anio
+                    ).execute()
 
                 if (response.isSuccessful) {
                     val bytes = response.body()?.bytes()
 
                     if (bytes != null) {
                         // Save the Excel file to Downloads folder
-                        val filename = "$desde--$hasta.xlsx"
+                        val filename = "RegistroDeAsistenciaVolanteros-$mes--$anio.xlsx"
                         val mimeType = "application/vnd.ms-excel"
                         val downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
@@ -752,9 +779,7 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         val file = File(downloadsFolder, filename)
 
                         // Write the bytes to the file
-                        FileOutputStream(file).use { output ->
-                            output.write(bytes)
-                        }
+                        FileOutputStream(file).use { output -> output.write(bytes) }
 
                         // Notify the media scanner to add the file to the Downloads folder
                         MediaScannerConnection.scanFile(
@@ -763,6 +788,46 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                             arrayOf(mimeType),
                             null
                         )
+
+                        // Send a notification to indicate that the file was saved
+                        val notificationId = 1
+                        val notificationTitle = "Registro de Asistencia"
+                        val notificationText = "El archivo excel ya ha sido descargado."
+                        val notificationChannelId = "my_channel_id"
+
+                        val notificationIntent = Intent(Intent.ACTION_GET_CONTENT)
+                        notificationIntent.type = "*/*"
+                        notificationIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+                        notificationIntent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, downloadsFolder.toURI())
+                        notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+                        val contentIntent = PendingIntent.getActivity(
+                            context,
+                            0,
+                            notificationIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+
+                        val notificationBuilder =
+                            NotificationCompat.Builder(context, notificationChannelId)
+                                .setSmallIcon(R.drawable.icono_app_sin_fondo)
+                                .setContentTitle(notificationTitle)
+                                .setContentText(notificationText)
+                                .setContentIntent(contentIntent)
+                                .setAutoCancel(true)
+
+                        val notificationManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                        val channel = NotificationChannel(
+                            notificationChannelId,
+                            "My Channel",
+                            NotificationManager.IMPORTANCE_DEFAULT
+                        )
+                        channel.description = "My Channel Description"
+                        notificationManager.createNotificationChannel(channel)
+
+                        notificationManager.notify(notificationId, notificationBuilder.build())
 
                         // Display a toast to indicate that the file was saved
                         Handler(Looper.getMainLooper()).post {
@@ -777,37 +842,22 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                         Handler(Looper.getMainLooper()).post {
                             Toast.makeText(
                                 context,
-                                "El backend no respondio nada. Intentelo nuevamente.",
+                                "El servidor no recibio el requerimiento. Intentelo nuevamente.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-                    }
-                } else {
-                    // Display a toast to indicate that the file was not downloaded
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(
-                            context,
-                            "El servidor no recibio el requerimiento. Intentelo nuevamente.",
-                            Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
             }
         }
     }
-    override suspend fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(
-        context: Context,
-        desde:String,
-        hasta: String
-    ): MutableList<Asistencia> = withContext(ioDispatcher) {
+
+    override suspend fun obtenerRegistroDeAsistenciaYMostrarloComoExcel(context: Context, mes:String, anio: String):
+            MutableList<Asistencia> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<MutableList<Asistencia>>()
                 val listaDeUsuariosYSuAsistencia = mutableListOf<Asistencia>()
-                val format = SimpleDateFormat("dd-MM-yyyy")
-                // Parse the string dates into Date objects
-                val startDate = format.parse(desde)
-                val endDate = format.parse(hasta)
                 var diasTrabajados = 0
 
                 cloudDB.collection("RegistroDeAsistencia").get()
@@ -823,20 +873,52 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                     }
                     .addOnSuccessListener{
                         it.documents.forEach{ documento ->
+                            val format = SimpleDateFormat("dd-MM-yyyy")
                             val uid = documento.id
                             val nombreCompleto = documento.data?.get("nombreCompleto") as String
                             val sueldoDiario = 10000
                             val registroAsistencia = documento.data?.get("registroAsistencia") as List<Map<*,*>>
-                            val bono = 0
+                            var bonop = "0"
+                            val aux = documento["registroDeBonoPersonal"] as? List<Map<*, *>> ?: emptyList()
+                            Log.e("aux", aux.toString())
+                            if(aux.isNotEmpty()){
+                                aux.forEach{
+                                    Log.e("aux", "registro: ${it["anio"]}-${it["mes"]} parametros: "+anio+"-"+mes)
+                                    Log.e("aux", (it["mes"] == mes && it["anio"] == anio).toString())
+                                    if(it["mes"] == mes && it["anio"] == anio){
+                                        Log.e("mesConBono", it["mes"].toString())
+                                        Log.e("mesConBono", it["bono"].toString())
+                                        bonop = it["bono"].toString()
+                                    }
+                                }
+
+                            }
+                            val bonor = 0
+                            val auxMes: String = when(mes){
+                                "Enero" -> "01"
+                                "Febrero" -> "02"
+                                "Marzo" -> "03"
+                                "Abril" -> "04"
+                                "Mayo" -> "05"
+                                "Junio" -> "06"
+                                "Julio" -> "07"
+                                "Agosto" -> "08"
+                                "Septiembre" -> "09"
+                                "Octubre" -> "10"
+                                "Noviembre" -> "11"
+                                "Diciembre" -> "12"
+                                else -> {""}
+                            }
 
                             registroAsistencia.forEach {
                                 val date = format.parse(it["fecha"] as String)
-                                if (startDate <= date && date <= endDate) {
+                                if (date!!.month+1 == auxMes.toInt() && date!!.year + 1900 == anio.toInt()) {
                                     diasTrabajados++
                                 }
                             }
 
                             val sueldo = sueldoDiario * diasTrabajados
+
                             if(diasTrabajados > 0){
                                 listaDeUsuariosYSuAsistencia.add(
                                     Asistencia(
@@ -845,8 +927,9 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                                         sueldoDiario.toString(),
                                         diasTrabajados.toString(),
                                         sueldo.toString(),
-                                        bono.toString(),
-                                        (sueldo + bono).toString()
+                                        bonop.toString(),
+                                        bonor.toString(),
+                                        (sueldo + bonop.toInt() + bonor.toInt()).toString()
                                     )
                                 )
                             }
@@ -861,13 +944,30 @@ class AppRepository(private val usuarioDao: UsuarioDao,
                                 ).show()
                             }
                         }
-                        Log.e("obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista", listaDeUsuariosYSuAsistencia.toString())
                         deferred.complete(listaDeUsuariosYSuAsistencia)
                     }
                 return@withContext deferred.await()
             }
         }
     }
+
+    override suspend fun agregarBonoPersonalAlVolantero(bono: String, volanteroId: String, mes:String, anio:String): Boolean = withContext(ioDispatcher){
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                try {
+                    val request = BonoPersonalApi.RETROFIT_SERVICE_BONOPERSONAL.ingresarBono(volanteroId, bono, mes, anio).await()
+                    enviarToastEnBackground(request.msg)
+                    deferred.complete(true)
+                }catch(e:Exception){
+                    enviarToastEnBackground(e.message?: "Error al agregar bono personal al volantero.")
+                    deferred.complete(false)
+                }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
     override suspend fun avisarQueQuedeSinMaterial(context: Context){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -889,22 +989,10 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             try {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
                 deferred.complete(true)
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        context,
-                        request.msg+"\n"+"Espere mientras se actualiza la lista.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                enviarToastEnBackground(request.msg+"\n"+"Espere mientras se actualiza la lista.")
             }catch(e:Exception){
                 deferred.complete(false)
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        context,
-                        "Error al notificar al volantero que se le abastecio de material.",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                enviarToastEnBackground("Error al notificar al volantero que se le abastecio de material.")
             }
             return@withContext deferred.await()
         }
@@ -936,7 +1024,6 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
-
     override suspend fun obtenerLatLngYHoraActualesDeRoom(): List<LatLngYHoraActualDBO> = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -944,4 +1031,12 @@ class AppRepository(private val usuarioDao: UsuarioDao,
             }
         }
     }
+
+
+    private suspend fun enviarToastEnBackground(message: String){
+        withContext(Dispatchers.Main){
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
 }

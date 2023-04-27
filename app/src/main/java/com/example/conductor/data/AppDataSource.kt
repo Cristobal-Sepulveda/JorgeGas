@@ -56,11 +56,12 @@ interface AppDataSource {
 
     suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, desde:String, hasta: String)
 
-    suspend fun obtenerExcelDelRegistroDeAsistenciaDesdeElBackendYParcearloALista(context:Context, desde: String, hasta: String): MutableList<Asistencia>
+    suspend fun obtenerRegistroDeAsistenciaYMostrarloComoExcel(context:Context, mes: String, anio: String): MutableList<Asistencia>
 
     suspend fun generarInstanciaDeEnvioRegistroDeTrayecto()
 
     suspend fun obtenerEnvioRegistroDeTrayecto(): List<EnvioRegistroDeTrayectoDBO>
     suspend fun cambiarValorDeEnvioRegistroDeTrayecto(boolean:Boolean)
     suspend fun eliminarInstanciaDeEnvioRegistroDeTrayecto()
+    suspend fun agregarBonoPersonalAlVolantero(bono: String, volanteroId: String, mes:String, anio:String): Boolean
 }

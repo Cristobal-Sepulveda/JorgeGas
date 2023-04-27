@@ -105,7 +105,7 @@ class MyApp : Application() {
             single{ getDatabase(this@MyApp).envioRegistroDeTrayectoDao }
 
             //REPOSITORY
-            single { AppRepository(get(),get(),get(),get()) as AppDataSource }
+            single { AppRepository(applicationContext, get(),get(),get(),get()) as AppDataSource }
         }
 
         startKoin {

@@ -13,8 +13,8 @@ interface RegistroDeAsistenciaApiService {
 
     @POST("exportarRegistroDeAsistenciaAExcel")
     fun exportarRegistroDeAsistenciaAExcel(
-        @Header("desde") desde: String,
-        @Header("hasta") hasta:String
+        @Header("mes") desde: String,
+        @Header("anio") hasta:String
     ): Call<ResponseBody>
 
 }
