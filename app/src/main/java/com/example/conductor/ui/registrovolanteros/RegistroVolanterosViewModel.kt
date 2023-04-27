@@ -31,16 +31,11 @@ class RegistroVolanterosViewModel(val app: Application, val dataSource: AppDataS
         cambiarStatusCloudRequestStatus(CloudRequestStatus.DONE)
     }
 
-    suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context):
-            List<DocumentSnapshot> {
-        return dataSource.obtenerRegistroDiariosRoomDesdeFirestore(context)
+    suspend fun obtenerRegistroDiariosRoomDesdeFirestore(): List<DocumentSnapshot> {
+        return dataSource.obtenerRegistroDiariosRoomDesdeFirestore()
     }
     fun setSelectedDate(date: String){
         _selectedDate.value = date
-    }
-
-    suspend fun obtenerTodoElRegistroTrayectoVolanteros(context: Context): Any {
-        return dataSource.obtenerTodoElRegistroTrayectoVolanteros(context)
     }
 
     fun cambiarStatusCloudRequestStatus(status: CloudRequestStatus){

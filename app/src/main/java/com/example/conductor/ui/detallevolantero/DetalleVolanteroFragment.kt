@@ -69,7 +69,7 @@ class DetalleVolanteroFragment: BaseFragment(), OnMapReadyCallback {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDiariosDelVolantero(bundle.id,requireActivity())
+                registroDelVolanteroDocRef = _viewModel.obtenerRegistroDiariosDelVolantero(bundle.id)
             }
         }
 

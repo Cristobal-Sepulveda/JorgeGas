@@ -114,12 +114,8 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         dataSource.guardarLatLngYHoraActualEnRoom(latLngYHoraActualDBO)
     }
 
-    suspend fun guardarLatLngYHoraActualEnFirestore(context: Context){
-        dataSource.guardarLatLngYHoraActualEnFirestore(context)
-    }
-
-    suspend fun avisarQueQuedeSinMaterial(context:Context){
-        dataSource.avisarQueQuedeSinMaterial(context)
+    suspend fun avisarQueQuedeSinMaterial(){
+        dataSource.avisarQueQuedeSinMaterial()
     }
 
     fun callCenterAgregoMarker(boolean: Boolean){

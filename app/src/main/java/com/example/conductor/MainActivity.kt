@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), MenuProvider {
             val foto = parseandoImagenParaSubirlaAFirestore(imageBitmap!!)
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    val intentoDeGuardarEnFirestore = dataSource.actualizarFotoDePerfilEnFirestoreYRoom(foto, this@MainActivity)
+                    val intentoDeGuardarEnFirestore = dataSource.actualizarFotoDePerfilEnFirestoreYRoom(foto)
                     if (intentoDeGuardarEnFirestore) {
                         Log.i("intentoDeGuardarEnFirestore", "true")
                             withContext(Dispatchers.Main) {

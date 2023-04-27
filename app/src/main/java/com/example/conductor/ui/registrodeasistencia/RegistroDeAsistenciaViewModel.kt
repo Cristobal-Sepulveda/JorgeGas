@@ -17,14 +17,14 @@ class RegistroDeAsistenciaViewModel(val app: Application, val dataSource: AppDat
     private val _status = MutableLiveData<CloudRequestStatus>()
     val status: LiveData<CloudRequestStatus>
         get() = _status
-    suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, mes:String, anio:String){
+    suspend fun exportarRegistroDeAsistenciaAExcel(mes:String, anio:String){
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
-        dataSource.exportarRegistroDeAsistenciaAExcel(context, mes, anio)
+        dataSource.exportarRegistroDeAsistenciaAExcel(mes, anio)
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
     }
     suspend fun obtenerRegistroDeAsistenciaYMostrarloComoExcel(context: Context,mes:String, anio:String){
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
-        val lista = dataSource.obtenerRegistroDeAsistenciaYMostrarloComoExcel(context, mes, anio)
+        val lista = dataSource.obtenerRegistroDeAsistenciaYMostrarloComoExcel(mes, anio)
         if(lista.isNotEmpty()){
             _registroDeAsistencia.postValue(lista)
             this.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)

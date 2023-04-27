@@ -1,20 +1,19 @@
 package com.example.conductor.ui.asistencia
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.conductor.R
 import com.example.conductor.adapter.AsistenciaIndividualAdapter
 import com.example.conductor.databinding.FragmentAsistenciaBinding
 import com.example.conductor.ui.base.BaseFragment
+import com.example.conductor.utils.lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +39,7 @@ class AsistenciaFragment: BaseFragment() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-        _viewModel.desplegarAsistenciaEnRecyclerView(requireContext())
+        _viewModel.desplegarAsistenciaEnRecyclerView()
 
         _viewModel.domainAsistenciaEnScreen.observe(requireActivity()) {
             it?.let {
@@ -57,15 +56,15 @@ class AsistenciaFragment: BaseFragment() {
         }
 
         _binding!!.buttonAsistenciaSalida.setOnClickListener {
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    lanzarAlerta()
+            lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread(requireActivity(), R.string.atencion, R.string.esta_seguro_que_desea_finalizar_su_jornada,) {
+                lifecycleScope.launch(Dispatchers.IO){
+                    _viewModel.registrarSalidaDeJornada()
                 }
             }
         }
-
         return _binding!!.root
     }
+
     @SuppressLint("MissingPermission")
     private fun getDeviceLocation() {
         try {
@@ -76,19 +75,11 @@ class AsistenciaFragment: BaseFragment() {
                     if (lastKnownLocation != null) {
                         lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                _viewModel.registrarIngresoDeJornada(
-                                    requireContext(),
-                                    lastKnownLocation!!.latitude,
-                                    lastKnownLocation!!.longitude
-                                )
+                                _viewModel.registrarIngresoDeJornada(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude)
                             }
                         }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "No se pudo obtener la ubicación",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Log.i("getDeviceLocation", "locationPermissionGranted is false")
@@ -99,22 +90,4 @@ class AsistenciaFragment: BaseFragment() {
         }
     }
 
-    private fun lanzarAlerta(){
-        Handler(Looper.getMainLooper()).post {
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle("Atención")
-            builder.setMessage("¿Estas seguro que deseas finalizar tu jornada? Si lo haces, tu trayecto del día será borrado del celular y será enviado a la nube.")
-            builder.setPositiveButton("OK") { dialog, which ->
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        _viewModel.registrarSalidaDeJornada(requireContext())
-                    }
-                }
-            }
-            builder.setNegativeButton("Cancelar") { dialog, which ->
-                // Do something when Cancel button is clicked
-            }
-            builder.show()
-        }
-    }
 }

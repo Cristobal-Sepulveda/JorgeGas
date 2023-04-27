@@ -58,8 +58,7 @@ class FiltroRegistroVolanterosFragment: BottomSheetDialogFragment() {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
-                    val listaObtenida =
-                        _viewModel.obtenerRegistroDiariosRoomDesdeFirestore(requireContext()) as MutableList<*>
+                    val listaObtenida = _viewModel.obtenerRegistroDiariosRoomDesdeFirestore() as MutableList<*>
                     if (listaObtenida.isNotEmpty()) {
                         listaObtenida.forEach { documento ->
                             withContext(Dispatchers.Main) {

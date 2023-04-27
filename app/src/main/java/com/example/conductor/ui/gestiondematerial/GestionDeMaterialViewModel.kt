@@ -43,14 +43,14 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
                         iterator.remove()
                     }
                 }
-                filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial(context, colRef)
+                filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial(colRef)
             }
         }
     }
 
-    suspend fun filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial(context: Context, listOfVolanteros: MutableList<Usuario>){
+    private suspend fun filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial(listOfVolanteros: MutableList<Usuario>){
         Log.i("filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial", "filtrarVolanterosEnRecyclerViewSegunSiTienenMaterial")
-        val registroTrayectoVolanteros = dataSource.obtenerTodoElRegistroTrayectoVolanteros(context)
+        val registroTrayectoVolanteros = dataSource.obtenerTodoElRegistroTrayectoVolanteros()
         val listaFinal = mutableListOf<Usuario>()
         if(registroTrayectoVolanteros.isEmpty()) {
             _status.value = CloudRequestStatus.ERROR
@@ -74,7 +74,7 @@ class GestionDeMaterialViewModel(val app: Application, val dataSource: AppDataSo
 
     suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id:String){
         _status.value = CloudRequestStatus.LOADING
-        if(dataSource.notificarQueSeAbastecioAlVolanteroDeMaterial(context, id)) {
+        if(dataSource.notificarQueSeAbastecioAlVolanteroDeMaterial(id)) {
             displayVolanterosInRecyclerView(context)
         }else{
             _status.value = CloudRequestStatus.ERROR

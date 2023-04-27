@@ -37,8 +37,11 @@ import kotlinx.coroutines.tasks.await
 import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.example.conductor.data.data_objects.dto.JornadaRequest
+import com.example.conductor.utils.convertirMesDeTextoStringANumeroString
+import com.example.conductor.utils.mostrarToastEnMainThread
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
+import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.await
 import java.io.File
@@ -90,7 +93,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -114,7 +116,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun obtenerRegistroTrayectoVolanterosColRef(): List<DocumentSnapshot> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -130,8 +131,7 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
-    override suspend fun obtenerRegistroDiariosRoomDesdeFirestore(context: Context): List<DocumentSnapshot> = withContext(ioDispatcher) {
+    override suspend fun obtenerRegistroDiariosRoomDesdeFirestore(): List<DocumentSnapshot> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<List<DocumentSnapshot>>()
@@ -147,7 +147,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun ingresarUsuarioAFirestore(usuario: Usuario): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -166,7 +165,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun eliminarUsuarioDeFirebase(usuario: Usuario) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
@@ -180,41 +178,45 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun obtenerRolDelUsuarioActual(): String = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                try {
-                    val user = FirebaseAuth.getInstance().currentUser
-                    val docRef = cloudDB.collection("Usuarios").document(user!!.uid).get().await()
-                    return@withContext docRef.get("rol") as String
-                } catch (e: Exception) {
-                    return@withContext "Error"
-                }
+                val user = FirebaseAuth.getInstance().currentUser
+                val deferred = CompletableDeferred<String>()
+                cloudDB.collection("Usuarios")
+                    .document(user!!.uid).get()
+                    .addOnFailureListener{
+                        deferred.complete("Error")
+                    }
+                    .addOnSuccessListener{
+                        deferred.complete(it.get("rol") as String)
+                    }
+                return@withContext deferred.await()
             }
         }
     }
-    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(context: Context): MutableList<Any> = withContext(ioDispatcher) {
+    override suspend fun obtenerTodoElRegistroTrayectoVolanteros(): MutableList<Any> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
-            val colRef = cloudDB.collection("RegistroTrayectoVolanteros")
-            val registroTrayectoVolantero = mutableListOf<Any>()
-            val deferred = CompletableDeferred<MutableList<Any>>()
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<MutableList<Any>>()
+                val registroTrayectoVolantero = mutableListOf<Any>()
 
-            colRef.get()
-                .addOnSuccessListener{ querySnapshot ->
-                    for (document in querySnapshot.documents) {
-                        registroTrayectoVolantero.add(document)
+                cloudDB.collection("RegistroTrayectoVolanteros").get()
+                    .addOnSuccessListener{ querySnapshot ->
+                        for (document in querySnapshot.documents) {
+                            registroTrayectoVolantero.add(document)
+                        }
+                        deferred.complete(registroTrayectoVolantero)
                     }
-                    deferred.complete(registroTrayectoVolantero)
-                }
-                .addOnFailureListener {
-                    Toast.makeText(context, "Error al obtener los datos", Toast.LENGTH_LONG).show()
-                    deferred.complete(registroTrayectoVolantero)
-                }
-            return@withContext deferred.await()
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error al obtener los datos", Toast.LENGTH_LONG).show()
+                        deferred.complete(registroTrayectoVolantero)
+                    }
+                return@withContext deferred.await()
+            }
         }
     }
-    override suspend fun obtenerRegistroDiariosDelVolantero(id: String,context: Context): Any = withContext(ioDispatcher){
+    override suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<Any>()
@@ -256,7 +258,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun guardarUsuarioEnSqlite(usuario: UsuarioDBO) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -278,84 +279,58 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
-    override suspend fun obtenerDistanciaEntreLatLngs(
-        origin: String,
-        destination: String,
-        apiKey: String
-    ): DistanceMatrixResponse {
-            return DistanceMatrixApi.RETROFIT_SERVICE_DISTANCE_MATRIX.getDistance(
-                origin,
-                destination,
-                apiKey
-            )
+    override suspend fun obtenerDistanciaEntreLatLngs(origin: String, destination: String, apiKey: String): DistanceMatrixResponse {
+        return DistanceMatrixApi.RETROFIT_SERVICE_DISTANCE_MATRIX.getDistance(origin, destination, apiKey)
     }
-
-    override suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String, context: Context) {
+    override suspend fun registroTrayectoVolanterosEstaActivoFalse(id: String) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                val task = cloudDB.collection("RegistroTrayectoVolanteros")
+                cloudDB.collection("RegistroTrayectoVolanteros")
                     .document(id)
                     .update("estaActivo", false)
-
-                task.addOnFailureListener{
-                    Toast.makeText(
-                        context,
-                        "Error al actualizar el estado del volantero",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-                task.addOnSuccessListener {
-                    Toast.makeText(
-                        context,
-                        "El estado del volantero a pasado a inactivo",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
+                    .addOnFailureListener{
+                        Toast.makeText(context, "Error al actualizar el estado del volantero", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnSuccessListener{
+                        Toast.makeText(context, "El estado del volantero a pasado a inactivo", Toast.LENGTH_SHORT).show()
+                 }
             }
         }
     }
-
-    override suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String, context: Context):Boolean = withContext(ioDispatcher){
+    override suspend fun actualizarFotoDePerfilEnFirestoreYRoom(fotoPerfil: String):Boolean = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
-            suspendCancellableCoroutine<Boolean> { continuation ->
-                val task = cloudDB.collection("Usuarios")
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                cloudDB.collection("Usuarios")
                     .document(firebaseAuth.currentUser!!.uid)
                     .update("fotoPerfil", fotoPerfil)
-
-                task.addOnFailureListener {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        Toast.makeText(context, "Error al actualizar la foto de perfil", Toast.LENGTH_LONG).show()
+                    .addOnFailureListener {
+                        mostrarToastEnMainThread(context, "Error al actualizar la foto de perfil")
+                        deferred.complete(false)
                     }
-                    continuation.resumeWith(Result.failure(it))
-                }
-                task.addOnSuccessListener {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        usuarioDao.actualizarFotoPerfil(fotoPerfil)
+                    .addOnSuccessListener {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            usuarioDao.actualizarFotoPerfil(fotoPerfil)
+                            deferred.complete(true)
+                        }
                     }
-                    continuation.resumeWith(Result.success(true))
-                }
+                return@withContext deferred.await()
             }
         }
     }
-
     override suspend fun guardarLatLngYHoraActualEnRoom(latLngYHoraActualEnRoom: LatLngYHoraActualDBO): Boolean = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
                 try{
                     latLngYHoraActualDao.guardarLatLngYHoraActual(latLngYHoraActualEnRoom)
-                    Log.i("guardarLatLngYHoraActualEnRoom", "guardarLatLngYHoraActualEnRoom")
                     return@withContext true
                 }catch(e: Exception){
-                    Log.i("guardarLatLngYHoraActualEnRoom", "Error: $e")
                     return@withContext false
                 }
             }
         }
     }
-
-    override suspend fun guardarLatLngYHoraActualEnFirestore(context: Context): Boolean = withContext(ioDispatcher) {
+    override suspend fun guardarLatLngYHoraActualEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
                 val deferred = CompletableDeferred<Boolean>()
@@ -363,10 +338,7 @@ class AppRepository(private val context: Context,
                 var deboContinuar = true
 
                 if(listOfLatLngsYHoraActualDBO.isEmpty()){
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(context, R.string.no_tienes_trayecto, Toast.LENGTH_LONG)
-                            .show()
-                    }
+                    mostrarToastEnMainThread(context, "Antes de cerrar jornada debes de caminar.")
                     deboContinuar = false
                     deferred.complete(false)
                 }
@@ -477,8 +449,7 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
-    override suspend fun solicitarTokenDeSesion(context: Context): String = withContext(ioDispatcher){
+    override suspend fun solicitarTokenDeSesion(): String = withContext(ioDispatcher){
         wrapEspressoIdlingResource{
             withContext(Dispatchers.IO){
                 val deferred = CompletableDeferred<String>()
@@ -487,43 +458,33 @@ class AppRepository(private val context: Context,
                     jwtDao.guardarJwt(JwtDBO(token))
                     deferred.complete(token)
                 }catch(e:Exception){
-                    withContext(Dispatchers.Main){
-                        Toast.makeText(context, "Error al solicitar el token de sesión", Toast.LENGTH_LONG).show()
-                    }
+                    mostrarToastEnMainThread(context, "Error al solicitar el token de sesión")
                     deferred.complete("error")
                 }
                 return@withContext deferred.await()
             }
         }
     }
-
     override suspend fun validarTokenDeSesion(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
                 val deferred = CompletableDeferred<Boolean>()
+                val token = jwtDao.obtenerJwt().first().token
                 try{
-                    val token = jwtDao.obtenerJwt().first().token
-                    println(token)
-                    val isTokenValid = JwtApi.RETROFIT_SERVICE_TOKEN.validateToken(token).await()
-                    println(isTokenValid)
+                    JwtApi.RETROFIT_SERVICE_TOKEN.validateToken(token).await()
                     deferred.complete(true)
                 }catch(e: HttpException){
-                    println(e.response()?.code())
-                    println(e.response()?.errorBody()?.string())
                     if(e.response()?.errorBody()?.string() == "No se proporcionó un token"){
-                        print("hola")
                         deferred.complete(true)
                     }
                     else{
                         deferred.complete(true)
-                        //jwtDao.eliminarJwt()
                     }
                 }
                 return@withContext deferred.await()
             }
         }
     }
-
     override suspend fun eliminarTokenDeSesion() {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO) {
@@ -531,7 +492,6 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun guardandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
@@ -563,7 +523,6 @@ class AppRepository(private val context: Context,
 
         }
     }
-
     override suspend fun eliminandoTokenDeFCMEnFirestore(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(Dispatchers.IO){
@@ -581,39 +540,23 @@ class AppRepository(private val context: Context,
             }
         }
     }
-    override suspend fun registrarIngresoDeJornada(context: Context,
-                                                   latitude: Double,
-                                                   longitude: Double, ): Boolean = withContext(ioDispatcher) {
+    override suspend fun registrarIngresoDeJornada(latitude: Double, longitude: Double): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<Boolean>()
                 try{
                     val nombreCompleto = usuarioDao.obtenerUsuarios().first().nombre + " " + usuarioDao.obtenerUsuarios().first().apellidos
                     val jornadaRequest = JornadaRequest(firebaseAuth.currentUser!!.uid, nombreCompleto, latitude, longitude)
-
                     val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.ingresoJornada(jornadaRequest).await()
-
                     if(envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto().isEmpty()){
                         envioRegistroDeTrayectoDao.guardarEnvioRegistroDeTrayecto(EnvioRegistroDeTrayectoDBO(false))
                     }
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(
-                            context,
-                            request.msg,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
+                    mostrarToastEnMainThread(context, request.msg)
                     deferred.complete(true)
                 } catch(e: HttpException){
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(
-                            context,
-                            "Usted ya inicio la jornada hoy.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                    if(e.response()?.errorBody()?.string().toString().contains("Usted ya inicio jornada")){
+                    val msg = e.response()?.errorBody()?.string()?.let { JSONObject(it).get("msg") }?: ""
+                    mostrarToastEnMainThread(context, msg.toString())
+                    if(msg.toString().contains("Usted ya inicio jornada") || msg.toString().contains("a menos de 500 metros")){
                         deferred.complete(true)
                     }else{
                         deferred.complete(false)
@@ -632,36 +575,24 @@ class AppRepository(private val context: Context,
             }
         }
     }
-    override suspend fun registrarSalidaDeJornada(context: Context): Boolean = withContext(ioDispatcher) {
+    override suspend fun registrarSalidaDeJornada(): Boolean = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<Boolean>()
                 try{
                     val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(
-                            context,
-                            request.msg,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    mostrarToastEnMainThread(context, request.msg)
                     envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
                     deferred.complete(true)
                 } catch(e: HttpException){
-                    Handler(Looper.getMainLooper()).post {
-                        Toast.makeText(
-                            context,
-                            e.response()?.errorBody()?.string(),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    e.response()?.errorBody()?.string()?.let { mostrarToastEnMainThread(context, it) }
                     deferred.complete(false)
                 }
                 deferred.await()
             }
         }
     }
-    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(context: Context): MutableList<AsistenciaIndividual> = withContext(ioDispatcher) {
+    override suspend fun obtenerRegistroDeAsistenciaDeUsuario(): MutableList<AsistenciaIndividual> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val registroTrayectoVolantero = mutableListOf<AsistenciaIndividual>()
@@ -669,18 +600,10 @@ class AppRepository(private val context: Context,
 
                 cloudDB.collection("RegistroDeAsistencia")
                     .document(firebaseAuth.currentUser!!.uid).get()
-
                     .addOnFailureListener{
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(
-                                context,
-                                "Error al obtener el registro de asistencia",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        mostrarToastEnMainThread(context, "Error al obtener el registro de asistencia")
                         deferred.complete(registroTrayectoVolantero)
                     }
-
                     .addOnSuccessListener{
                         if(it.get("registroAsistencia") == null){
                             registroTrayectoVolantero.add(
@@ -710,56 +633,11 @@ class AppRepository(private val context: Context,
             }
         }
     }
-    override suspend fun obtenerRegistroDeAsistencia(context: Context): MutableList<Map<*,*>> = withContext(ioDispatcher){
-        wrapEspressoIdlingResource {
-            withContext(ioDispatcher){
-                val deferred = CompletableDeferred<MutableList<Map<*,*>>>()
-
-                cloudDB.collection("RegistroDeAsistencia").get()
-                    .addOnFailureListener{
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(
-                                context,
-                                "Error al obtener el registro de asistencia",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                        deferred.complete(mutableListOf())
-                    }
-
-                    .addOnSuccessListener {
-                        if(it.documents.isEmpty()){
-                            deferred.complete(mutableListOf())
-                        }else{
-                            val listadoDeRegistros = it.documents.map{ document->
-                                document.data as Map<String,*>
-                            }
-                            deferred.complete(listadoDeRegistros.toMutableList())
-                        }
-                    }
-                deferred.await()
-            }
-        }
-    }
     @SuppressLint("MissingPermission")
-    override suspend fun exportarRegistroDeAsistenciaAExcel(context: Context, mes: String, anio: String) {
+    override suspend fun exportarRegistroDeAsistenciaAExcel(mes: String, anio: String) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                val auxMes: String = when(mes){
-                    "Enero" -> "01"
-                    "Febrero" -> "02"
-                    "Marzo" -> "03"
-                    "Abril" -> "04"
-                    "Mayo" -> "05"
-                    "Junio" -> "06"
-                    "Julio" -> "07"
-                    "Agosto" -> "08"
-                    "Septiembre" -> "09"
-                    "Octubre" -> "10"
-                    "Noviembre" -> "11"
-                    "Diciembre" -> "12"
-                    else -> {""}
-                }
+                val auxMes = convertirMesDeTextoStringANumeroString(mes)
                 val response =
                     RegistroDeAsistenciaApi.RETROFIT_SERVICE_REGISTRODEASISTENCIA.exportarRegistroDeAsistenciaAExcel(
                         auxMes,
@@ -851,9 +729,7 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
-    override suspend fun obtenerRegistroDeAsistenciaYMostrarloComoExcel(context: Context, mes:String, anio: String):
-            MutableList<Asistencia> = withContext(ioDispatcher) {
+    override suspend fun obtenerRegistroDeAsistenciaYMostrarloComoExcel(mes:String, anio: String): MutableList<Asistencia> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val deferred = CompletableDeferred<MutableList<Asistencia>>()
@@ -862,13 +738,7 @@ class AppRepository(private val context: Context,
 
                 cloudDB.collection("RegistroDeAsistencia").get()
                     .addOnFailureListener {
-                        Handler(Looper.getMainLooper()).post {
-                            Toast.makeText(
-                                context,
-                                "Error al obtener el registro de asistencia. Intentelo nuevamente.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        mostrarToastEnMainThread(context, "Error al obtener el registro de asistencia. Intentelo nuevamente.")
                         deferred.complete(mutableListOf())
                     }
                     .addOnSuccessListener{
@@ -883,42 +753,18 @@ class AppRepository(private val context: Context,
                             Log.e("aux", aux.toString())
                             if(aux.isNotEmpty()){
                                 aux.forEach{
-                                    Log.e("aux", "registro: ${it["anio"]}-${it["mes"]} parametros: "+anio+"-"+mes)
-                                    Log.e("aux", (it["mes"] == mes && it["anio"] == anio).toString())
-                                    if(it["mes"] == mes && it["anio"] == anio){
-                                        Log.e("mesConBono", it["mes"].toString())
-                                        Log.e("mesConBono", it["bono"].toString())
-                                        bonop = it["bono"].toString()
-                                    }
+                                    if(it["mes"] == mes && it["anio"] == anio) bonop = it["bono"].toString()
                                 }
-
                             }
                             val bonor = 0
-                            val auxMes: String = when(mes){
-                                "Enero" -> "01"
-                                "Febrero" -> "02"
-                                "Marzo" -> "03"
-                                "Abril" -> "04"
-                                "Mayo" -> "05"
-                                "Junio" -> "06"
-                                "Julio" -> "07"
-                                "Agosto" -> "08"
-                                "Septiembre" -> "09"
-                                "Octubre" -> "10"
-                                "Noviembre" -> "11"
-                                "Diciembre" -> "12"
-                                else -> {""}
-                            }
-
+                            val auxMes = convertirMesDeTextoStringANumeroString(mes)
                             registroAsistencia.forEach {
                                 val date = format.parse(it["fecha"] as String)
                                 if (date!!.month+1 == auxMes.toInt() && date!!.year + 1900 == anio.toInt()) {
                                     diasTrabajados++
                                 }
                             }
-
                             val sueldo = sueldoDiario * diasTrabajados
-
                             if(diasTrabajados > 0){
                                 listaDeUsuariosYSuAsistencia.add(
                                     Asistencia(
@@ -933,16 +779,9 @@ class AppRepository(private val context: Context,
                                     )
                                 )
                             }
-
                         }
                         if(listaDeUsuariosYSuAsistencia.isEmpty()){
-                            Handler(Looper.getMainLooper()).post {
-                                Toast.makeText(
-                                    context,
-                                    "No hay registros de asistencia en el rango de fechas seleccionado.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                            mostrarToastEnMainThread(context, "No hay registros de asistencia en el rango de fechas seleccionado.")
                         }
                         deferred.complete(listaDeUsuariosYSuAsistencia)
                     }
@@ -950,49 +789,40 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
     override suspend fun agregarBonoPersonalAlVolantero(bono: String, volanteroId: String, mes:String, anio:String): Boolean = withContext(ioDispatcher){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 val deferred = CompletableDeferred<Boolean>()
                 try {
                     val request = BonoPersonalApi.RETROFIT_SERVICE_BONOPERSONAL.ingresarBono(volanteroId, bono, mes, anio).await()
-                    enviarToastEnBackground(request.msg)
+                    mostrarToastEnMainThread(context, request.msg)
                     deferred.complete(true)
                 }catch(e:Exception){
-                    enviarToastEnBackground(e.message?: "Error al agregar bono personal al volantero.")
+                    mostrarToastEnMainThread(context, e.message?: "Error al agregar bono personal al volantero.")
                     deferred.complete(false)
                 }
                 return@withContext deferred.await()
             }
         }
     }
-
-    override suspend fun avisarQueQuedeSinMaterial(context: Context){
+    override suspend fun avisarQueQuedeSinMaterial(){
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
-                //val request = RegistroJornadaApi.RETROFIT_SERVICE_REGISTRO_JORNADA.salidaJornada(firebaseAuth.currentUser!!.uid).await()
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
-                Handler(Looper.getMainLooper()).post {
-                    Toast.makeText(
-                        context,
-                        request.msg,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
+                mostrarToastEnMainThread(context, request.msg)
             }
         }
     }
-    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(context: Context, id: String):Boolean = withContext(ioDispatcher){
+    override suspend fun notificarQueSeAbastecioAlVolanteroDeMaterial(id: String):Boolean = withContext(ioDispatcher){
         withContext(ioDispatcher){
             val deferred = CompletableDeferred<Boolean>()
             try {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
+                mostrarToastEnMainThread(context, request.msg+"\n"+"Espere mientras se actualiza la lista.")
                 deferred.complete(true)
-                enviarToastEnBackground(request.msg+"\n"+"Espere mientras se actualiza la lista.")
             }catch(e:Exception){
+                mostrarToastEnMainThread(context,"Error al notificar al volantero que se le abastecio de material.")
                 deferred.complete(false)
-                enviarToastEnBackground("Error al notificar al volantero que se le abastecio de material.")
             }
             return@withContext deferred.await()
         }
@@ -1031,12 +861,4 @@ class AppRepository(private val context: Context,
             }
         }
     }
-
-
-    private suspend fun enviarToastEnBackground(message: String){
-        withContext(Dispatchers.Main){
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        }
-    }
-
 }

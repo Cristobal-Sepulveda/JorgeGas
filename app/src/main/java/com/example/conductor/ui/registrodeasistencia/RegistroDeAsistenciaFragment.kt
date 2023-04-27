@@ -116,7 +116,7 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
 
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
-                    _viewModel.exportarRegistroDeAsistenciaAExcel(requireActivity(), mes!!, anio!!)
+                    _viewModel.exportarRegistroDeAsistenciaAExcel(mes!!, anio!!)
                 }
             }
         }

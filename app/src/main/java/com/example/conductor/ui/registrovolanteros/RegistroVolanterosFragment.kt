@@ -191,7 +191,7 @@ class RegistroVolanterosFragment: BaseFragment(), OnMapReadyCallback {
 
         _viewModel.cambiarStatusCloudRequestStatus(CloudRequestStatus.LOADING)
 
-        val registroDiariosVolanteros = _viewModel.obtenerRegistroDiariosRoomDesdeFirestore(requireActivity())
+        val registroDiariosVolanteros = _viewModel.obtenerRegistroDiariosRoomDesdeFirestore()
 
         if (registroDiariosVolanteros.isNotEmpty()) {
             var hayRegistrosEnEsaFecha = false

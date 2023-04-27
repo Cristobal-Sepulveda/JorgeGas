@@ -12,6 +12,7 @@ import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividua
 import com.example.conductor.data.data_objects.domainObjects.Usuario
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
 import com.example.conductor.ui.base.BaseViewModel
+import com.example.conductor.utils.changeUiStatusInMainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,60 +27,54 @@ class AsistenciaViewModel(val app : Application, val dataSource: AppDataSource) 
     val domainAsistenciaEnScreen: LiveData<MutableList<AsistenciaIndividual>>
         get() = _domainAsistenciaEnScreen
 
-    fun desplegarAsistenciaEnRecyclerView(context: Context){
-        _status.value = CloudRequestStatus.LOADING
-        Log.d("bindingAdapter", "${status.value}")
-
+    fun desplegarAsistenciaEnRecyclerView(){
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
         viewModelScope.launch {
-            val colRef = dataSource.obtenerRegistroDeAsistenciaDeUsuario(context)
+            val colRef = dataSource.obtenerRegistroDeAsistenciaDeUsuario()
             if (colRef.isEmpty()) {
-                _status.value = CloudRequestStatus.ERROR
-                Log.d("bindingAdapter", "${status.value}")
+                this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
                 return@launch
             }
             if(colRef.first().fecha == "error"){
-                _status.value = CloudRequestStatus.DONE
+                this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
             } else {
                 _domainAsistenciaEnScreen.value = colRef
-                _status.value = CloudRequestStatus.DONE
-                Log.d("bindingAdapter", "${status.value}")
+                this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
             }
         }
     }
 
-    suspend fun registrarIngresoDeJornada(context: Context, latitude: Double, longitude: Double) {
-        _status.postValue(CloudRequestStatus.LOADING)
+    suspend fun registrarIngresoDeJornada(latitude: Double, longitude: Double) {
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
         viewModelScope.launch{
             withContext(Dispatchers.IO){
-                if(dataSource.registrarIngresoDeJornada(context,latitude, longitude)){
+                if(dataSource.registrarIngresoDeJornada(latitude, longitude)){
                     dataSource.generarInstanciaDeEnvioRegistroDeTrayecto()
-                    _status.postValue(CloudRequestStatus.DONE)
+                    desplegarAsistenciaEnRecyclerView()
+                    this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
                 }else{
-                    _status.postValue(CloudRequestStatus.ERROR)
+                    this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
                 }
             }
         }
-        return
     }
 
-    suspend fun registrarSalidaDeJornada(context: Context) {
-        _status.postValue(CloudRequestStatus.LOADING)
-        viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                if(dataSource.guardarLatLngYHoraActualEnFirestore(context)){
-                    if(dataSource.registrarSalidaDeJornada(context)){
-                        dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
-                        _status.postValue(CloudRequestStatus.DONE)
-                    }
+    suspend fun registrarSalidaDeJornada() {
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        viewModelScope.launch(Dispatchers.IO){
+            if(dataSource.guardarLatLngYHoraActualEnFirestore()){
+                if(dataSource.registrarSalidaDeJornada()){
+                    dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
+                    desplegarAsistenciaEnRecyclerView()
+                    this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+                }
+            }else{
+                if(dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()){
+                    this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
                 }else{
-                    if(dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()){
-                        _status.postValue(CloudRequestStatus.DONE)
-                    }else{
-                        _status.postValue(CloudRequestStatus.ERROR)
-                    }
+                    this@AsistenciaViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
                 }
             }
         }
-        return
     }
 }

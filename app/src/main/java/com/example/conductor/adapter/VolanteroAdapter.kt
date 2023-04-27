@@ -64,7 +64,7 @@ class VolanteroAdapter(viewModel: GestionDeVolanterosViewModel, dataSource: AppD
         holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroItem_parar).setOnClickListener{
             CoroutineScope(Dispatchers.Main).launch{
                 withContext(Dispatchers.IO){
-                    dataSourcee.registroTrayectoVolanterosEstaActivoFalse(usuario.id, holder.itemView.context)
+                    dataSourcee.registroTrayectoVolanterosEstaActivoFalse(usuario.id)
                 }
             }
         }

@@ -196,7 +196,7 @@
     <string name="usuario_o_clave_equivocados">El usuario o la contraseña no son correctas. Compruebala.</string>
     <string name="login_error_nube">Hay un error al conectarse a la nube. Intentelo nuevamente.</string>
     <string name="todos_los_volanteros_tienen_material">En estos momentos todos los volanteros tienen material. \nVuelve mas tarde.</string>
-    <string name="no_tienes_trayecto">Antes de cerrar jornada debes de caminar. </string>
+    <string name="no_tienes_trayecto">Antes de cerrar jornada debes de caminar.</string>
     <string name="buscar_por_direccion">Buscar por dirección</string>
     <string name="ingrese_direccion_o_telefono_antes_de_buscar">Ingrese direccioón o teléfono antes de buscar.</string>
     <string name="ver_en_mapa">Ver en mapa</string>
@@ -243,6 +243,8 @@
     <string name="anio">Año</string>
     <string name="boton_excel">Boton excel</string>
     <string name="elegir_volantero">Elegir volantero</string>
+    <string name="atencion">Atención:</string>
+    <string name="esta_seguro_que_desea_finalizar_su_jornada">¿Estas seguro que deseas finalizar tu jornada? Si lo haces, tu trayecto del día será borrado del celular y será enviado a la nube.</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

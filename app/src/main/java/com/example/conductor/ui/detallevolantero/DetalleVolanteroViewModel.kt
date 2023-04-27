@@ -8,8 +8,8 @@ import com.example.conductor.data.network.DistanceMatrixResponse
 
 class DetalleVolanteroViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
 
-    suspend fun obtenerRegistroDiariosDelVolantero(id: String,context: Context): Any {
-        return dataSource.obtenerRegistroDiariosDelVolantero(id, context)
+    suspend fun obtenerRegistroDiariosDelVolantero(id: String): Any {
+        return dataSource.obtenerRegistroDiariosDelVolantero(id)
     }
 
 

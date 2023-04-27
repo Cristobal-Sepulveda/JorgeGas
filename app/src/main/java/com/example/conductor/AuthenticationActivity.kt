@@ -166,7 +166,7 @@ class AuthenticationActivity : AppCompatActivity() {
             return
         }
 
-        if(solicitarTokenDeSesion(this) == "error"){
+        if(solicitarTokenDeSesion() == "error"){
             runOnUiThread {
                 aparecerYDesaparecerElementosTrasNoLogin()
             }
@@ -289,8 +289,8 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.loginButton.visibility = View.GONE
     }
 
-    private suspend fun solicitarTokenDeSesion(context: Context): String{
-        return dataSource.solicitarTokenDeSesion(context)
+    private suspend fun solicitarTokenDeSesion(): String{
+        return dataSource.solicitarTokenDeSesion()
     }
 }
 
