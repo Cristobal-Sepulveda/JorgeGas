@@ -802,6 +802,7 @@ class AppRepository(private val context: Context,
                                 if(diasTrabajados >= 20 && diasTrabajados < 26){
 
                                 }
+
                             }
 
                             if(diasTrabajados > 0){

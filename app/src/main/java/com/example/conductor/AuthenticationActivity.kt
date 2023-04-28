@@ -35,7 +35,6 @@ class AuthenticationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
         binding.imageviewLogoAbastible.visibility = View.VISIBLE
         binding.imageviewLogoJorgeGas.visibility = View.VISIBLE
@@ -61,7 +60,7 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
-    fun hayUsuarioLogeado(user: FirebaseUser?) : Boolean {
+    private fun hayUsuarioLogeado(user: FirebaseUser?) : Boolean {
         aparecerYDesaparecerElementosAlIniciarLogin()
 
         if (user != null) {

@@ -125,11 +125,13 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                                         )
                                     )
                                     val documentActualizado = mapOf(
-                                        "estaActivo" to true,
                                         "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
                                         "registroJornada" to registroJornada,
                                         "rol" to "Volantero"
                                     )
+                                    if(dataDocumento["estaActivo"] == false){
+                                        documentActualizado.plus("estaActivo" to true)
+                                    }
 
                                     cloudDB.collection("RegistroTrayectoVolanteros")
                                         .document(firebaseAuth.currentUser!!.uid)
@@ -158,8 +160,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                             val nuevoRegistro = mapOf(
                                 "registroJornada" to registroJornada,
                                 "estaActivo" to true,
-                                "nombreCompleto" to _viewModel.usuarioDesdeSqlite,
-                                "rol" to "Volantero"
                             )
                             cloudDB.collection("RegistroTrayectoVolanteros")
                                 .document(firebaseAuth.currentUser!!.uid)
