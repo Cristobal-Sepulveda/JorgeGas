@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.conductor.ui.base.BaseViewModel
 import com.example.conductor.data.AppDataSource
+import com.example.conductor.data.data_objects.dbo.EnvioRegistroDeTrayectoDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
@@ -108,6 +109,7 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         val distanciaKmString = "%.2fkm".format(distanciaKm)
         _distanciaTotalRecorrida.value = distanciaKmString
     }
+
     fun editarTiempoTotalRecorrido(tiempo: Float, color: String) {
         val seconds = tiempo.roundToInt()
         val minutes = seconds / 60
@@ -144,8 +146,10 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
                 return@launch
             }
             if(colRef.first().fecha == "error"){
-                this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+                Log.e("cargandoData", "al pedir el registro en cloud se descubrio que aun no hay uno existente")
+                this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
             } else {
+                Log.e("cargandoData", "failureListener")
                 _domainAsistenciaEnScreen.value = colRef
                 this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
             }
@@ -166,28 +170,36 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
             }
         }
     }
+
     suspend fun registrarSalidaDeJornada() {
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
         viewModelScope.launch(Dispatchers.IO){
-            if(dataSource.guardarLatLngYHoraActualEnFirestore()){
-                if(dataSource.registrarSalidaDeJornada(tiempoTotalRecorridoVerde.value.toString(),
-                        tiempoTotalRecorridoAmarillo.value.toString(),
-                        tiempoTotalRecorridoRojo.value.toString(),
-                        tiempoTotalRecorridoAzul.value.toString(),
-                        tiempoTotalRecorridoRosado.value.toString(),)) {
-
+            if(dataSource.registrarSalidaDeJornada(tiempoTotalRecorridoVerde.value.toString(),
+                    tiempoTotalRecorridoAmarillo.value.toString(),
+                    tiempoTotalRecorridoRojo.value.toString(),
+                    tiempoTotalRecorridoAzul.value.toString(),
+                    tiempoTotalRecorridoRosado.value.toString(),)) {
+                if(dataSource.guardarLatLngYHoraActualEnFirestore()){
                     dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
                     desplegarAsistenciaEnRecyclerView()
                     this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
+                }else{
+                    this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
                 }
             }else{
-                if(dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()){
+                val aux = dataSource.obtenerLatLngYHoraActualesDeRoom().isEmpty()
+                Log.e("RegistrarSalidaDeJornada", "$aux")
+                if(aux){
                     this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
                 }else{
                     this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
                 }
             }
         }
+    }
+
+    suspend fun obtenerEnvioRegistroDeTrayecto(): List<EnvioRegistroDeTrayectoDBO> {
+        return dataSource.obtenerEnvioRegistroDeTrayecto()
     }
 }
 

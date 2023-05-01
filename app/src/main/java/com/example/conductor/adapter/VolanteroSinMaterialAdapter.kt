@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.databinding.VolanteroSinMaterialItemViewBinding
 import com.example.conductor.ui.gestiondematerial.GestionDeMaterialViewModel
+import com.example.conductor.utils.lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread
 
 
 class VolanteroSinMaterialAdapter(viewModel: GestionDeMaterialViewModel, dataSource: AppDataSource, val onClickListener: OnClickListener)
@@ -60,8 +61,14 @@ class VolanteroSinMaterialAdapter(viewModel: GestionDeMaterialViewModel, dataSou
     override fun onBindViewHolder(holder: UsuarioViewHolder, position: Int) {
         val usuario = getItem(position)
         holder.itemView.findViewById<ImageView>(R.id.imageView_volanteroSinMaterial_item).setOnClickListener{ view ->
-            viewModell.viewModelScope.launch{
-                viewModell.notificarQueSeAbastecioAlVolanteroDeMaterial(view.context, usuario.id)
+            lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread(
+                view.context,
+                R.string.atencion,
+                R.string.alerta_entregando_material
+            ){
+                viewModell.viewModelScope.launch{
+                    viewModell.notificarQueSeAbastecioAlVolanteroDeMaterial(view.context, usuario.id)
+                }
             }
         }
         holder.bind(usuario)

@@ -15,6 +15,7 @@ import com.example.conductor.databinding.FragmentAsistenciaBinding
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.ui.vistageneral.VistaGeneralViewModel
 import com.example.conductor.utils.lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread
+import com.example.conductor.utils.showToastInMainThreadWithStringResource
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +52,7 @@ class AsistenciaFragment: BaseFragment() {
         _binding!!.buttonAsistenciaEntrada.setOnClickListener {
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    getDeviceLocation()
+                    registrarEntradaDeJornada()
                 }
             }
         }
@@ -67,7 +68,7 @@ class AsistenciaFragment: BaseFragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getDeviceLocation() {
+    private fun registrarEntradaDeJornada() {
         try {
             val locationResult = fusedLocationProviderClient.lastLocation
             locationResult.addOnCompleteListener(requireActivity()) { task ->
@@ -80,14 +81,16 @@ class AsistenciaFragment: BaseFragment() {
                             }
                         }
                     } else {
-                        Toast.makeText(requireContext(), "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No se pudo obtener la ubicación $lastKnownLocation", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.i("getDeviceLocation", "locationPermissionGranted is false")
+                    Log.e("AsistenciaFragment", task.result.toString())
+                    Toast.makeText(requireContext(), "No se pudo obtener la ubicación"+ task.result.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
+            Toast.makeText(requireContext(), "No se pudo obtener la ubicación ${e.message}", Toast.LENGTH_SHORT).show()
+            Log.e("AsistenciaFragment", e.message, e)
         }
     }
 

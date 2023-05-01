@@ -24,7 +24,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -71,7 +70,13 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     private lateinit var sharedPreferences: SharedPreferences
     private var locationServiceBound = false
     private lateinit var iniciandoSnapshotListener: ListenerRegistration
-
+    private lateinit var map: GoogleMap
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var lastKnownLocation: Location? = null
+    private var latLngsDeInteres = mutableListOf<LatLng?>()
+    private lateinit var polylineOptions: PolylineOptions
+    private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
+    private lateinit var marker: Marker
     // Listens for location broadcasts from LocationService.
     private inner class LocationServiceBroadcastReceiverVistaGeneral : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -199,13 +204,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
     }
-
     private var locationServiceBroadcastReceiverVistaGeneral = LocationServiceBroadcastReceiverVistaGeneral()
-
     /////////////////////////////////////////////////////////////////////////
     // Provides location updates for while-in-use feature.
     private var locationService: LocationService? = null
-
     // Monitors connection to the while-in-use service.
     private val locationServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -213,20 +215,11 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             locationService = binder.service
             locationServiceBound = true
         }
-
         override fun onServiceDisconnected(name: ComponentName) {
             locationService = null
             locationServiceBound = false
         }
     }
-
-    private lateinit var map: GoogleMap
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private var lastKnownLocation: Location? = null
-    private var latLngsDeInteres = mutableListOf<LatLng?>()
-    private lateinit var polylineOptions: PolylineOptions
-    private lateinit var listadoDeHorasDeRegistrodeNuevosGeopoints: ArrayList<String>
-    private lateinit var marker: Marker
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentVistaGeneralBinding.inflate(inflater, container, false)
@@ -235,73 +228,52 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         //Obteniendo sharedPreferences y poniendo un listener a cualquier cambio en esta key
         sharedPreferences = requireActivity().getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-
-
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         //bindeando el servicio al fragment y registrando el broadcast receiver
         val serviceIntent = Intent(requireActivity(), LocationService::class.java)
-
-        requireActivity().bindService(
-            serviceIntent,
-            locationServiceConnection,
-            Context.BIND_AUTO_CREATE
+        requireActivity().bindService(serviceIntent, locationServiceConnection, Context.BIND_AUTO_CREATE)
+        LocalBroadcastManager.getInstance(requireActivity()).registerReceiver(
+            locationServiceBroadcastReceiverVistaGeneral,
+            IntentFilter(ACTION_LOCATION_BROADCAST)
         )
-        LocalBroadcastManager.getInstance(requireActivity())
-            .registerReceiver(
-                locationServiceBroadcastReceiverVistaGeneral,
-                IntentFilter(ACTION_LOCATION_BROADCAST)
-            )
+
         //configurando UI según el rol del usuario
         configurandoUISegunRolDelUsuario()
 
-        _binding!!.fabVistaGeneralRegistroJornadaVolantero.setOnClickListener {
-            iniciarODetenerLocationService()
-        }
-
-        _binding!!.fabVistaGeneralSinMaterial.setOnClickListener {
-            lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    _viewModel.avisarQueQuedeSinMaterial()
-                }
-            }
-        }
-
+        /*Administrador*/
+        /* ClickListener's Administrador*/
+        /*Fold and unfold cards*/
         _binding!!.imageViewVistaGeneralVolanterosFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility = View.GONE
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility =
                 View.VISIBLE
         }
-
         _binding!!.imageViewVistaGeneralVolanterosFlechaArriba.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutReducido.visibility =
                 View.VISIBLE
             _binding!!.linearLayoutVistaGeneralVolanterosLinearLayoutAmpliado.visibility = View.GONE
         }
-
         _binding!!.imageViewVistaGeneralChoferesFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility = View.GONE
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility =
                 View.VISIBLE
         }
-
         _binding!!.imageViewVistaGeneralChoferesFlechaArriba.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutReducido.visibility =
                 View.VISIBLE
             _binding!!.linearLayoutVistaGeneralChoferesLinearLayoutAmpliado.visibility = View.GONE
         }
-
         _binding!!.imageViewVistaGeneralCallCenterFlechaBaja.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility = View.GONE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility =
                 View.VISIBLE
         }
-
         _binding!!.imageViewVistaGeneralCallCenterFlechaArriba.setOnClickListener {
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutReducido.visibility =
                 View.VISIBLE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
         }
-
+        /* Volantero card options*/
         _binding!!.textViewVistaGeneralGestionDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
@@ -309,7 +281,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         .actionNavigationVistaGeneralToNavigationGestionDeVolanteros()
                 )
         }
-
         _binding!!.textViewVistaGeneralRegistroDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
@@ -317,7 +288,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         .actionNavigationVistaGeneralToNavigationRegistroTrayectoVolanteros()
                 )
         }
-
         _binding!!.textViewVistaGeneralGestionDeMaterial.setOnClickListener {
             _viewModel.navigationCommand.value =
                 NavigationCommand.To(
@@ -325,7 +295,48 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                         .actionNavigationVistaGeneralToNavigationGestionDeMaterial()
                 )
         }
+        /***********/
 
+        /*Volantero*/
+        /* ClickListener's Volanteros*/
+
+        _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setOnClickListener {
+            iniciarODetenerLocationService()
+        }
+        _binding!!.fabVistaGeneralSinMaterial.setOnClickListener {
+            lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread(
+                requireContext(),
+                R.string.atencion,
+                R.string.alerta_pidiendo_material
+            ) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    _viewModel.avisarQueQuedeSinMaterial()
+                }
+            }
+        }
+        /*Observers*/
+        _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralKilometros.text = it
+        }
+        _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralVerde.text = it
+        }
+        _viewModel.tiempoTotalRecorridoAmarillo.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralAmarillo.text = it
+        }
+        _viewModel.tiempoTotalRecorridoRojo.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralRojo.text = it
+        }
+        _viewModel.tiempoTotalRecorridoAzul.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralAzul.text = it
+        }
+        _viewModel.tiempoTotalRecorridoRosado.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralRosado.text = it
+        }
+        /****************/
+
+
+        /*ClickListener's CallCenter*/
         _binding!!.includeVistaGeneralUiCallCenter
             .buttonVistaGeneralUiCallCenterBuscarPorDireccion.setOnClickListener {
                 lifecycleScope.launch {
@@ -334,136 +345,21 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                     }
                 }
             }
-
         _binding!!.includeVistaGeneralUiCallCenter
             .buttonVistaGeneralUiCallCenterConfirmarDireccion.setOnClickListener{
                 callCenterValidarYCargarDatosAntesDeNavegar()
             }
-
-
-        _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralKilometros.text = it
-        }
-
-        _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralVerde.text = it
-        }
-
-        _viewModel.tiempoTotalRecorridoAmarillo.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralAmarillo.text = it
-        }
-
-        _viewModel.tiempoTotalRecorridoRojo.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralRojo.text = it
-        }
-
-        _viewModel.tiempoTotalRecorridoAzul.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralAzul.text = it
-        }
-
-        _viewModel.tiempoTotalRecorridoRosado.observe(viewLifecycleOwner){
-            _binding!!.textViewVistaGeneralRosado.text = it
-        }
-
-
-        _binding!!.includeVistaGeneralUiCallCenter.buttonVistaGeneralUiCallCenterMedioDePago.setOnClickListener{
+        _binding!!.includeVistaGeneralUiCallCenter
+            .buttonVistaGeneralUiCallCenterMedioDePago.setOnClickListener{
             abrirMenuMedioDePago(it)
         }
-
+        /*Function that helps to keep the form data if the user go to the next windows and then
+        comes back*/
         cargarFormularioSiYaTeniaDatos()
+        /****************************/
 
         return _binding!!.root
     }
-
-    private fun cargarFormularioSiYaTeniaDatos(){
-        val nombreCompleto = _viewModel.nombreDelCliente
-        val direccion = _viewModel.direccionDelCliente
-        val departamento = _viewModel.deptoDelCliente
-        val block = _viewModel.blockDelCliente
-        val telefono = _viewModel.telefonoDelCliente
-        val medioDePago = _viewModel.medioDePagoDelCliente
-        val comentarios = _viewModel.comentarios
-
-        if(nombreCompleto != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.setText(nombreCompleto)
-        }
-        if(direccion != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.setText(direccion)
-        }
-        if(departamento != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .autoCompleteTextViewVistaGeneralUiCallCenterDepto.setText(departamento)
-        }
-        if(block != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .autoCompleteTextViewVistaGeneralUiCallCenterBlock.setText(block)
-        }
-        if(telefono != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.setText(telefono)
-        }
-        if(medioDePago != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .buttonVistaGeneralUiCallCenterMedioDePago.text = medioDePago
-        }
-        if(comentarios != ""){
-            _binding!!.includeVistaGeneralUiCallCenter
-                .textInputEditTextVistaGeneralUiCallCenterComentarios.setText(comentarios)
-        }
-
-    }
-
-    private fun callCenterValidarYCargarDatosAntesDeNavegar() {
-        val nombreCompleto = _binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.text.toString()
-        val direccion = _binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.text.toString()
-        val departamento = _binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterDepto.text.toString()
-        val block = _binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterBlock.text.toString()
-        val telefono = _binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.text.toString()
-        val medioDePago = _binding!!.includeVistaGeneralUiCallCenter
-            .buttonVistaGeneralUiCallCenterMedioDePago.text.toString()
-        val comentarios = _binding!!.includeVistaGeneralUiCallCenter
-            .textInputEditTextVistaGeneralUiCallCenterComentarios.text.toString()
-        val cantidadDePalabras = nombreCompleto.split(" ")
-
-        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(_binding!!.includeVistaGeneralUiCallCenter
-            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.windowToken, 0)
-
-        if (nombreCompleto.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || medioDePago == "Medio de pago") {
-            Snackbar.make(
-                _binding!!.root,
-                R.string.snackbar_pedido_gas_faltan_datos,
-                Snackbar.LENGTH_SHORT
-            ).show()
-            return
-        }
-        if (cantidadDePalabras.size < 4) {
-            Snackbar.make(
-                _binding!!.root,
-                R.string.tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos,
-                Snackbar.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        _viewModel.nombreDelCliente = nombreCompleto
-        _viewModel.direccionDelCliente = direccion
-        _viewModel.deptoDelCliente = departamento
-        _viewModel.blockDelCliente = block
-        _viewModel.telefonoDelCliente = telefono
-        _viewModel.medioDePagoDelCliente = medioDePago
-        _viewModel.comentarios = comentarios
-        findNavController().navigate(VistaGeneralFragmentDirections.actionNavigationVistaGeneralToNavigationCantidadDeBalones())
-    }
-
-
     override fun onDestroy() {
         if (::iniciandoSnapshotListener.isInitialized) {
             iniciandoSnapshotListener.remove()
@@ -496,7 +392,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         super.onDestroy()
     }
-
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         startingPermissionCheck()
@@ -512,7 +407,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
     }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // Updates button states if new while in use location is added to SharedPreferences.
         if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
@@ -524,6 +418,156 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
     }
 
+
+    /*General functions*/
+    private fun startingPermissionCheck() {
+        val isPermissionGranted = ContextCompat.checkSelfPermission(
+            requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        if (isPermissionGranted) {
+            try {
+                val locationResult = fusedLocationProviderClient.lastLocation
+                locationResult.addOnCompleteListener(requireActivity()) { task ->
+                    lastKnownLocation = task.result
+                    Log.i("getDeviceLocation", task.result?.longitude.toString())
+                    if (lastKnownLocation != null) {
+                        //zoom to the user location after taking his permission
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    lastKnownLocation!!.latitude, lastKnownLocation!!.longitude
+                                ),
+                                18f
+                            )
+                        )
+                        map.addMarker(
+                            MarkerOptions()
+                                .position(
+                                    LatLng(
+                                        lastKnownLocation!!.latitude,
+                                        lastKnownLocation!!.longitude
+                                    )
+                                )
+                                .title("Marker in your actual location")
+                                .icon(getBitmap(R.drawable.ic_marker_volantero_green)?.let {
+                                    BitmapDescriptorFactory.fromBitmap(
+                                        it
+                                    )
+                                })
+                        )
+                    } else {
+                        map.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    Constants.defaultLocation.latitude,
+                                    Constants.defaultLocation.longitude
+                                ),
+                                Constants.cameraDefaultZoom.toFloat()
+                            )
+                        )
+                        Toast.makeText(
+                            requireActivity(),
+                            "No se pudo obtener la ubicación actual",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+            } catch (e: SecurityException) {
+                _binding!!.fragmentContainerViewVistaGeneralMapa.isGone = true
+                _binding!!.imageViewVistaGeneralMapaSinPermisos.isGone = false
+
+            }
+        }else{
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(
+                        Constants.defaultLocation.latitude,
+                        Constants.defaultLocation.longitude
+                    ),
+                    Constants.cameraDefaultZoom.toFloat()
+                )
+            )
+        }
+    }
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireActivity(), R.raw.map_style
+                )
+            )
+            if (!success) {
+                Log.e("MapFragment", "Error al cargar el estilo del mapa")
+            }
+        } catch (e: Exception) {
+            Log.e("MapFragment", "Error al cargar el estilo del mapa", e)
+        }
+    }
+    private fun configurandoUISegunRolDelUsuario() {
+        lifecycleScope.launch {
+            when (_viewModel.obtenerRolDelUsuarioActual()) {
+                "Volantero" -> {
+                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapa) as? SupportMapFragment)
+                        ?.getMapAsync(this@VistaGeneralFragment)
+                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    _binding!!.constraintLayoutVistaGeneralUiVolanteros.visibility = View.VISIBLE
+                    val isServiceEnabled = sharedPreferences.getBoolean(
+                        SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
+                        false
+                    )
+                    updateButtonState(isServiceEnabled)
+                    if (!isServiceEnabled) {
+                        if (!_viewModel.editarEstadoVolantero(false)) {
+                            Snackbar.make(
+                                requireView(),
+                                "Su cuenta presenta problemas de internet para acceder al registro de trayecto. Comunique esta situación a su superior inmediatamente.",
+                                Snackbar.LENGTH_INDEFINITE
+                            ).show()
+                        }
+                    }
+
+                }
+
+                "Administrador" -> {
+                    _binding!!.nestedScrollViewVistaGeneralUiAdministradores.visibility = View.VISIBLE
+                }
+
+                "Call Center" ->{
+                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapaCallCenter) as? SupportMapFragment)
+                        ?.getMapAsync(this@VistaGeneralFragment)
+                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                    _binding!!.includeVistaGeneralUiCallCenter.constraintLayoutVistaGeneralUiCallCenter.visibility = View.VISIBLE
+                    // Initialize Places.
+                    if (!Places.isInitialized()) {
+                        Places.initialize(requireContext(), BuildConfig.PLACES_API_KEY)
+                    }
+                }
+
+                "Error" -> Toast.makeText(
+                    requireActivity(),
+                    "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+    /********************/
+
+    /*VolanteroUi Functions*/
+    private fun updateButtonState(trackingLocation: Boolean) {
+        if (trackingLocation) {
+            _viewModel.editarBotonVolantero(true)
+            _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setBackgroundColor(
+                Color.argb(100, 255, 0, 0)
+            )
+        } else {
+            _viewModel.editarBotonVolantero(false)
+            _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setBackgroundColor(
+                Color.argb(100, 0, 255, 0)
+            )
+        }
+    }
     private fun iniciarSnapshotListenerDelDocumentoDelUsuarioEnRegistroTrayectoVolanteros(){
         val docRef = cloudDB
             .collection("RegistroTrayectoVolanteros")
@@ -555,7 +599,41 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
     }
-
+    private fun iniciarODetenerLocationService() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if(_viewModel.obtenerEnvioRegistroDeTrayecto().isNotEmpty()){
+                if(sharedPreferences.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)){
+                    if (_viewModel.editarEstadoVolantero(false)) {
+                        locationService?.let{
+                            it.unsubscribeToLocationUpdatesVistaGeneralFragment()
+                            lifecycleScope.launch(Dispatchers.Main){ map.clear() }
+                            val snapshotListenerIniciado = ::iniciandoSnapshotListener.isInitialized
+                            if (snapshotListenerIniciado) iniciandoSnapshotListener.remove()
+                            Handler(Looper.getMainLooper()).post {
+                                Snackbar.make(
+                                    _binding!!.root,
+                                    R.string.trasmision_detenida,
+                                    Snackbar.LENGTH_INDEFINITE
+                                ).setAction("Ok", {}).show()
+                            }
+                        }
+                    }
+                }else{
+                    if (_viewModel.editarEstadoVolantero(true)) {
+                        locationService?.let{
+                            it.subscribeToLocationUpdatesVistaGeneralFragment()
+                            _viewModel.obtenerUsuariosDesdeSqlite()
+                            iniciarSnapshotListenerDelDocumentoDelUsuarioEnRegistroTrayectoVolanteros()
+                            showToastInMainThreadWithStringResource(requireContext(),
+                                R.string.trasmision_iniciada)
+                        }
+                    }
+                }
+            }else{
+                showToastInMainThreadWithStringResource(requireContext(), R.string.trasmision_no_asist)
+            }
+        }
+    }
     private fun pintarPolyline(geopoints: ArrayList<GeoPoint>){
         map.clear()
         latLngsDeInteres.clear()
@@ -645,7 +723,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _viewModel.editarTiempoTotalRecorrido(tiempoEnAzul, "azul")
         _viewModel.editarTiempoTotalRecorrido(tiempoEnRosado, "rosado")
     }
-
     private fun reDibujarMarker(listAux: MutableList<LatLng?>, icono:Int) {
         if (::marker.isInitialized) {
             marker.remove()
@@ -656,93 +733,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 .icon(getBitmap(icono)?.let { BitmapDescriptorFactory.fromBitmap(it) })
         )!!
     }
-
-    private fun startingPermissionCheck() {
-        val isPermissionGranted = ContextCompat.checkSelfPermission(
-            requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        if (isPermissionGranted) {
-            try {
-                val locationResult = fusedLocationProviderClient.lastLocation
-                locationResult.addOnCompleteListener(requireActivity()) { task ->
-                    lastKnownLocation = task.result
-                    Log.i("getDeviceLocation", task.result?.longitude.toString())
-                    if (lastKnownLocation != null) {
-                        //zoom to the user location after taking his permission
-                        map.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    lastKnownLocation!!.latitude, lastKnownLocation!!.longitude
-                                ),
-                                18f
-                            )
-                        )
-                        map.addMarker(
-                            MarkerOptions()
-                                .position(
-                                    LatLng(
-                                        lastKnownLocation!!.latitude,
-                                        lastKnownLocation!!.longitude
-                                    )
-                                )
-                                .title("Marker in your actual location")
-                                .icon(getBitmap(R.drawable.ic_marker_volantero_green)?.let {
-                                    BitmapDescriptorFactory.fromBitmap(
-                                        it
-                                    )
-                                })
-                        )
-                    } else {
-                        map.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    Constants.defaultLocation.latitude,
-                                    Constants.defaultLocation.longitude
-                                ),
-                                Constants.cameraDefaultZoom.toFloat()
-                            )
-                        )
-                        Toast.makeText(
-                            requireActivity(),
-                            "No se pudo obtener la ubicación actual",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-
-            } catch (e: SecurityException) {
-                _binding!!.fragmentContainerViewVistaGeneralMapa.isGone = true
-                _binding!!.imageViewVistaGeneralMapaSinPermisos.isGone = false
-
-            }
-        }else{
-            map.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        Constants.defaultLocation.latitude,
-                        Constants.defaultLocation.longitude
-                    ),
-                    Constants.cameraDefaultZoom.toFloat()
-                )
-            )
-        }
-    }
-
-    private fun setMapStyle(map: GoogleMap) {
-        try {
-            val success = map.setMapStyle(
-                MapStyleOptions.loadRawResourceStyle(
-                    requireActivity(), R.raw.map_style
-                )
-            )
-            if (!success) {
-                Log.e("MapFragment", "Error al cargar el estilo del mapa")
-            }
-        } catch (e: Exception) {
-            Log.e("MapFragment", "Error al cargar el estilo del mapa", e)
-        }
-    }
-
     private fun getBitmap(svgResource: Int): Bitmap? {
         val svg = AppCompatResources.getDrawable(requireActivity(), svgResource)?: return null
         val bitmap =
@@ -752,132 +742,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         svg.draw(canvas)
         return bitmap
     }
+    /************************/
 
-    private fun configurandoUISegunRolDelUsuario() {
-        lifecycleScope.launch {
-            when (_viewModel.obtenerRolDelUsuarioActual()) {
-                "Volantero" -> {
-                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapa) as? SupportMapFragment)
-                        ?.getMapAsync(this@VistaGeneralFragment)
-                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                    _binding!!.constraintLayoutVistaGeneralUiVolanteros.visibility = View.VISIBLE
-                    val isServiceEnabled = sharedPreferences.getBoolean(
-                        SharedPreferenceUtil.KEY_FOREGROUND_ENABLED,
-                        false
-                    )
-                    updateButtonState(isServiceEnabled)
-                    if (!isServiceEnabled) {
-                        if (!_viewModel.editarEstadoVolantero(false)) {
-                            Snackbar.make(
-                                requireView(),
-                                "Su cuenta presenta problemas de internet para acceder al registro de trayecto. Comunique esta situación a su superior inmediatamente.",
-                                Snackbar.LENGTH_INDEFINITE
-                            ).show()
-                        }
-                    }
-                }
-
-                "Administrador" -> {
-                    _binding!!.nestedScrollViewVistaGeneralUiAdministradores.visibility = View.VISIBLE
-                }
-
-                "Call Center" ->{
-                    (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapaCallCenter) as? SupportMapFragment)
-                        ?.getMapAsync(this@VistaGeneralFragment)
-                    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                    _binding!!.includeVistaGeneralUiCallCenter.constraintLayoutVistaGeneralUiCallCenter.visibility = View.VISIBLE
-                    // Initialize Places.
-                    if (!Places.isInitialized()) {
-                        Places.initialize(requireContext(), BuildConfig.PLACES_API_KEY)
-                    }
-                }
-
-                "Error" -> Toast.makeText(
-                    requireActivity(),
-                    "Error: No se pudo obtener el rol del usuario. Cierre la app y vuelva a intentarlo. Si esto no funciona, revise su internet\"",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
-
-    private fun updateButtonState(trackingLocation: Boolean) {
-        if (trackingLocation) {
-            _viewModel.editarBotonVolantero(true)
-            _binding!!.fabVistaGeneralRegistroJornadaVolantero.setBackgroundColor(
-                Color.argb(
-                    100,
-                    255,
-                    0,
-                    0
-                )
-            )
-        } else {
-            _viewModel.editarBotonVolantero(false)
-            _binding!!.fabVistaGeneralRegistroJornadaVolantero.setBackgroundColor(
-                Color.argb(
-                    100,
-                    0,
-                    255,
-                    0
-                )
-            )
-        }
-    }
-
-    private fun iniciarODetenerLocationService() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                val enabled = sharedPreferences.getBoolean(
-                    SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
-
-                if (enabled) {
-                    if (_viewModel.editarEstadoVolantero(false)) {
-                        locationService?.unsubscribeToLocationUpdatesVistaGeneralFragment()
-
-                        lifecycleScope.launch{
-                            withContext(Dispatchers.Main){
-                                map.clear()
-                            }
-                        }
-
-                        //esto detiene el snapshot listener del RegistroTrayectoVolanteros de la cloudDB
-                        if (::iniciandoSnapshotListener.isInitialized) {
-                            iniciandoSnapshotListener.remove()
-                        }
-                        Snackbar.make(_binding!!.root, "El servicio de localización ha sido detenido.", Snackbar.LENGTH_SHORT).show()
-                    } else {
-                        val snackbar = Snackbar.make(
-                            _binding!!.root,
-                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.",
-                            Snackbar.LENGTH_INDEFINITE
-                        )
-                        snackbar.setAction("Aceptar") {
-                            snackbar.dismiss()
-                        }
-                        snackbar.show()
-                    }
-                } else {
-                    if (_viewModel.editarEstadoVolantero(true)) {
-                        _viewModel.obtenerUsuariosDesdeSqlite()
-                        locationService?.subscribeToLocationUpdatesVistaGeneralFragment()
-                        iniciarSnapshotListenerDelDocumentoDelUsuarioEnRegistroTrayectoVolanteros()
-                    } else {
-                        val snackbar = Snackbar.make(
-                            _binding!!.root,
-                            "El servicio no será desactivado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.",
-                            Snackbar.LENGTH_INDEFINITE
-                        )
-                        snackbar.setAction("Aceptar") {
-                            snackbar.dismiss()
-                        }
-                        snackbar.show()
-                    }
-                }
-            }
-        }
-    }
-
+    /*CallCenterUi Functions*/
     private fun convertirTextoAListaDeSugerenciasDeDireccionesAsync() {
 
         val editText = _binding!!.includeVistaGeneralUiCallCenter.autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion
@@ -947,7 +814,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 }
             }
     }
-
     private fun convertirDireccionALatLng(direccion: String): LatLng? {
         val geocoder = Geocoder(requireContext())
         try {
@@ -962,7 +828,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         return null
     }
-
     private fun abrirMenuMedioDePago(it: View?) {
         val popupMenu = PopupMenu(requireContext(), it)
         popupMenu.menuInflater.inflate(R.menu.menu_medio_de_pago, popupMenu.menu)
@@ -993,6 +858,92 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         popupMenu.show()
     }
+    private fun callCenterValidarYCargarDatosAntesDeNavegar() {
+        val nombreCompleto = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.text.toString()
+        val direccion = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.text.toString()
+        val departamento = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterDepto.text.toString()
+        val block = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterBlock.text.toString()
+        val telefono = _binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.text.toString()
+        val medioDePago = _binding!!.includeVistaGeneralUiCallCenter
+            .buttonVistaGeneralUiCallCenterMedioDePago.text.toString()
+        val comentarios = _binding!!.includeVistaGeneralUiCallCenter
+            .textInputEditTextVistaGeneralUiCallCenterComentarios.text.toString()
+        val cantidadDePalabras = nombreCompleto.split(" ")
 
+        val inputMethodManager = requireActivity().getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(_binding!!.includeVistaGeneralUiCallCenter
+            .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.windowToken, 0)
+
+        if (nombreCompleto.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || medioDePago == "Medio de pago") {
+            Snackbar.make(
+                _binding!!.root,
+                R.string.snackbar_pedido_gas_faltan_datos,
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+        if (cantidadDePalabras.size < 4) {
+            Snackbar.make(
+                _binding!!.root,
+                R.string.tu_nombre_debe_contener_a_lo_menos_2_nombres_y_2_apellidos,
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        _viewModel.nombreDelCliente = nombreCompleto
+        _viewModel.direccionDelCliente = direccion
+        _viewModel.deptoDelCliente = departamento
+        _viewModel.blockDelCliente = block
+        _viewModel.telefonoDelCliente = telefono
+        _viewModel.medioDePagoDelCliente = medioDePago
+        _viewModel.comentarios = comentarios
+        findNavController().navigate(VistaGeneralFragmentDirections.actionNavigationVistaGeneralToNavigationCantidadDeBalones())
+    }
+    private fun cargarFormularioSiYaTeniaDatos(){
+        val nombreCompleto = _viewModel.nombreDelCliente
+        val direccion = _viewModel.direccionDelCliente
+        val departamento = _viewModel.deptoDelCliente
+        val block = _viewModel.blockDelCliente
+        val telefono = _viewModel.telefonoDelCliente
+        val medioDePago = _viewModel.medioDePagoDelCliente
+        val comentarios = _viewModel.comentarios
+
+        if(nombreCompleto != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterNombreCompleto.setText(nombreCompleto)
+        }
+        if(direccion != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterBuscarPorDireccion.setText(direccion)
+        }
+        if(departamento != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterDepto.setText(departamento)
+        }
+        if(block != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterBlock.setText(block)
+        }
+        if(telefono != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .autoCompleteTextViewVistaGeneralUiCallCenterTelefono.setText(telefono)
+        }
+        if(medioDePago != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .buttonVistaGeneralUiCallCenterMedioDePago.text = medioDePago
+        }
+        if(comentarios != ""){
+            _binding!!.includeVistaGeneralUiCallCenter
+                .textInputEditTextVistaGeneralUiCallCenterComentarios.setText(comentarios)
+        }
+
+    }
+    /************************/
 
 }

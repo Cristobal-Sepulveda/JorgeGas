@@ -1,7 +1,5 @@
 package com.example.conductor.data
 
-import android.content.Context
-import androidx.lifecycle.LiveData
 import com.example.conductor.data.data_objects.dbo.EnvioRegistroDeTrayectoDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
@@ -16,6 +14,9 @@ interface AppDataSource {
     suspend fun obtenerUsuariosDesdeFirestore(): MutableList<Usuario>
     suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero>
     suspend fun obtenerRegistroTrayectoVolanterosColRef(): List<DocumentSnapshot>
+
+    suspend fun cambiarValorDeSesionActivaEnFirestore(boolean: Boolean): Boolean
+
     suspend fun ingresarUsuarioAFirestore(usuario:Usuario):Boolean
     suspend fun eliminarUsuarioDeFirebase(usuario: Usuario)
     suspend fun obtenerRolDelUsuarioActual(): String

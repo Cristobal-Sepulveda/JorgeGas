@@ -67,7 +67,7 @@
             android:orientation="horizontal"
             >
 
-            <ImageView
+            <!--<ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/baseline_arrow_left_24"
@@ -105,7 +105,7 @@
                 android:src="@drawable/baseline_arrow_right_24"
                 android:layout_marginEnd="@dimen/space_medium"
                 android:layout_marginTop="@dimen/space_small"
-                android:contentDescription="@string/calendario" />
+                android:contentDescription="@string/calendario" />-->
 
         </LinearLayout>
 

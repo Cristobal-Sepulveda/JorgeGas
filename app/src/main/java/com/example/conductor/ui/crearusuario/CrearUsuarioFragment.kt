@@ -37,14 +37,11 @@ class CrearUsuarioFragment : BaseFragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private var imageBitmap: Bitmap? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
+        _binding = FragmentCrearUsuarioBinding.inflate(inflater, container, false)
         firebaseAuth = FirebaseAuth.getInstance()
+
         val roles = listOf("Administrador","Conductor","Peoneta","Call Center", "Supervisor Volantero", "Volantero" )
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item,roles)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -144,8 +141,7 @@ class CrearUsuarioFragment : BaseFragment() {
 
             lifecycleScope.launch{
                 withContext(Dispatchers.IO){
-                    val creandoUsuarioEnFirestore = _viewModel.ingresarUsuarioAFirestore(usuario)
-                    if(creandoUsuarioEnFirestore){
+                    if(_viewModel.ingresarUsuarioAFirestore(usuario)){
                         firebaseAuth.signOut()
                         firebaseAuth.signInWithEmailAndPassword(actualUserEmail!!, actualUserPassword).await()
                         Snackbar.make(
@@ -154,6 +150,7 @@ class CrearUsuarioFragment : BaseFragment() {
                             Snackbar.LENGTH_SHORT
                         ).show()
                     }else{
+                        Log.e("CrearUsuarioFragment", "Error al crear cuenta en firestore")
                         Snackbar.make(_binding!!.root,
                             getString(R.string.error_al_crear_cuenta_firestore),
                             Snackbar.LENGTH_LONG
@@ -165,10 +162,20 @@ class CrearUsuarioFragment : BaseFragment() {
         }
 
         creandoUsuarioEnFirebaseAuth.addOnFailureListener {
-            Snackbar.make(_binding!!.root,
-                getString(R.string.error_al_crear_cuenta_fireauth),
-                Snackbar.LENGTH_LONG
-            ).show()
+            Log.e("CrearUsuarioFragment", "Error al crear cuenta en firebase auth: ${it.message}")
+            if (it.message!!.contains("The email address is already in use by another account")) {
+                Snackbar.make(
+                    _binding!!.root,
+                    getString(R.string.error_email_ya_en_uso),
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }else {
+                Snackbar.make(
+                    _binding!!.root,
+                    it.message!!,
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
     }
 

@@ -37,7 +37,8 @@ import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.example.conductor.data.data_objects.dto.JornadaRequest
 import com.example.conductor.utils.convertirMesDeTextoStringANumeroString
-import com.example.conductor.utils.mostrarToastEnMainThread
+import com.example.conductor.utils.mostrarToastEnMainThreadWithHardcoreString
+import com.example.conductor.utils.showToastInMainThreadWithStringResource
 import com.example.conductor.utils.sumarEntreDosTiemposQueVienenComoString
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.messaging.FirebaseMessaging
@@ -48,7 +49,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-
 
 @Suppress("LABEL_NAME_CLASH")
 class AppRepository(private val context: Context,
@@ -93,6 +93,30 @@ class AppRepository(private val context: Context,
             }
         }
     }
+
+    override suspend fun cambiarValorDeSesionActivaEnFirestore(boolean: Boolean): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                cloudDB.collection("Usuarios")
+                    .document(firebaseAuth.currentUser!!.uid)
+                    .update("sesionActiva", boolean)
+                    .addOnFailureListener {
+                        it.message?.let { it1 ->
+                            mostrarToastEnMainThreadWithHardcoreString(context,
+                                it1
+                            )
+                        }
+                        deferred.complete(false)
+                    }
+                    .addOnSuccessListener{
+                        deferred.complete(true)
+                    }
+                return@withContext deferred.await()
+            }
+        }
+    }
+
     override suspend fun obtenerRegistroTrayectoVolanteros(): MutableList<RegistroTrayectoVolantero> = withContext(ioDispatcher) {
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
@@ -252,7 +276,18 @@ class AppRepository(private val context: Context,
                         deferred.complete(true)
                     }
                     .addOnFailureListener {
-                        deferred.complete(false)
+                        it.message?.let{
+                            if(it.contains("NOT_FOUND")){
+                                deferred.complete(true)
+                            }else{
+                                if(estaActivo){
+                                    showToastInMainThreadWithStringResource(context, R.string.error_en_dejar_estaactivo_en_true)
+                                }else{
+                                    showToastInMainThreadWithStringResource(context, R.string.error_en_dejar_estaactivo_en_false)
+                                }
+                                deferred.complete(false)
+                            }
+                        }
                     }
                 return@withContext deferred.await()
             }
@@ -305,7 +340,7 @@ class AppRepository(private val context: Context,
                     .document(firebaseAuth.currentUser!!.uid)
                     .update("fotoPerfil", fotoPerfil)
                     .addOnFailureListener {
-                        mostrarToastEnMainThread(context, "Error al actualizar la foto de perfil")
+                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al actualizar la foto de perfil")
                         deferred.complete(false)
                     }
                     .addOnSuccessListener {
@@ -338,7 +373,7 @@ class AppRepository(private val context: Context,
                 var deboContinuar = true
 
                 if(listOfLatLngsYHoraActualDBO.isEmpty()){
-                    mostrarToastEnMainThread(context, "Antes de cerrar jornada debes de caminar.")
+                    mostrarToastEnMainThreadWithHardcoreString(context, "Antes de cerrar jornada debes de caminar.")
                     deboContinuar = false
                     deferred.complete(false)
                 }
@@ -458,7 +493,7 @@ class AppRepository(private val context: Context,
                     jwtDao.guardarJwt(JwtDBO(token))
                     deferred.complete(token)
                 }catch(e:Exception){
-                    mostrarToastEnMainThread(context, "Error al solicitar el token de sesión")
+                    mostrarToastEnMainThreadWithHardcoreString(context, "Error al solicitar el token de sesión")
                     deferred.complete("error")
                 }
                 return@withContext deferred.await()
@@ -551,11 +586,11 @@ class AppRepository(private val context: Context,
                     if(envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto().isEmpty()){
                         envioRegistroDeTrayectoDao.guardarEnvioRegistroDeTrayecto(EnvioRegistroDeTrayectoDBO(false))
                     }
-                    mostrarToastEnMainThread(context, request.msg)
+                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
                     deferred.complete(true)
                 } catch(e: HttpException){
                     val msg = e.response()?.errorBody()?.string()?.let { JSONObject(it).get("msg") }?: ""
-                    mostrarToastEnMainThread(context, msg.toString())
+                    mostrarToastEnMainThreadWithHardcoreString(context, msg.toString())
                     if(msg.toString().contains("Usted ya inicio jornada") || msg.toString().contains("a menos de 500 metros")){
                         deferred.complete(true)
                     }else{
@@ -591,11 +626,12 @@ class AppRepository(private val context: Context,
                         tiempoEnAzul,
                         tiempoEnRosado).await()
 
-                    mostrarToastEnMainThread(context, request.msg)
+                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
                     envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
                     deferred.complete(true)
                 } catch(e: HttpException){
-                    e.response()?.errorBody()?.string()?.let { mostrarToastEnMainThread(context, it) }
+                    Log.e("RegistrarSalidaDeJornada", "RegistrarSalidaDeJornada")
+                    e.response()?.errorBody()?.string()?.let { mostrarToastEnMainThreadWithHardcoreString(context, it) }
                     deferred.complete(false)
                 }
                 deferred.await()
@@ -611,7 +647,7 @@ class AppRepository(private val context: Context,
                 cloudDB.collection("RegistroDeAsistencia")
                     .document(firebaseAuth.currentUser!!.uid).get()
                     .addOnFailureListener{
-                        mostrarToastEnMainThread(context, "Error al obtener el registro de asistencia")
+                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia")
                         deferred.complete(registroTrayectoVolantero)
                     }
                     .addOnSuccessListener{
@@ -748,7 +784,7 @@ class AppRepository(private val context: Context,
 
                 cloudDB.collection("RegistroDeAsistencia").get()
                     .addOnFailureListener {
-                        mostrarToastEnMainThread(context, "Error al obtener el registro de asistencia. Intentelo nuevamente.")
+                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia. Intentelo nuevamente.")
                         deferred.complete(mutableListOf())
                     }
                     .addOnSuccessListener{
@@ -821,7 +857,7 @@ class AppRepository(private val context: Context,
                             }
                         }
                         if(listaDeUsuariosYSuAsistencia.isEmpty()){
-                            mostrarToastEnMainThread(context, "No hay registros de asistencia en el rango de fechas seleccionado.")
+                            mostrarToastEnMainThreadWithHardcoreString(context, "No hay registros de asistencia en el rango de fechas seleccionado.")
                         }
                         deferred.complete(listaDeUsuariosYSuAsistencia)
                     }
@@ -835,10 +871,10 @@ class AppRepository(private val context: Context,
                 val deferred = CompletableDeferred<Boolean>()
                 try {
                     val request = BonoPersonalApi.RETROFIT_SERVICE_BONOPERSONAL.ingresarBono(volanteroId, bono, mes, anio).await()
-                    mostrarToastEnMainThread(context, request.msg)
+                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
                     deferred.complete(true)
                 }catch(e:Exception){
-                    mostrarToastEnMainThread(context, e.message?: "Error al agregar bono personal al volantero.")
+                    mostrarToastEnMainThreadWithHardcoreString(context, e.message?: "Error al agregar bono personal al volantero.")
                     deferred.complete(false)
                 }
                 return@withContext deferred.await()
@@ -849,7 +885,7 @@ class AppRepository(private val context: Context,
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
-                mostrarToastEnMainThread(context, request.msg)
+                mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
             }
         }
     }
@@ -858,10 +894,10 @@ class AppRepository(private val context: Context,
             val deferred = CompletableDeferred<Boolean>()
             try {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
-                mostrarToastEnMainThread(context, request.msg+"\n"+"Espere mientras se actualiza la lista.")
+                mostrarToastEnMainThreadWithHardcoreString(context, request.msg+"\n"+"Espere mientras se actualiza la lista.")
                 deferred.complete(true)
             }catch(e:Exception){
-                mostrarToastEnMainThread(context,"Error al notificar al volantero que se le abastecio de material.")
+                mostrarToastEnMainThreadWithHardcoreString(context,"Error al notificar al volantero que se le abastecio de material.")
                 deferred.complete(false)
             }
             return@withContext deferred.await()

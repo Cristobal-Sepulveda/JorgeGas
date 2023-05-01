@@ -20,7 +20,7 @@
     <string name="perm_request_rationale">Para poder utilizar la aplicación debes aceptar el permiso de ubicación.</string>
     <string name="request_perm_again">ACEPTAR</string>
     <string name="dismiss">CANCELAR</string>
-    <string name="crear_nueva_cuenta">Crear cuentas</string>
+    <string name="crear_usuario">Crear Usuario</string>
     <string name="eliminar_cuenta">Eliminar cuenta</string>
     <string name="perfil">Perfil</string>
     <string name="administrar_cuentas">Administrar cuentas</string>
@@ -245,6 +245,15 @@
     <string name="elegir_volantero">Elegir volantero</string>
     <string name="atencion">Atención:</string>
     <string name="esta_seguro_que_desea_finalizar_su_jornada">¿Estas seguro que deseas finalizar tu jornada? Si lo haces, tu trayecto del día será borrado del celular y será enviado a la nube.</string>
+    <string name="error_email_ya_en_uso">El email ya se encuentra en uso en otra cuenta</string>
+    <string name="trasmision_detenida">Trasmisión detenida. Si tu jornada finalizo, no olvides registrar tu salida.</string>
+    <string name="trasmision_iniciada">Trasmisión de ubicación iniciada.</string>
+    <string name="error_en_dejar_estaactivo_en_false">El servicio no será desactivado debido a que no se ha podido configurar al usuario como inactivo en la nube. Intentelo Nuevamente.</string>
+    <string name="error_en_dejar_estaactivo_en_true">El servicio no será desactivado debido a que no se ha podido configurar al usuario como activo en la nube. Intentelo Nuevamente.</string>
+    <string name="trasmision_no_asist">Antes de iniciar la transmisión de tu ubicación debes marcar asistencia.</string>
+    <string name="falta_marcar_salida">Antes de cerrar sesión recuerda marcar tu salida de jornada.</string>
+    <string name="alerta_pidiendo_material">¿Estas seguro que necesitas pedir material?</string>
+    <string name="alerta_entregando_material">¿Estas seguro que ya entregaste el material?</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

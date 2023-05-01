@@ -60,7 +60,7 @@ fun bindStatusErrorCircularProgress(progressBar: ProgressBar, status: LiveData<C
             progressBar.visibility = View.GONE
         }
         else -> {
-            progressBar.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
         }
     }
 }

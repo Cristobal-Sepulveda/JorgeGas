@@ -21,7 +21,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="@dimen/space_big"
-            android:text="@string/crear_nueva_cuenta"
+            android:text="@string/crear_usuario"
             android:textSize="24sp"
             android:textColor="#3c3c3c"/>
 

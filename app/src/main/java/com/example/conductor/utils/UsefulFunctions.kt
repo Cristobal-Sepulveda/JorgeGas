@@ -4,8 +4,15 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 
-fun mostrarToastEnMainThread(context: Context, message: String){
+fun mostrarToastEnMainThreadWithHardcoreString(context: Context, message: String){
+    Handler(Looper.getMainLooper()).post {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+}
+
+fun showToastInMainThreadWithStringResource(context: Context, message: Int){
     Handler(Looper.getMainLooper()).post {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }

@@ -25,11 +25,9 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.lifecycle.Lifecycle
@@ -41,12 +39,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.conductor.data.AppDataSource
 import com.example.conductor.data.data_objects.dbo.UsuarioDBO
 import com.example.conductor.databinding.ActivityMainBinding
-import com.example.conductor.ui.estadoactual.EstadoActualFragment
 import com.example.conductor.ui.map.MapFragment
 import com.example.conductor.utils.Constants
 import com.example.conductor.utils.Constants.REQUEST_CAMERA_PERMISSION
 import com.example.conductor.utils.Constants.REQUEST_POST_NOTIFICATIONS_PERMISSION
 import com.example.conductor.utils.Constants.firebaseAuth
+import com.example.conductor.utils.showToastInMainThreadWithStringResource
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
@@ -209,6 +207,86 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
+    private fun checkingPermissionsSettings(resolve: Boolean = true) {
+        val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) permissions.plus(Manifest.permission.POST_NOTIFICATIONS)
+        val checkingPermissions = permissions.filter {
+            checkSelfPermission(it) == PackageManager.PERMISSION_DENIED
+        }
+
+        if (checkingPermissions.isNotEmpty()) {
+            val requestPermissionLauncher = registerForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()) { results ->
+                for (result in results) {
+                    if (!result.value && result.key == Manifest.permission.ACCESS_FINE_LOCATION) {
+                        Snackbar.make(
+                            binding.root,
+                            R.string.permission_denied_explanation,
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setAction(R.string.settings) {
+                            startActivityForResult(Intent().apply {
+                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                data = Uri.fromParts("package", packageName, null)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            }, 1001)
+                        }.show()
+                        break
+                    }
+                }
+            }
+
+            if (checkingPermissions.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Permiso de ubicación")
+                    .setMessage(R.string.aviso_de_permiso)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        requestPermissionLauncher.launch(checkingPermissions.toTypedArray())
+                    }
+                    .show()
+            } else {
+                requestPermissionLauncher.launch(checkingPermissions.toTypedArray())
+            }
+        }
+    }
+
+    private fun checkingDeviceLocationSettings(resolve: Boolean = true) {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            val locationRequest = LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                30000
+            ).apply {
+                setMinUpdateDistanceMeters(100f)
+                setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+                setWaitForAccurateLocation(true)
+            }.build()
+
+            val locationSettingsRequest = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+                .setNeedBle(true)
+                .build()
+
+            val clientLocationSettings = LocationServices
+                .getSettingsClient(this)
+                .checkLocationSettings(locationSettingsRequest)
+
+            clientLocationSettings.addOnSuccessListener { }
+            clientLocationSettings.addOnFailureListener {
+                if (it is ResolvableApiException && resolve) {
+                    try {
+                        it.startResolutionForResult(this, Constants.REQUEST_TURN_DEVICE_LOCATION_ON)
+                    } catch (sendEx: IntentSender.SendIntentException) {
+                        Log.d(
+                            "MainActivity", "Error getting location settings resolution: " +
+                                    "${sendEx.message}"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private suspend fun validarToken(){
         if(!dataSource.validarTokenDeSesion()){
             launchLogoutFlow()
@@ -300,97 +378,9 @@ class MainActivity : AppCompatActivity(), MenuProvider {
         }
     }
 
-    private fun checkingPermissionsSettings(resolve: Boolean = true) {
-        val permissionsToRequest = mutableListOf<String>()
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            permissionsToRequest.add(Manifest.permission.CAMERA)
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-
-        if (permissionsToRequest.isNotEmpty()) {
-            val requestPermissionLauncher = registerForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()) { results ->
-
-                for (result in results) {
-                    if (!result.value && result.key == Manifest.permission.ACCESS_FINE_LOCATION) {
-                        Snackbar.make(
-                            binding.root,
-                            R.string.permission_denied_explanation,
-                            Snackbar.LENGTH_INDEFINITE
-                        ).setAction(R.string.settings) {
-                            startActivityForResult(Intent().apply {
-                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                data = Uri.fromParts("package", packageName, null)
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            }, 1001)
-                        }.show()
-                        break
-                    }
-                }
-            }
-
-            if (permissionsToRequest.contains(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog.Builder(this)
-                    .setTitle("Permiso de ubicación")
-                    .setMessage(R.string.aviso_de_permiso)
-                    .setPositiveButton(android.R.string.ok) { _, _ ->
-                        requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
-                    }
-                    .show()
-            } else {
-                requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
-            }
-        }
-    }
-
-    private fun checkingDeviceLocationSettings(resolve: Boolean = true) {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            val locationRequest = LocationRequest.Builder(
-                Priority.PRIORITY_HIGH_ACCURACY,
-                30000
-            ).apply {
-                setMinUpdateDistanceMeters(100f)
-                setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
-                setWaitForAccurateLocation(true)
-            }.build()
-
-            val locationSettingsRequest = LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest)
-                .setNeedBle(true)
-                .build()
-
-            val clientLocationSettings = LocationServices
-                .getSettingsClient(this)
-                .checkLocationSettings(locationSettingsRequest)
-
-            clientLocationSettings.addOnSuccessListener { }
-            clientLocationSettings.addOnFailureListener {
-                if (it is ResolvableApiException && resolve) {
-                    try {
-                        it.startResolutionForResult(this, Constants.REQUEST_TURN_DEVICE_LOCATION_ON)
-                    } catch (sendEx: IntentSender.SendIntentException) {
-                        Log.d(
-                            "MainActivity", "Error getting location settings resolution: " +
-                                    "${sendEx.message}"
-                        )
-                    }
-                }
-            }
-        }
-    }
 
     private suspend fun launchLogoutFlow() {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork = connectivityManager.activeNetworkInfo
         //aquí chequeo si hay internet
         if (activeNetwork != null && activeNetwork.isConnectedOrConnecting) {
@@ -405,95 +395,35 @@ class MainActivity : AppCompatActivity(), MenuProvider {
     }
 
     private suspend fun logout() {
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                var continueLogout = true
-                val user = dataSource.obtenerUsuariosDesdeSqlite()
-                if(user.isEmpty()){
-                    withContext(Dispatchers.IO) {
-                        dataSource.eliminarUsuariosEnSqlite()
-                        FirebaseAuth.getInstance().signOut()
-                        this@MainActivity.finish()
-                        startActivity(
-                            Intent(
-                                this@MainActivity,
-                                AuthenticationActivity::class.java
-                            )
-                        )
-                    }
-                    return@withContext
+        lifecycleScope.launch(Dispatchers.IO) {
+            val user = dataSource.obtenerUsuariosDesdeSqlite()
+            Log.e("logout", "iniciando: $user")
+            if(user.isEmpty()){
+                firebaseAuth.signOut()
+                this@MainActivity.finish()
+                startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+                return@launch
+            }
+            if (user.first().rol == "Volantero") {
+                if(dataSource.obtenerEnvioRegistroDeTrayecto().isNotEmpty()){
+                    showToastInMainThreadWithStringResource(this@MainActivity,
+                        R.string.falta_marcar_salida)
+                    return@launch
                 }
+            }
 
-                if (user.first().rol.isNotEmpty() && user.first().rol == "Volantero") {
-
-                    val registroTrayectoVolanterosUsuario = cloudDB
-                        .collection("RegistroTrayectoVolanteros")
-                        .document(firebaseAuth.currentUser!!.uid)
-                        .get()
-
-                    registroTrayectoVolanterosUsuario.addOnSuccessListener { document ->
-                        if (document.exists() && document.data!!["estaActivo"] as Boolean) {
-                            val docRef = cloudDB.collection("RegistroTrayectoVolanteros")
-                                .document(firebaseAuth.currentUser!!.uid)
-                                .update("estaActivo", false)
-
-                            docRef.addOnFailureListener {
-                                continueLogout = false
-                                Snackbar.make(
-                                    binding.root,
-                                    it.message.toString(),
-                                    Snackbar.LENGTH_LONG
-                                ).show()
-                            }
-                        }
-                    }
-
-                    registroTrayectoVolanterosUsuario.addOnFailureListener {
-                        continueLogout = false
-                        Snackbar.make(binding.root, it.message.toString(), Snackbar.LENGTH_LONG)
-                            .show()
-                    }
-                }
-
-
-                if (continueLogout) {
-                    val docRef = cloudDB.collection("Usuarios")
-                        .document(firebaseAuth.currentUser!!.uid)
-                        .update("sesionActiva", false)
-
-                    docRef.addOnFailureListener() {
-                        continueLogout = false
-                        Snackbar.make(binding.root, it.message.toString(), Snackbar.LENGTH_LONG)
-                            .show()
-                    }
-
-                    docRef.addOnSuccessListener {
-                        lifecycleScope.launch {
-                            withContext(Dispatchers.IO) {
-                                // When a user logs out
-                                FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        lifecycleScope.launch {
-                                            withContext(Dispatchers.IO) {
-                                                if(dataSource.eliminandoTokenDeFCMEnFirestore()){
-                                                    dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
-                                                    dataSource.eliminarUsuariosEnSqlite()
-                                                    FirebaseAuth.getInstance().signOut()
-                                                    this@MainActivity.finish()
-                                                    startActivity(
-                                                        Intent(
-                                                            this@MainActivity,
-                                                            AuthenticationActivity::class.java
-                                                        )
-                                                    )
-                                                    Log.i("MyFirebaseMsgService", "Remove the FCM token from your backend server")
-                                                }
-                                            }
-                                        }
-                                        // Remove the FCM token from your backend server
-
-                                    }
-                                }
+            if(dataSource.cambiarValorDeSesionActivaEnFirestore(false)){
+                FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            if(dataSource.eliminandoTokenDeFCMEnFirestore()){
+                                dataSource.eliminarInstanciaDeEnvioRegistroDeTrayecto()
+                                dataSource.eliminarUsuariosEnSqlite()
+                                firebaseAuth.signOut()
+                                this@MainActivity.finish()
+                                startActivity(
+                                    Intent(this@MainActivity, AuthenticationActivity::class.java)
+                                )
                             }
                         }
                     }

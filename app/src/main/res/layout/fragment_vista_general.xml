@@ -554,7 +554,7 @@
                 />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_vistaGeneral_registroJornadaVolantero"
+                android:id="@+id/fab_vistaGeneral_volanteroIniciarODetenerTrasmision"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 app:layout_constraintStart_toStartOf="parent"
