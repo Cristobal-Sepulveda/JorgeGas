@@ -273,6 +273,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 View.VISIBLE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
         }
+
         /* Volantero card options*/
         _binding!!.textViewVistaGeneralGestionDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
@@ -297,6 +298,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         }
         /***********/
 
+
+
         /*Volantero*/
         /* ClickListener's Volanteros*/
 
@@ -315,6 +318,10 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 }
             }
         }
+        _binding!!.textViewVistaGeneralUiVolanteroVerDetalleBonos.setOnClickListener{
+            findNavController().navigate(VistaGeneralFragmentDirections.actionNa())
+        }
+
         /*Observers*/
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
@@ -556,16 +563,11 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     private fun updateButtonState(trackingLocation: Boolean) {
         if (trackingLocation) {
             _viewModel.editarBotonVolantero(true)
-            _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setBackgroundColor(
-                Color.argb(100, 255, 0, 0)
-            )
         } else {
             _viewModel.editarBotonVolantero(false)
-            _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setBackgroundColor(
-                Color.argb(100, 0, 255, 0)
-            )
         }
     }
+
     private fun iniciarSnapshotListenerDelDocumentoDelUsuarioEnRegistroTrayectoVolanteros(){
         val docRef = cloudDB
             .collection("RegistroTrayectoVolanteros")

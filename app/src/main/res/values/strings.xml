@@ -257,6 +257,9 @@
     <string name="fondo_tablero_volantero">Fondo tablero volantero</string>
     <string name="iniciar_trayecto">Iniciar trayecto</string>
     <string name="solicitar_material">Solicitar material</string>
+    <string name="dias_trabajados_sin_salto">Días trabajados</string>
+    <string name="ver_m_s">Ver más</string>
+    <string name="bonos">Bonos</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

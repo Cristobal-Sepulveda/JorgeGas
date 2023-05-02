@@ -1,6 +1,5 @@
 package com.example.conductor.utils
 
-
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
@@ -105,21 +104,11 @@ fun bindBotonIniciarODetenerRegistroVolantero(fab: FloatingActionButton, status:
     when (status?.value) {
         true -> {
             fab.setImageResource(R.drawable.baseline_stop_24)
-            fab.setBackgroundColor(Color.argb(
-                100,
-                255,
-                0,
-                0
-            ))
+            fab.setBackgroundColor(ContextCompat.getColor(fab.context, R.color.red))
         }
         false -> {
             fab.setImageResource(R.drawable.baseline_directions_walk_24)
-            fab.setBackgroundColor(Color.argb(
-                100,
-                0,
-                255,
-                0
-            ))
+            fab.setBackgroundColor(ContextCompat.getColor(fab.context, R.color.green))
         }
         else -> {
             fab.setImageResource(R.drawable.baseline_directions_walk_24)

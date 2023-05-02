@@ -444,10 +444,141 @@
                 app:layout_constraintEnd_toEndOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
                 app:layout_constraintTop_toTopOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
                 app:layout_constraintBottom_toBottomOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
-                app:fabCustomSize="100dp"
+                app:fabCustomSize="48dp"
                 android:elevation="3dp"
+                android:backgroundTint="@color/green"
                 android:contentDescription="@string/iniciar_trasmisi_n"
                 app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}"/>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView_vistaGeneral_uiVolantero_diasTrabajados"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/materialCardView_vistaGeneral_uiVolantero_sueldo"
+                app:layout_constraintBottom_toTopOf="@id/materialCardView_vistaGeneral_informacionVolantero"
+                android:background="@color/white"
+                android:layout_marginBottom="@dimen/space_small"
+                android:layout_marginStart="@dimen/space_small"
+                >
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginVertical="@dimen/space_very_small"
+                    >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_calendar_today_24_orange"
+                        android:contentDescription="@string/dias_trabajados"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dias_trabajados_sin_salto"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textSize="14sp"
+                        android:textAlignment="center"
+                        />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="26 / 31"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView_vistaGeneral_uiVolantero_sueldo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/materialCardView_vistaGeneral_uiVolantero_diasTrabajados"
+                app:layout_constraintEnd_toStartOf="@id/materialCardView_vistaGeneral_uiVolantero_bono"
+                app:layout_constraintBottom_toTopOf="@id/materialCardView_vistaGeneral_informacionVolantero"
+                android:layout_marginStart="@dimen/space_small"
+                android:layout_marginEnd="@dimen/space_small"
+                android:layout_marginBottom="@dimen/space_small"
+                android:background="@color/white">
+
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginVertical="@dimen/space_very_small">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_attach_money_24"
+                        android:contentDescription="@string/sueldo"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sueldo"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textSize="14sp"
+                        android:textAlignment="center"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="$1000000"
+                        android:textAlignment="center"
+                        />
+            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView_vistaGeneral_uiVolantero_bono"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/materialCardView_vistaGeneral_uiVolantero_sueldo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/materialCardView_vistaGeneral_informacionVolantero"
+                android:layout_marginEnd="@dimen/space_small"
+                android:layout_marginBottom="@dimen/space_small"
+                android:background="@color/white">
+
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginVertical="@dimen/space_very_small"
+                    >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_card_giftcard_24"
+                        android:contentDescription="@string/sueldo"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bonos"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        android:textSize="14sp"
+                        android:textAlignment="center"
+                        />
+                    <TextView
+                        android:id="@+id/textView_vistaGeneral_uiVolantero_verDetalleBonos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ver_m_s"
+                        android:textColor="@color/hiperlink"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView_vistaGeneral_informacionVolantero"
@@ -459,8 +590,9 @@
                 app:cardElevation="2dp"
                 android:background="@drawable/card_borders"
                 style="?attr/materialCardViewElevatedStyle">
+
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:layout_marginEnd="@dimen/space_very_small"
@@ -673,5 +805,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
