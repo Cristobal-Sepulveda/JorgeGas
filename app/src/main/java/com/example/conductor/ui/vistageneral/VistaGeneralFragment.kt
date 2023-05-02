@@ -303,6 +303,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setOnClickListener {
             iniciarODetenerLocationService()
         }
+
         _binding!!.fabVistaGeneralSinMaterial.setOnClickListener {
             lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread(
                 requireContext(),
@@ -410,10 +411,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // Updates button states if new while in use location is added to SharedPreferences.
         if (key == SharedPreferenceUtil.KEY_FOREGROUND_ENABLED) {
-            updateButtonState(
-                sharedPreferences!!.getBoolean(
-                    SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false
-                )
+            updateButtonState(sharedPreferences!!.getBoolean(SharedPreferenceUtil.KEY_FOREGROUND_ENABLED, false)
             )
         }
     }

@@ -254,6 +254,9 @@
     <string name="falta_marcar_salida">Antes de cerrar sesión recuerda marcar tu salida de jornada.</string>
     <string name="alerta_pidiendo_material">¿Estas seguro que necesitas pedir material?</string>
     <string name="alerta_entregando_material">¿Estas seguro que ya entregaste el material?</string>
+    <string name="fondo_tablero_volantero">Fondo tablero volantero</string>
+    <string name="iniciar_trayecto">Iniciar trayecto</string>
+    <string name="solicitar_material">Solicitar material</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

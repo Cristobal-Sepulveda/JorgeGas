@@ -383,14 +383,81 @@
             android:visibility="gone"
             tools:visibility="visible">
 
+
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="@dimen/space_small"
+                android:src="@drawable/footer_tablero_volantero"
+                android:contentDescription="@string/fondo_tablero_volantero"
+                android:elevation="1dp"
+                />
+
+            <TextView
+                android:id="@+id/linearLayout_vistaGeneral_uiVolantero_textViewBotonTransmitir"
+                android:layout_width="102dp"
+                android:layout_height="40dp"
+                android:text="@string/iniciar_trayecto"
+                android:textSize="9sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="@dimen/space_big"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:background="@color/white"
+                android:elevation="2dp"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/materialCardView_vistaGeneral_informacionVolantero"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:backgroundTint="@color/white"
+                app:fabCustomSize="100dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="3dp"
+                android:contentDescription="@string/iniciar_trasmisi_n" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:layout_constraintStart_toStartOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
+                app:layout_constraintEnd_toEndOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
+                app:layout_constraintTop_toTopOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
+                app:layout_constraintBottom_toBottomOf="@id/fab_vistaGeneral_volantero_iniciarODetenerTrasmision_container"
+                app:fabCustomSize="100dp"
+                android:elevation="3dp"
+                android:contentDescription="@string/iniciar_trasmisi_n"
+                app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}"/>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView_vistaGeneral_informacionVolantero"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:cardElevation="1dp"
-                android:background="@drawable/bottom_left_border"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:cardElevation="2dp"
+                android:background="@drawable/card_borders"
                 style="?attr/materialCardViewElevatedStyle">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -539,45 +606,49 @@
 
                 </LinearLayout>
 
-
             </com.google.android.material.card.MaterialCardView>
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintStart_toStartOf="parent"
+            <TextView
+                android:id="@+id/linearLayout_vistaGeneral_uiVolantero_textViewBotonPedirMaterial"
+                android:layout_width="102dp"
+                android:layout_height="40dp"
+                android:text="@string/solicitar_material"
+                android:textSize="9sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="@dimen/space_big"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:background="@color/white"
+                android:elevation="2dp"
                 />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_vistaGeneral_volanteroIniciarODetenerTrasmision"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/fab_vistaGeneral_sinMaterial_container"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/materialCardView_vistaGeneral_informacionVolantero"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/space_medium"
-                app:backgroundTint="@color/green"
+                app:backgroundTint="@color/white"
                 app:fabCustomSize="100dp"
-                android:contentDescription="@string/iniciar_turno"
-                app:botonIniciarODetenerRegistroVolantero="@{viewModel.botonVolantero}" />
+                android:layout_marginBottom="12dp"
+                android:elevation="3dp"
+                android:contentDescription="@string/iniciar_trasmisi_n" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_vistaGeneral_sinMaterial"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/space_medium"
-                android:layout_marginEnd="@dimen/space_medium"
-                app:backgroundTint="@color/orange"
+                app:layout_constraintStart_toStartOf="@id/fab_vistaGeneral_sinMaterial_container"
+                app:layout_constraintEnd_toEndOf="@id/fab_vistaGeneral_sinMaterial_container"
+                app:layout_constraintTop_toTopOf="@id/fab_vistaGeneral_sinMaterial_container"
+                app:layout_constraintBottom_toBottomOf="@id/fab_vistaGeneral_sinMaterial_container"
+                app:backgroundTint="@color/green"
                 app:fabCustomSize="48dp"
                 android:src="@drawable/baseline_notifications_active_24"
                 android:contentDescription="@string/falta_material" />
+
             <ImageView
                 android:id="@+id/imageView_vistaGeneral_mapaSinPermisos"
                 android:layout_width="match_parent"
@@ -589,6 +660,7 @@
                 android:src="@drawable/mapa_sin_permisos"
                 android:visibility="gone"
                 android:contentDescription="@string/mapa_sin_permisos_autorizados" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--UI Call Center-->
