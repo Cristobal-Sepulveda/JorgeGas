@@ -33,7 +33,7 @@ import com.example.conductor.R
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
-import com.example.conductor.ui.DetalleBonosDeResponsabilidad
+import com.example.conductor.ui.detallebonosderesponsabilidad.DetalleBonosDeResponsabilidadDialogFragment
 import com.example.conductor.utils.*
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
@@ -61,6 +61,8 @@ import java.io.IOException
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenceChangeListener,
     OnMapReadyCallback {
@@ -274,7 +276,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 View.VISIBLE
             _binding!!.linearLayoutVistaGeneralCallCenterLinearLayoutAmpliado.visibility = View.GONE
         }
-
         /* Volantero card options*/
         _binding!!.textViewVistaGeneralGestionDeVolanterosInforme.setOnClickListener {
             _viewModel.navigationCommand.value =
@@ -303,11 +304,9 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
 
         /*Volantero*/
         /* ClickListener's Volanteros*/
-
         _binding!!.fabVistaGeneralVolanteroIniciarODetenerTrasmision.setOnClickListener {
             iniciarODetenerLocationService()
         }
-
         _binding!!.fabVistaGeneralSinMaterial.setOnClickListener {
             lanzarAlertaConConfirmacionYFuncionEnConsecuenciaEnMainThread(
                 requireContext(),
@@ -319,16 +318,24 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 }
             }
         }
-
         _binding!!.textViewVistaGeneralUiVolanteroVerDetalleBonos.setOnClickListener{
-            val showModal = DetalleBonosDeResponsabilidad()
+            val showModal = DetalleBonosDeResponsabilidadDialogFragment()
             showModal.show(requireActivity().supportFragmentManager, "DetalleBonosDeResponsabilidad")
         }
 
         /*Observers*/
+        _viewModel.diasTrabajados.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralUiVolanteroDiasTrabajados.text = it
+        }
+        _viewModel.sueldoAcumulado.observe(viewLifecycleOwner){
+            _binding!!.textViewVistaGeneralUiVolanteroSueldo.text =
+                String.format(Locale("es", "CL"), "\$%,d", it.toInt())
+        }
+
         _viewModel.distanciaTotalRecorrida.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralKilometros.text = it
         }
+
         _viewModel.tiempoTotalRecorridoVerde.observe(viewLifecycleOwner){
             _binding!!.textViewVistaGeneralVerde.text = it
         }
@@ -515,6 +522,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         lifecycleScope.launch {
             when (_viewModel.obtenerRolDelUsuarioActual()) {
                 "Volantero" -> {
+                    rellenarDiasTrabajadosYSueldoDelVolantero(firebaseAuth.currentUser!!.uid)
                     (childFragmentManager.findFragmentById(R.id.fragmentContainerView_vistaGeneral_mapa) as? SupportMapFragment)
                         ?.getMapAsync(this@VistaGeneralFragment)
                     fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -742,6 +750,12 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
         svg.setBounds(0, 0, canvas.width, canvas.height)
         svg.draw(canvas)
         return bitmap
+    }
+
+    private fun rellenarDiasTrabajadosYSueldoDelVolantero(id: String){
+        lifecycleScope.launch(Dispatchers.IO){
+            _viewModel.obtenerDiasTrabajadosYSueldoDelVolantero(id)
+        }
     }
     /************************/
 

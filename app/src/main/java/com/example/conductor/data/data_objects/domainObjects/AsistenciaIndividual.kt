@@ -9,7 +9,12 @@ import java.util.*
 data class AsistenciaIndividual(
     val fecha:String,
     val ingresoJornada: String,
-    val salidaJornada: String
+    val salidaJornada: String,
+    val tiempoEnVerde: String,
+    val tiempoEnAmarillo: String,
+    val tiempoEnRojo: String,
+    val tiempoEnAzul: String,
+    val tiempoEnRosado: String
 ) : Parcelable {
     fun longConverterToString(id: Long): String{
         return id.toString()

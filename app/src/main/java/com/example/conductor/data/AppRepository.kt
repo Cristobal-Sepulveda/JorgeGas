@@ -656,7 +656,12 @@ class AppRepository(private val context: Context,
                                 AsistenciaIndividual(
                                     "error",
                                     "error",
-                                    "error"
+                                    "error",
+                                    "error",
+                                    "error",
+                                    "error",
+                                    "error",
+                                    "error",
                                 )
                             )
                             deferred.complete(registroTrayectoVolantero)
@@ -669,7 +674,12 @@ class AppRepository(private val context: Context,
                                 AsistenciaIndividual(
                                     asistencia["fecha"] as String,
                                     asistencia["ingresoJornada"] as String,
-                                    asistencia["salidaJornada"] as String
+                                    asistencia["salidaJornada"] as String,
+                                    asistencia["tiempoEnVerde"] as String,
+                                    asistencia["tiempoEnAmarillo"] as String,
+                                    asistencia["tiempoEnRojo"] as String,
+                                    asistencia["tiempoEnAzul"] as String,
+                                    asistencia["tiempoEnRosado"] as String,
                                 )
                             )
                         }
@@ -966,4 +976,22 @@ class AppRepository(private val context: Context,
             }
         }
     }
+
+    override suspend fun obtenerMontoDelBonoDeResponsabilidad(): Int = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Int>()
+                cloudDB.collection("bonoDeResponsabilidad")
+                    .document("monto").get()
+                    .addOnFailureListener{
+                        deferred.complete(0)
+                    }
+                    .addOnSuccessListener{
+                        deferred.complete(it["monto"].toString().toInt())
+                    }
+                deferred.await()
+            }
+        }
+    }
+
 }

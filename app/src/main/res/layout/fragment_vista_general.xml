@@ -383,8 +383,6 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-
-
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragmentContainerView_vistaGeneral_mapa"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -473,21 +471,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/baseline_calendar_today_24_orange"
-                        android:contentDescription="@string/dias_trabajados"
+                        android:contentDescription="@string/dias_por_cobrar"
                         />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/dias_trabajados_sin_salto"
+                        android:text="@string/dias_por_cobrar"
                         android:textAppearance="?attr/textAppearanceHeadline6"
                         android:textSize="14sp"
                         android:textAlignment="center"
                         />
                     <TextView
+                        android:id="@+id/textView_vistaGeneral_uiVolantero_diasTrabajados"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="26 / 31"
                         android:textAlignment="center"
+                        android:text="0"
+                        tools:text="26 / 31"
                         />
                 </LinearLayout>
 
@@ -528,9 +528,10 @@
                         />
 
                     <TextView
+                        android:id="@+id/textView_vistaGeneral_uiVolantero_sueldo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="$1000000"
+                        android:text="$0"
                         android:textAlignment="center"
                         />
             </LinearLayout>
@@ -722,7 +723,6 @@
                             android:layout_height="12dp"
                             android:layout_marginTop="@dimen/space_small"
                             android:layout_marginStart="@dimen/space_very_small"
-                            android:layout_marginBottom="@dimen/space_small"
                             android:background="@drawable/baseline_directions_walk_24"
                             android:contentDescription="@string/kilometros"/>
 
@@ -735,7 +735,45 @@
                             tools:text="22.1k"/>
                     </LinearLayout>
 
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_height="1dp"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="@dimen/space_small" />
 
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:text="@string/rendimiento_mensual"
+                        android:textAlignment="center"
+                        android:textStyle="bold"
+                        android:textSize="8sp"
+                        android:layout_marginTop="@dimen/space_small"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/imageView_vistaGeneral_rendimiento"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_marginTop="@dimen/space_small"
+                            android:layout_marginStart="@dimen/space_very_small"
+                            android:layout_marginBottom="@dimen/space_small"
+                            android:background="@drawable/my_circle_drawable_verde"
+                            android:contentDescription="@string/kilometros"/>
+
+                        <TextView
+                            android:id="@+id/textView_vistaGeneral_rendimiento"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/space_very_small"
+                            android:text="76%"
+                            tools:text="22.1k"/>
+                    </LinearLayout>
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>

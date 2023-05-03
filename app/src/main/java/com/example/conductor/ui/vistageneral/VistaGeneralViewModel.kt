@@ -12,11 +12,15 @@ import com.example.conductor.data.data_objects.dbo.EnvioRegistroDeTrayectoDBO
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.data.data_objects.domainObjects.AsistenciaIndividual
 import com.example.conductor.ui.administrarcuentas.CloudRequestStatus
+import com.example.conductor.utils.Constants.sueldoBaseVolanteros
 import com.example.conductor.utils.changeUiStatusInMainThread
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
 class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,) : BaseViewModel(app) {
@@ -35,6 +39,14 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     private var _botonVolantero = MutableLiveData<Boolean>()
     val botonVolantero: LiveData<Boolean>
         get() = _botonVolantero
+
+    private var _diasTrabajados = MutableLiveData<String>()
+    val diasTrabajados: LiveData<String>
+        get() = _diasTrabajados
+
+    private var _sueldoAcumulado = MutableLiveData<String>()
+    val sueldoAcumulado: LiveData<String>
+        get() = _sueldoAcumulado
 
     private var _distanciaTotalRecorrida = MutableLiveData<String>()
     val distanciaTotalRecorrida: LiveData<String>
@@ -141,10 +153,12 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
         viewModelScope.launch {
             val colRef = dataSource.obtenerRegistroDeAsistenciaDeUsuario()
+
             if (colRef.isEmpty()) {
                 this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
                 return@launch
             }
+
             if(colRef.first().fecha == "error"){
                 Log.e("cargandoData", "al pedir el registro en cloud se descubrio que aun no hay uno existente")
                 this@VistaGeneralViewModel.changeUiStatusInMainThread(_status, CloudRequestStatus.DONE)
@@ -174,20 +188,21 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
     suspend fun registrarSalidaDeJornada() {
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
         if(tiempoTotalRecorridoVerde.value == null){
-            _tiempoTotalRecorridoVerde.value = "00:00:00"
+            _tiempoTotalRecorridoVerde.postValue("00:00:00")
         }
         if(tiempoTotalRecorridoAmarillo.value == null){
-            _tiempoTotalRecorridoAmarillo.value = "00:00:00"
+            _tiempoTotalRecorridoAmarillo.postValue("00:00:00")
         }
         if(tiempoTotalRecorridoRojo.value == null){
-            _tiempoTotalRecorridoRojo.value = "00:00:00"
+            _tiempoTotalRecorridoRojo.postValue("00:00:00")
         }
         if(tiempoTotalRecorridoAzul.value == null){
-            _tiempoTotalRecorridoAzul.value = "00:00:00"
+            _tiempoTotalRecorridoAzul.postValue("00:00:00")
         }
         if(tiempoTotalRecorridoRosado.value == null){
-            _tiempoTotalRecorridoRosado.value = "00:00:00"
+            _tiempoTotalRecorridoRosado.postValue("00:00:00")
         }
+
         viewModelScope.launch(Dispatchers.IO){
             if(dataSource.registrarSalidaDeJornada(tiempoTotalRecorridoVerde.value.toString(),
                     tiempoTotalRecorridoAmarillo.value.toString(),
@@ -215,6 +230,39 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
 
     suspend fun obtenerEnvioRegistroDeTrayecto(): List<EnvioRegistroDeTrayectoDBO> {
         return dataSource.obtenerEnvioRegistroDeTrayecto()
+    }
+
+    suspend fun obtenerDiasTrabajadosYSueldoDelVolantero(id: String){
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        viewModelScope.launch{
+            val listadoDeAsistencia = dataSource.obtenerRegistroDeAsistenciaDeUsuario()
+            if (listadoDeAsistencia.isEmpty() || listadoDeAsistencia.first().fecha == "error") {
+                Log.e("obtenerMesEnCurso", obtenerMesEnCurso())
+                return@launch
+            }else{
+                Log.e("obtenerMesEnCurso", obtenerMesEnCurso())
+                val mesActual = obtenerMesEnCurso()
+                val auxListadoDeAsistencia = listadoDeAsistencia.filter { it.fecha.split("-")[1] == mesActual}
+                _diasTrabajados.value = (auxListadoDeAsistencia.size).toString()
+                _sueldoAcumulado.value = (auxListadoDeAsistencia.size * sueldoBaseVolanteros).toString()
+                val tiempoTotal = 0
+                auxListadoDeAsistencia.forEach{
+                    it.tiempoEnVerde.let { tiempoTotal.plus(it.toInt()) }
+                    it.tiempoEnAmarillo.let { tiempoTotal.plus(it.toInt()) }
+                    it.tiempoEnRojo.let { tiempoTotal.plus(it.toInt()) }
+                    it.tiempoEnAzul.let { tiempoTotal.plus(it.toInt()) }
+                    it.tiempoEnRosado.let { tiempoTotal.plus(it.toInt()) }
+                }
+            }
+        }
+
+    }
+    private fun obtenerMesEnCurso(): String{
+        val chileZoneId = ZoneId.of("America/Santiago")
+        val chileDateTime = LocalDateTime.now(chileZoneId)
+        val formatter = DateTimeFormatter.ofPattern("MM")
+        Log.e("obtenerMesEnCurso", chileDateTime.format(formatter))
+        return chileDateTime.format(formatter)
     }
 }
 

@@ -18,6 +18,7 @@ object Constants {
     const val NOTIFICATION_CHANNEL_ID = "jorge_gas_empresa"
     //const val backend_url = "http://192.168.1.138:8080"
     const val backend_url = "https://ahora-si-2-dkc7p57skq-tl.a.run.app"
+    const val sueldoBaseVolanteros = 10000
 }
 
 
