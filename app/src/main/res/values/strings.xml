@@ -263,6 +263,15 @@
     <string name="ingrese_monto_del_bono_de_responsabilidad">Ingrese monto del bono de responsabilidad</string>
     <string name="bono_responsabilidad_agregado_correctamente">Bono de responsabilidad ingresado con exito.</string>
     <string name="bono_responsabilidad_agregado_error">Ha ocurrido un error al ingresar el bono de responsabilidad. Intentelo nuevamente</string>
+    <string name="bonos_de_responsabilidad">Bonos de\nresponsabilidad</string>
+    <string name="boton_volver">volver</string>
+    <string name="jorge_coin">Jorge Coin</string>
+    <string name="bono_1">Bono 1</string>
+    <string name="descripcion_bono_1">Este bono se te otorgará si asistes a lo menos 26 días y siempre que tengas un 80% o mas de rendimiento en verde</string>
+    <string name="bono_2">Bono 2</string>
+    <string name="descripcion_bono_2">Este bono se te otorgará si asistes entre 20 a 25 días y siempre que tengas un 80% o mas de rendimiento en verde</string>
+    <string name="bono_3">Bono 3</string>
+    <string name="descripcion_bono_3">Este bono se te otorgará si asistes a lo menos 20 días y siempre que tengas un 70% o mas de rendimiento en verde</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

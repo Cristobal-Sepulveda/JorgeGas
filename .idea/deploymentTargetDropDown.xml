@@ -6,12 +6,12 @@
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="ZY32GDMV4J" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\maico\.android\avd\Pixel_3a_API_33.avd" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2023-05-03T16:31:17.126633300Z" />
+    <timeTargetWasSelectedWithDropDown value="2023-05-03T16:46:15.120002300Z" />
   </component>
 </project>

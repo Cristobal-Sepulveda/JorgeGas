@@ -319,6 +319,7 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
                 }
             }
         }
+
         _binding!!.textViewVistaGeneralUiVolanteroVerDetalleBonos.setOnClickListener{
             val showModal = DetalleBonosDeResponsabilidad()
             showModal.show(requireActivity().supportFragmentManager, "DetalleBonosDeResponsabilidad")
@@ -424,7 +425,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             )
         }
     }
-
 
     /*General functions*/
     private fun startingPermissionCheck() {
@@ -569,7 +569,6 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             _viewModel.editarBotonVolantero(false)
         }
     }
-
     private fun iniciarSnapshotListenerDelDocumentoDelUsuarioEnRegistroTrayectoVolanteros(){
         val docRef = cloudDB
             .collection("RegistroTrayectoVolanteros")

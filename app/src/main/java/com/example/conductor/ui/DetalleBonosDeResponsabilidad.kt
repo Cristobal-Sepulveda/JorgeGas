@@ -16,7 +16,7 @@ class DetalleBonosDeResponsabilidad: DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogFragmentDetalleBonosDeResponsabilidadBinding.inflate(inflater, container, false)
 
-        _binding!!.buttonDetalleBonosDeResponsabilidadVolver.setOnClickListener {
+        _binding!!.imageViewDetalleBonosDeResponsabilidadVolver.setOnClickListener {
             dismiss()
         }
 
