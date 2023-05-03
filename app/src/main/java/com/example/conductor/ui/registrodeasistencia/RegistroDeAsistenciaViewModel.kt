@@ -1,7 +1,6 @@
 package com.example.conductor.ui.registrodeasistencia
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.conductor.data.AppDataSource
@@ -40,6 +39,18 @@ class RegistroDeAsistenciaViewModel(val app: Application, val dataSource: AppDat
             obtenerRegistroDeAsistenciaYMostrarloComoExcel(mes, anio)
         }else{
             this.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+        }
+    }
+
+    suspend fun agregarBonoDeResponsabilidad(bonoDeResponsabilidad: String, mes: String, anio: String):Boolean{
+        this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        val task = dataSource.agregarBonoDeResponsabilidad(bonoDeResponsabilidad)
+        return if(task){
+            obtenerRegistroDeAsistenciaYMostrarloComoExcel(mes, anio)
+            true
+        }else{
+            this.changeUiStatusInMainThread(_status, CloudRequestStatus.ERROR)
+            false
         }
     }
     fun vaciarRecyclerView(){

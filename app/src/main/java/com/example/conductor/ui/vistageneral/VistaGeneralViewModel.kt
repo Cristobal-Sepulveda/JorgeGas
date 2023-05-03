@@ -173,6 +173,21 @@ class VistaGeneralViewModel(val app: Application, val dataSource: AppDataSource,
 
     suspend fun registrarSalidaDeJornada() {
         this.changeUiStatusInMainThread(_status, CloudRequestStatus.LOADING)
+        if(tiempoTotalRecorridoVerde.value == null){
+            _tiempoTotalRecorridoVerde.value = "00:00:00"
+        }
+        if(tiempoTotalRecorridoAmarillo.value == null){
+            _tiempoTotalRecorridoAmarillo.value = "00:00:00"
+        }
+        if(tiempoTotalRecorridoRojo.value == null){
+            _tiempoTotalRecorridoRojo.value = "00:00:00"
+        }
+        if(tiempoTotalRecorridoAzul.value == null){
+            _tiempoTotalRecorridoAzul.value = "00:00:00"
+        }
+        if(tiempoTotalRecorridoRosado.value == null){
+            _tiempoTotalRecorridoRosado.value = "00:00:00"
+        }
         viewModelScope.launch(Dispatchers.IO){
             if(dataSource.registrarSalidaDeJornada(tiempoTotalRecorridoVerde.value.toString(),
                     tiempoTotalRecorridoAmarillo.value.toString(),

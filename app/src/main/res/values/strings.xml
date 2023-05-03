@@ -260,6 +260,9 @@
     <string name="dias_trabajados_sin_salto">Días trabajados</string>
     <string name="ver_m_s">Ver más</string>
     <string name="bonos">Bonos</string>
+    <string name="ingrese_monto_del_bono_de_responsabilidad">Ingrese monto del bono de responsabilidad</string>
+    <string name="bono_responsabilidad_agregado_correctamente">Bono de responsabilidad ingresado con exito.</string>
+    <string name="bono_responsabilidad_agregado_error">Ha ocurrido un error al ingresar el bono de responsabilidad. Intentelo nuevamente</string>
     <!--String arrays-->
     <string-array name="roles">
         <item>Administrador</item>

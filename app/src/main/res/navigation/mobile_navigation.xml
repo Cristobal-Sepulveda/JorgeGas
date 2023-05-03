@@ -23,9 +23,7 @@
         <action
             android:id="@+id/action_navigation_vista_general_to_navigation_cantidad_de_balones"
             app:destination="@id/navigation_cantidad_de_balones" />
-        <action
-            android:id="@+id/action_navigation_vista_general_to_navigation_detalle_bonos_de_responsabilidad"
-            app:destination="@id/navigation_detalle_bonos_de_responsabilidad"/>
+
     </fragment>
 
     <fragment
@@ -167,15 +165,6 @@
             app:destination="@id/navigation_cantidad_de_balones"
             app:popUpTo="@id/navigation_cantidad_de_balones"
             app:popUpToInclusive="true" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/navigation_detalle_bonos_de_responsabilidad"
-        android:name="com.example.conductor.ui.DetalleBonosDeResponsabilidad"
-        android:label="DetalleBonosDeResponsabilidad">
-        <action
-            android:id="@+id/action_navigation_detalle_bonos_de_responsabilidad_to_navigation_vista_general"
-            app:destination="@id/navigation_vista_general"/>
     </fragment>
 
 </navigation>

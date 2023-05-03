@@ -37,7 +37,7 @@ import com.example.conductor.data.network.DistanceMatrixApi
 import com.example.conductor.data.network.DistanceMatrixResponse
 import com.example.conductor.data.data_objects.dto.JornadaRequest
 import com.example.conductor.utils.convertirMesDeTextoStringANumeroString
-import com.example.conductor.utils.mostrarToastEnMainThreadWithHardcoreString
+import com.example.conductor.utils.showToastInMainThreadWithHardcoreString
 import com.example.conductor.utils.showToastInMainThreadWithStringResource
 import com.example.conductor.utils.sumarEntreDosTiemposQueVienenComoString
 import com.google.firebase.firestore.DocumentSnapshot
@@ -103,7 +103,7 @@ class AppRepository(private val context: Context,
                     .update("sesionActiva", boolean)
                     .addOnFailureListener {
                         it.message?.let { it1 ->
-                            mostrarToastEnMainThreadWithHardcoreString(context,
+                            showToastInMainThreadWithHardcoreString(context,
                                 it1
                             )
                         }
@@ -340,7 +340,7 @@ class AppRepository(private val context: Context,
                     .document(firebaseAuth.currentUser!!.uid)
                     .update("fotoPerfil", fotoPerfil)
                     .addOnFailureListener {
-                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al actualizar la foto de perfil")
+                        showToastInMainThreadWithHardcoreString(context, "Error al actualizar la foto de perfil")
                         deferred.complete(false)
                     }
                     .addOnSuccessListener {
@@ -373,7 +373,7 @@ class AppRepository(private val context: Context,
                 var deboContinuar = true
 
                 if(listOfLatLngsYHoraActualDBO.isEmpty()){
-                    mostrarToastEnMainThreadWithHardcoreString(context, "Antes de cerrar jornada debes de caminar.")
+                    showToastInMainThreadWithHardcoreString(context, "Antes de cerrar jornada debes de caminar.")
                     deboContinuar = false
                     deferred.complete(false)
                 }
@@ -493,7 +493,7 @@ class AppRepository(private val context: Context,
                     jwtDao.guardarJwt(JwtDBO(token))
                     deferred.complete(token)
                 }catch(e:Exception){
-                    mostrarToastEnMainThreadWithHardcoreString(context, "Error al solicitar el token de sesión")
+                    showToastInMainThreadWithHardcoreString(context, "Error al solicitar el token de sesión")
                     deferred.complete("error")
                 }
                 return@withContext deferred.await()
@@ -586,11 +586,11 @@ class AppRepository(private val context: Context,
                     if(envioRegistroDeTrayectoDao.obtenerEnvioRegistroDeTrayecto().isEmpty()){
                         envioRegistroDeTrayectoDao.guardarEnvioRegistroDeTrayecto(EnvioRegistroDeTrayectoDBO(false))
                     }
-                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
+                    showToastInMainThreadWithHardcoreString(context, request.msg)
                     deferred.complete(true)
                 } catch(e: HttpException){
                     val msg = e.response()?.errorBody()?.string()?.let { JSONObject(it).get("msg") }?: ""
-                    mostrarToastEnMainThreadWithHardcoreString(context, msg.toString())
+                    showToastInMainThreadWithHardcoreString(context, msg.toString())
                     if(msg.toString().contains("Usted ya inicio jornada") || msg.toString().contains("a menos de 500 metros")){
                         deferred.complete(true)
                     }else{
@@ -626,12 +626,12 @@ class AppRepository(private val context: Context,
                         tiempoEnAzul,
                         tiempoEnRosado).await()
 
-                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
+                    showToastInMainThreadWithHardcoreString(context, request.msg)
                     envioRegistroDeTrayectoDao.eliminarEnvioRegistroDeTrayecto()
                     deferred.complete(true)
                 } catch(e: HttpException){
                     Log.e("RegistrarSalidaDeJornada", "RegistrarSalidaDeJornada")
-                    e.response()?.errorBody()?.string()?.let { mostrarToastEnMainThreadWithHardcoreString(context, it) }
+                    e.response()?.errorBody()?.string()?.let { showToastInMainThreadWithHardcoreString(context, it) }
                     deferred.complete(false)
                 }
                 deferred.await()
@@ -647,7 +647,7 @@ class AppRepository(private val context: Context,
                 cloudDB.collection("RegistroDeAsistencia")
                     .document(firebaseAuth.currentUser!!.uid).get()
                     .addOnFailureListener{
-                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia")
+                        showToastInMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia")
                         deferred.complete(registroTrayectoVolantero)
                     }
                     .addOnSuccessListener{
@@ -784,7 +784,7 @@ class AppRepository(private val context: Context,
 
                 cloudDB.collection("RegistroDeAsistencia").get()
                     .addOnFailureListener {
-                        mostrarToastEnMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia. Intentelo nuevamente.")
+                        showToastInMainThreadWithHardcoreString(context, "Error al obtener el registro de asistencia. Intentelo nuevamente.")
                         deferred.complete(mutableListOf())
                     }
                     .addOnSuccessListener{
@@ -796,17 +796,15 @@ class AppRepository(private val context: Context,
                                 "tiempoEnAzul" to "00:00",
                                 "tiempoEnRosado" to "00:00"
                             )
-
                             val format = SimpleDateFormat("dd-MM-yyyy")
                             val uid = documento.id
                             val nombreCompleto = documento.data?.get("nombreCompleto") as String
                             val sueldoDiario = 10000
                             val registroAsistencia = documento.data?.get("registroAsistencia") as List<Map<*,*>>
                             var bonop = "0"
-                            val bonor = "0"
+                            var bonor = "0"
                             val auxMes = convertirMesDeTextoStringANumeroString(mes)
                             val aux = documento["registroDeBonoPersonal"] as? List<Map<*, *>> ?: emptyList()
-                            Log.e("aux", aux.toString())
                             if(aux.isNotEmpty()){
                                 aux.forEach{
                                     if(it["mes"] == mes && it["anio"] == anio) bonop = it["bono"].toString()
@@ -814,33 +812,45 @@ class AppRepository(private val context: Context,
                             }
                             registroAsistencia.forEach {
                                 val date = format.parse(it["fecha"] as String)
-                                if (date!!.month+1 == auxMes.toInt() && date!!.year + 1900 == anio.toInt()) {
-                                    val tiempoEnVerde = it["tiempoEnVerde"] as String
-                                    val tiempoEnAmarillo = it["tiempoEnAmarillo"] as String
-                                    val tiempoEnRojo = it["tiempoEnRojo"] as String
-                                    val tiempoEnAzul = it["tiempoEnAzul"] as String
-                                    val tiempoEnRosado = it["tiempoEnRosado"] as String
-                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnVerde"]!!, tiempoEnVerde)
-                                    mapaDeTiempos["tiempoEnAmarillo"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAmarillo"]!!, tiempoEnAmarillo)
-                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRojo"]!!, tiempoEnRojo)
-                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAzul"]!!, tiempoEnAzul)
-                                    mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRosado"]!!, tiempoEnRosado)
-                                    diasTrabajados++
-                                }
+                                    if (date!!.month+1 == auxMes.toInt() && date!!.year + 1900 == anio.toInt()) {
+                                        Log.e("sumarEntreDosTiemposQueVienenComoString", it.toString())
+                                        if(it["tiempoEnVerde"] != null){
+                                            val tiempoEnVerde = it["tiempoEnVerde"] as String
+                                            val tiempoEnAmarillo = it["tiempoEnAmarillo"] as String
+                                            val tiempoEnRojo = it["tiempoEnRojo"] as String
+                                            val tiempoEnAzul = it["tiempoEnAzul"] as String
+                                            val tiempoEnRosado = it["tiempoEnRosado"] as String
+                                            mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnVerde"]!!, tiempoEnVerde)
+                                            mapaDeTiempos["tiempoEnAmarillo"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAmarillo"]!!, tiempoEnAmarillo)
+                                            mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRojo"]!!, tiempoEnRojo)
+                                            mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnAzul"]!!, tiempoEnAzul)
+                                            mapaDeTiempos["tiempoEnVerde"] = sumarEntreDosTiemposQueVienenComoString(mapaDeTiempos["tiempoEnRosado"]!!, tiempoEnRosado)
+                                        }
+                                        diasTrabajados++
+                                    }
                             }
                             val sueldo = sueldoDiario * diasTrabajados
-                            if(diasTrabajados >= 26){
-                                val minutosMinimosEnVerde = 360*diasTrabajados*0.8
-                                if(minutosMinimosEnVerde <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
-                                    bonop = (bonop.toInt() + 10000).toString()
+                            val minutosMinimosEnVerde = 360 * diasTrabajados * 0.8
+                            if(mapaDeTiempos["tiempoEnVerde"] != null){
+                                when(diasTrabajados){
+                                    in 26 .. 31 -> {
+                                        if(minutosMinimosEnVerde <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
+                                            bonor = (bonop.toInt() + 10000).toString()
+                                        }
+                                        if((minutosMinimosEnVerde/80)*70 <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
+                                            bonor = (bonop.toInt() + 5000).toString()
+                                        }
+                                    }
+                                    in 20..25 -> {
+                                        if(minutosMinimosEnVerde <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
+                                            bonor = (bonop.toInt() + 10000).toString()
+                                        }
+                                        if((minutosMinimosEnVerde/80)*70 <= mapaDeTiempos["tiempoEnVerde"]!!.toDouble()){
+                                            bonor = (bonop.toInt() + 5000).toString()
+                                        }
+                                    }
                                 }
-                            }else{
-                                if(diasTrabajados >= 20 && diasTrabajados < 26){
-
-                                }
-
                             }
-
                             if(diasTrabajados > 0){
                                 listaDeUsuariosYSuAsistencia.add(
                                     Asistencia(
@@ -856,9 +866,11 @@ class AppRepository(private val context: Context,
                                 )
                             }
                         }
+
                         if(listaDeUsuariosYSuAsistencia.isEmpty()){
-                            mostrarToastEnMainThreadWithHardcoreString(context, "No hay registros de asistencia en el rango de fechas seleccionado.")
+                            showToastInMainThreadWithHardcoreString(context, "No hay registros de asistencia en el rango de fechas seleccionado.")
                         }
+
                         deferred.complete(listaDeUsuariosYSuAsistencia)
                     }
                 return@withContext deferred.await()
@@ -871,10 +883,10 @@ class AppRepository(private val context: Context,
                 val deferred = CompletableDeferred<Boolean>()
                 try {
                     val request = BonoPersonalApi.RETROFIT_SERVICE_BONOPERSONAL.ingresarBono(volanteroId, bono, mes, anio).await()
-                    mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
+                    showToastInMainThreadWithHardcoreString(context, request.msg)
                     deferred.complete(true)
                 }catch(e:Exception){
-                    mostrarToastEnMainThreadWithHardcoreString(context, e.message?: "Error al agregar bono personal al volantero.")
+                    showToastInMainThreadWithHardcoreString(context, e.message?: "Error al agregar bono personal al volantero.")
                     deferred.complete(false)
                 }
                 return@withContext deferred.await()
@@ -885,7 +897,7 @@ class AppRepository(private val context: Context,
         wrapEspressoIdlingResource {
             withContext(ioDispatcher) {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmPedido(firebaseAuth.currentUser!!.uid).await()
-                mostrarToastEnMainThreadWithHardcoreString(context, request.msg)
+                showToastInMainThreadWithHardcoreString(context, request.msg)
             }
         }
     }
@@ -894,10 +906,10 @@ class AppRepository(private val context: Context,
             val deferred = CompletableDeferred<Boolean>()
             try {
                 val request = RdmApi.RETROFIT_SERVICE_RDM.rdmEntrega(id).await()
-                mostrarToastEnMainThreadWithHardcoreString(context, request.msg+"\n"+"Espere mientras se actualiza la lista.")
+                showToastInMainThreadWithHardcoreString(context, request.msg+"\n"+"Espere mientras se actualiza la lista.")
                 deferred.complete(true)
             }catch(e:Exception){
-                mostrarToastEnMainThreadWithHardcoreString(context,"Error al notificar al volantero que se le abastecio de material.")
+                showToastInMainThreadWithHardcoreString(context,"Error al notificar al volantero que se le abastecio de material.")
                 deferred.complete(false)
             }
             return@withContext deferred.await()
@@ -934,6 +946,23 @@ class AppRepository(private val context: Context,
         wrapEspressoIdlingResource {
             withContext(ioDispatcher){
                 return@withContext latLngYHoraActualDao.obtenerLatLngYHoraActuales()
+            }
+        }
+    }
+
+    override suspend fun agregarBonoDeResponsabilidad(bonoDeResponsabilidad: String): Boolean = withContext(ioDispatcher) {
+        wrapEspressoIdlingResource {
+            withContext(ioDispatcher){
+                val deferred = CompletableDeferred<Boolean>()
+                cloudDB.collection("bonoDeResponsabilidad")
+                    .document("monto").set(mapOf("monto" to bonoDeResponsabilidad.toInt()))
+                    .addOnFailureListener{
+                        deferred.complete(false)
+                    }
+                    .addOnSuccessListener{
+                        deferred.complete(true)
+                    }
+                deferred.await()
             }
         }
     }

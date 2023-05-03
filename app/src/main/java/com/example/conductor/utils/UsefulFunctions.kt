@@ -3,10 +3,10 @@ package com.example.conductor.utils
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 
-fun mostrarToastEnMainThreadWithHardcoreString(context: Context, message: String){
+fun showToastInMainThreadWithHardcoreString(context: Context, message: String){
     Handler(Looper.getMainLooper()).post {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
@@ -37,6 +37,7 @@ fun convertirMesDeTextoStringANumeroString(mes: String): String{
 }
 
 fun sumarEntreDosTiemposQueVienenComoString(tiempo1:String, tiempo2:String): String{
+    Log.e("sumarEntreDosTiemposQueVienenComoString", "$tiempo1'--'$tiempo2")
     val (min1, sec1) = tiempo1.split(":")
     val (min2, sec2) = tiempo2.split(":")
     var totalMin = min1.toInt() + min2.toInt()

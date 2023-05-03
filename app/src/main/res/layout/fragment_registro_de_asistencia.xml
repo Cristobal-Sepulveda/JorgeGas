@@ -136,6 +136,43 @@
             app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_generarReporte"
             tools:visibility="visible" />
 
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView_registroDeAsistencia_ingresarMontoBonoResponsabilidad"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="@dimen/space_big"
+            android:layout_marginEnd="@dimen/space_small"
+            android:autofillHints="name"
+            android:background="@drawable/edittext_border"
+            android:hint="@string/ingrese_monto_del_bono_de_responsabilidad"
+            android:inputType="number"
+            android:padding="@dimen/space_small"
+            android:textAlignment="center"
+            android:textSize="10sp"
+            android:visibility="gone"
+            android:layout_marginTop="13dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextView_registroDeAsistencia_elegirVolanteroBono"
+            app:layout_constraintEnd_toStartOf="@id/button_registroDeAsistencia_agregarBonoResponsabilidad"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/button_registroDeAsistencia_agregarBonoResponsabilidad"
+            android:layout_width="0dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/ingresar"
+            android:textSize="10sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/button_registroDeAsistencia_generarReporte"
+            app:layout_constraintStart_toStartOf="@id/button_registroDeAsistencia_agregarBono"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_agregarBono"
+            tools:visibility="visible" />
+
+
+
+
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_registroDeAsistencia_dividerTop"
             android:layout_width="match_parent"
@@ -143,7 +180,7 @@
             android:layout_marginTop="@dimen/space_medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_agregarBono"
+            app:layout_constraintTop_toBottomOf="@id/button_registroDeAsistencia_agregarBonoResponsabilidad"
             />
 
         <LinearLayout

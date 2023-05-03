@@ -1,21 +1,21 @@
 package com.example.conductor.ui.registrodeasistencia
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.example.conductor.R
 import com.example.conductor.adapter.AsistenciaAdapter
 import com.example.conductor.data.data_objects.domainObjects.Asistencia
 import com.example.conductor.databinding.FragmentRegistroDeAsistenciaBinding
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.utils.cerrarTeclado
 import com.example.conductor.utils.showToast
+import com.example.conductor.utils.showToastInMainThreadWithStringResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,6 +66,8 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
             }
             _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBono.visibility = View.VISIBLE
             _binding!!.buttonRegistroDeAsistenciaAgregarBono.visibility = View.VISIBLE
+            _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBonoResponsabilidad.visibility = View.VISIBLE
+            _binding!!.buttonRegistroDeAsistenciaAgregarBonoResponsabilidad.visibility = View.VISIBLE
         }
 
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirMes.apply{
@@ -125,11 +127,25 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
             if(volantero.isEmpty()) return@setOnClickListener showToast("Por favor, seleccione un volantero")
             val bono = _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBono.text.toString()
             if(bono.isEmpty() || bono == "0") return@setOnClickListener showToast("El bono debe ser mayor a 0")
-            val volanteroElegido = _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirVolanteroBono.text.toString()
             val mes = _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirMes.text.toString()
             val anio = _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirAnio.text.toString()
             lifecycleScope.launch(Dispatchers.IO){
-                _viewModel.agregarBonoPersonalAlVolantero(bono, hashMapVolanterosQueAsistieronEnElMesSeleccionado[volanteroElegido]!!,mes,anio)
+                _viewModel.agregarBonoPersonalAlVolantero(bono, hashMapVolanterosQueAsistieronEnElMesSeleccionado[volantero]!!,mes,anio)
+            }
+        }
+
+        _binding!!.buttonRegistroDeAsistenciaAgregarBonoResponsabilidad.setOnClickListener{
+            requireActivity().cerrarTeclado(it)
+            val bonoDeResponsabilidad = _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBonoResponsabilidad.text.toString()
+            if(bonoDeResponsabilidad.isEmpty() || bonoDeResponsabilidad == "0") return@setOnClickListener showToast("Antes de ingresar el bono debes de escribirlo.")
+            val mes = _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirMes.text.toString()
+            val anio = _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirAnio.text.toString()
+            lifecycleScope.launch(Dispatchers.IO){
+                if(_viewModel.agregarBonoDeResponsabilidad(bonoDeResponsabilidad, mes,anio)){
+                    showToastInMainThreadWithStringResource(requireActivity(), R.string.bono_responsabilidad_agregado_correctamente)
+                }else{
+                    showToastInMainThreadWithStringResource(requireActivity(), R.string.bono_responsabilidad_agregado_error)
+                }
             }
         }
         return _binding!!.root
@@ -139,6 +155,8 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirVolanteroBono.visibility = View.GONE
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBono.visibility = View.GONE
         _binding!!.buttonRegistroDeAsistenciaAgregarBono.visibility = View.GONE
+        _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBonoResponsabilidad.visibility = View.GONE
+        _binding!!.buttonRegistroDeAsistenciaAgregarBonoResponsabilidad.visibility = View.GONE
     }
     override fun onPause() {
         super.onPause()
@@ -147,6 +165,8 @@ class RegistroDeAsistenciaFragment: BaseFragment() {
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaElegirVolanteroBono.visibility = View.GONE
         _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBono.visibility = View.GONE
         _binding!!.buttonRegistroDeAsistenciaAgregarBono.visibility = View.GONE
+        _binding!!.autoCompleteTextViewRegistroDeAsistenciaIngresarMontoBonoResponsabilidad.visibility = View.GONE
+        _binding!!.buttonRegistroDeAsistenciaAgregarBonoResponsabilidad.visibility = View.GONE
         _viewModel.vaciarRecyclerView()
         _binding!!.recyclerViewRegistroDeAsistenciaListadoDeAsistencia.adapter = null
         recyclerViewAdapter.submitList(null)

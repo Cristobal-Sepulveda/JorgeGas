@@ -57,4 +57,5 @@ interface AppDataSource {
     suspend fun cambiarValorDeEnvioRegistroDeTrayecto(boolean:Boolean)
     suspend fun eliminarInstanciaDeEnvioRegistroDeTrayecto()
     suspend fun agregarBonoPersonalAlVolantero(bono: String, volanteroId: String, mes:String, anio:String): Boolean
+    suspend fun agregarBonoDeResponsabilidad(bonoDeResponsabilidad : String): Boolean
 }

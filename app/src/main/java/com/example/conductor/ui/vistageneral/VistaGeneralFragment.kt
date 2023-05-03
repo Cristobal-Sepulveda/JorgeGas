@@ -33,6 +33,7 @@ import com.example.conductor.R
 import com.example.conductor.ui.base.BaseFragment
 import com.example.conductor.data.data_objects.dbo.LatLngYHoraActualDBO
 import com.example.conductor.databinding.FragmentVistaGeneralBinding
+import com.example.conductor.ui.DetalleBonosDeResponsabilidad
 import com.example.conductor.utils.*
 import com.example.conductor.utils.Constants.ACTION_LOCATION_BROADCAST
 import com.example.conductor.utils.Constants.EXTRA_LOCATION
@@ -319,7 +320,8 @@ class VistaGeneralFragment : BaseFragment(), SharedPreferences.OnSharedPreferenc
             }
         }
         _binding!!.textViewVistaGeneralUiVolanteroVerDetalleBonos.setOnClickListener{
-            findNavController().navigate(VistaGeneralFragmentDirections.actionNa())
+            val showModal = DetalleBonosDeResponsabilidad()
+            showModal.show(requireActivity().supportFragmentManager, "DetalleBonosDeResponsabilidad")
         }
 
         /*Observers*/
